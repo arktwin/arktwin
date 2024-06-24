@@ -1,0 +1,172 @@
+@startuml messaging
+skinparam defaultTextAlignment center
+
+frame "Remote Network" {
+  node "ArkTwin Center\n<color:#gray><plain>(Pekko cluster)</plain></color>" {
+    agent "<color:#gray>Conductor</color>" as Conductor
+
+    agent "Atlas" as Atlas
+    collections "Atlas/\nChartRecorderParent/\nChartRecorder" as ChartRecorder
+    collections "Atlas/\nChartReceiverParent/\n<b>ChartReceiver</b>\n<color:#gray>which forwards</color>\n<color:#gray>culled agent transforms</color>" as ChartReceiver
+    collections "Atlas/\nChartSenderParent/\nChartSender" as ChartSender
+
+    agent "<b>Clock</b>\nwhich delivers\nbase time matching" as ClockC
+    agent "<color:#gray>Reporter</color>" as ReporterC
+    agent "<b>Register</b>\nwhich delivers\n all agent infomation" as RegisterC
+
+    storage "Kamon" as KamonC
+    agent "CenterReporter" as CenterReporter
+    agent " " as PrometheusReporterC
+    
+    rectangle "gRPC Services" as center.services {
+      interface "Admin" as AdminService
+      interface "Chart" as ChartService
+      interface "Clock" as ClockService
+      interface "<color:#gray>Reporter</color>" as ReporterService
+      interface "Register" as RegisterService
+    }
+    rectangle "Prometheus\nEndpoint" as center.prometheus {
+      interface "/metrics" as CenterMetrics
+    }
+  }
+  node "Prometheus" as prometheusC
+}
+
+frame "Local Network<plain>, which can deny inbound connections</plain>" {
+  node "ArkTwin Edge\n<plain>(agent simulator sidecar)</plain>" {
+    rectangle "gRPC Clients" as edge.clients {
+      interface "Admin" as AdminClient
+      interface "Chart" as ChartClient
+      interface "Clock" as ClockClient
+      interface "<color:#gray>Reporter</color>" as ReporterClient
+      interface "Register" as RegisterClient
+    }
+
+    storage "Kamon" as Kamon
+    agent "EdgeReporter" as EdgeReporter
+    agent " " as PrometheusReporter
+
+    rectangle " " as edge.actors {
+      agent "Chart" as Chart
+      agent "Clock" as Clock
+      agent "Register" as Register
+
+      agent " " as EdgeAgentsPutAdapter
+      agent " " as EdgeNeighborsQueryAdapter
+    }
+
+    agent "EdgeConfigurator" as EdgeConfigurator
+
+    rectangle "REST API" as edge.endpoints {
+      rectangle "/api/center" {
+        interface "DELETE\n/agents" as CenterAgentsDelete
+        interface "PUT\n/clock/speed" as CenterClockSpeedPut
+      }
+      rectangle "/api/edge\n" {
+        interface "<color:#gray>DELETE</color>\n<color:#gray>/agents</color>" as EdgeAgentsDelete
+        interface "POST\n/agents" as EdgeAgentsPost
+        interface "PUT\n/agents" as EdgeAgentsPut
+        interface "GET\n/config" as EdgeConfigGet
+        interface "PUT\n/config/*" as EdgeConfigPut
+        interface "POST\n/nighbors/_query" as EdgeNeighborsQuery
+        interface "<color:#gray>POST</color>\n<color:#gray>/_tick</color>" as EdgeTick
+      }
+    }
+    rectangle "Prometheus\nEndpoint" as edge.prometheus {
+      interface "/metrics" as EdgeMetrics
+    }
+  }
+
+  rectangle "Web UI" as webui {
+    rectangle "/docs" {
+      rectangle "Swagger"
+    }
+  }
+  node "<b>Agent Simulator / VR</b>\nwhich can push and pull data synchronously" as simulator
+  node "Prometheus" as prometheus
+}
+
+Conductor -[#gray]-> ClockC
+Conductor -[#gray]-> RegisterC
+Conductor <-[#gray]- ReporterC
+
+ChartReceiver <--- ChartService
+ChartReceiver -> ChartSender
+ChartSender ---> ChartService
+ChartRecorder <--- ChartService
+Atlas <--o ChartRecorder
+Atlas --> ChartReceiver
+
+ClockC <--- AdminService
+ClockC ---> ClockService
+ReporterC <-[#gray]-- ReporterService
+RegisterC <--- AdminService
+RegisterC <---> RegisterService
+
+AdminService <--> AdminClient
+ChartService <--> ChartClient
+ClockService --> ClockClient
+ReporterService <-[#gray]- ReporterClient
+RegisterService <--> RegisterClient
+
+ReporterClient <-[#gray]- EdgeReporter
+
+ChartClient ---> Chart
+
+ClockClient ---> Clock
+
+RegisterClient ---> Register
+
+AdminClient <-- CenterAgentsDelete
+
+AdminClient <-- CenterClockSpeedPut
+
+RegisterClient <-[#gray]- EdgeAgentsDelete
+
+RegisterClient <-- EdgeAgentsPost
+ChartClient <-- EdgeAgentsPutAdapter
+Chart <-- EdgeAgentsPutAdapter
+Clock o--> EdgeAgentsPutAdapter
+RegisterClient <-- EdgeAgentsPutAdapter
+EdgeAgentsPutAdapter <-- EdgeAgentsPut
+EdgeAgentsPutAdapter <-[#gray]-> EdgeTick
+
+Chart o--> EdgeNeighborsQueryAdapter
+Clock o--> EdgeNeighborsQueryAdapter
+Register o--> EdgeNeighborsQueryAdapter
+EdgeNeighborsQueryAdapter o--> EdgeNeighborsQuery
+EdgeNeighborsQueryAdapter o-[#gray]-> EdgeTick
+
+EdgeConfigurator o--> EdgeConfigGet
+EdgeConfigurator <-- EdgeConfigPut
+edge.actors <-- EdgeConfigurator  
+
+edge.endpoints <-- webui
+edge.endpoints o--> webui
+edge.endpoints <-- simulator
+edge.endpoints o--> simulator
+
+KamonC --> CenterReporter
+CenterReporter -[#gray]-> Conductor
+KamonC --> PrometheusReporterC
+PrometheusReporterC o--> CenterMetrics
+CenterMetrics o--> prometheusC
+
+Kamon --> EdgeReporter
+Kamon --> PrometheusReporter
+PrometheusReporter o--> EdgeMetrics
+EdgeMetrics o--> prometheus
+
+!procedure $inlineArrow($arrow)
+{{\nleft to right direction\nlabel " " as A\nlabel " " as B\nA $arrow B\n}}
+!endprocedure
+
+legend
+{{
+  map "arrows legend " as arrows {
+    $inlineArrow( "-->") => push
+    $inlineArrow("o-->") => pull
+  }
+}}
+endlegend
+@enduml

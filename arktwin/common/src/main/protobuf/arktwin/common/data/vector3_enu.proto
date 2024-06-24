@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package arktwin.common.data;
+
+message Vector3Enu {
+  double x = 1;
+  double y = 2;
+  double z = 3;
+}

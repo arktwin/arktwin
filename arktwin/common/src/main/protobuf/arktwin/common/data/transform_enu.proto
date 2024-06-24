@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package arktwin.common.data;
+
+import "arktwin/common/data/quaternion_enu.proto";
+import "arktwin/common/data/timestamp.proto";
+import "arktwin/common/data/vector3_enu.proto";
+import "google/protobuf/wrappers.proto";
+import "validate/validate.proto";
+
+// cf. https://docs.unity3d.com/Manual/class-Transform.html
+// cf. https://docs.unrealengine.com/4.27/en-US/API/Runtime/Core/Math/FTransform/
+message TransformEnu {
+  Timestamp timestamp = 1 [(validate.rules).message.required = true];
+
+  google.protobuf.StringValue parent_agent = 2;
+
+  Vector3Enu global_scale = 3 [(validate.rules).message.required = true];
+
+  QuaternionEnu local_rotation = 4 [(validate.rules).message.required = true];
+
+  Vector3Enu local_translation_meter = 5 [(validate.rules).message.required = true];
+
+  Vector3Enu local_translation_speed_mps = 6 [(validate.rules).message.required = true];
+}

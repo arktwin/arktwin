@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package arktwin.center.services;
+
+import "google/protobuf/empty.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+service Register {
+  rpc EdgeCreate (EdgeCreateRequest) returns (EdgeCreateResponse);
+  rpc EdgeAgentsPost (EdgeAgentsPostRequests) returns (EdgeAgentsPostResponses);
+  rpc Publish (stream RegisterAgentsPublish) returns (google.protobuf.Empty);
+  rpc Subscribe (google.protobuf.Empty) returns (stream RegisterAgentsSubscribe);
+}
+
+message EdgeCreateRequest {
+  string edge_id_prefix = 1 [(validate.rules).string = {pattern: "[0-9a-zA-Z\\-_]+"}];
+}
+
+message EdgeCreateResponse {
+  string edge_id = 1;
+}
+
+message EdgeAgentsPostRequests {
+  repeated EdgeAgentsPostRequest requests = 1;
+}
+
+message EdgeAgentsPostRequest {
+  string agent_id_prefix = 1 [
+    (scalapb.field).annotations = '@description("[0-9a-zA-Z&bsol;-_]+")',
+    (validate.rules).string = {pattern: "[0-9a-zA-Z\\-_]+"}
+  ];
+  string kind = 2 [
+    (scalapb.field).annotations = '@description("[0-9a-zA-Z&bsol;-_]+")',
+    (validate.rules).string = {pattern: "[0-9a-zA-Z\\-_]+"}
+  ];
+  map<string, string> status = 3;
+  map<string, string> assets = 4;
+}
+
+message EdgeAgentsPostResponses {
+  repeated EdgeAgentsPostResponse responses = 1;
+}
+
+message EdgeAgentsPostResponse {
+  string agent_id = 1;
+}
+
+message RegisterAgentsPublish {
+  repeated RegisterAgentUpdated agents = 1;
+}
+
+message RegisterAgentsSubscribe {
+  repeated RegisterAgentSubscribe agents = 1;
+}
+
+message RegisterAgentSubscribe {
+  oneof sealed_value {
+    RegisterAgent latest = 1;
+    RegisterAgentUpdated updated = 2;
+    RegisterAgentDeleted deleted = 3;
+  }
+}
+
+message RegisterAgent {
+  string agent_id = 1;
+  string kind = 2;
+  map<string, string> status = 3;
+  map<string, string> assets = 4;
+}
+
+message RegisterAgentUpdated {
+  string agent_id = 1;
+  map<string, string> status = 2;
+}
+
+message RegisterAgentDeleted {
+  string agent_id = 1;
+}

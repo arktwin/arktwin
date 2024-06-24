@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package arktwin;
+
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+option (scalapb.options) = {
+  scope: PACKAGE,
+  enum_value_naming: CAMEL_CASE,
+  field_transformations: [
+    {
+      when: {options: {[validate.rules] {message: {required: true}}}}
+      set: {[scalapb.field] {required: true}}
+    }
+  ],
+  import: "sttp.tapir.Schema.annotations.description",
+  no_default_values_in_constructor: true,
+  preserve_unknown_fields: false
+};

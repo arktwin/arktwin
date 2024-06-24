@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package arktwin.center.services;
+
+import "arktwin/common/data/timestamp.proto";
+import "arktwin/common/data/transform_enu.proto";
+import "google/protobuf/empty.proto";
+import "validate/validate.proto";
+
+service Chart {
+  rpc Publish (stream ChartAgentsPublish) returns (google.protobuf.Empty);
+  rpc Subscribe (google.protobuf.Empty) returns (stream ChartAgentsSubscribe);
+}
+
+message ChartAgent {
+  string agent_id = 1 [(validate.rules).string = {pattern: "[0-9a-zA-Z\\-_]+"}];
+  common.data.TransformEnu transform = 2 [(validate.rules).message.required = true];
+}
+
+message ChartAgentsPublish {
+  repeated ChartAgent agents = 1;
+  common.data.Timestamp transmission_machine_timestamp = 2 [(validate.rules).message.required = true];
+}
+
+message ChartAgentsSubscribe {
+  repeated ChartAgent agents = 1;
+  common.data.Timestamp transmission_machine_timestamp= 2 [(validate.rules).message.required = true];
+}

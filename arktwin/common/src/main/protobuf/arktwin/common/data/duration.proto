@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package arktwin.common.data;
+
+message Duration {
+  int64 seconds = 1;
+  int32 nanos = 2;
+}

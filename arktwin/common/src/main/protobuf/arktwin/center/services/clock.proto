@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package arktwin.center.services;
+
+import "arktwin/common/data/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "validate/validate.proto";
+
+service Clock {
+  rpc Subscribe(google.protobuf.Empty) returns (stream ClockBase);
+}
+
+message ClockBase {
+  common.data.Timestamp base_machine_timestamp = 1 [(validate.rules).message.required = true];
+  common.data.Timestamp base_timestamp = 2 [(validate.rules).message.required = true];
+  double clock_speed = 3 [(validate.rules).double = {gte: 0}];
+}

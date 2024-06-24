@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package arktwin.common.data;
+
+import "validate/validate.proto";
+
+message QuaternionEnu {
+  double x = 1 [(validate.rules).double = {gte: -1, lte: 1}];
+  double y = 2 [(validate.rules).double = {gte: -1, lte: 1}];
+  double z = 3 [(validate.rules).double = {gte: -1, lte: 1}];
+  double w = 4 [(validate.rules).double = {gte: -1, lte: 1}];
+}

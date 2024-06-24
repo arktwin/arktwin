@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package arktwin.center.services;
+
+import "google/protobuf/empty.proto";
+import "scalapb/scalapb.proto";
+import "validate/validate.proto";
+
+service Admin {
+  rpc CenterClockSpeedPut(CenterClockSpeedPutRequest) returns (google.protobuf.Empty);
+  rpc CenterAgentsDelete(AgentSelector) returns (google.protobuf.Empty);
+}
+
+message CenterClockSpeedPutRequest {
+  double clock_speed = 1 [
+    (scalapb.field).annotations = '@description("&gt;= 0")',
+    (validate.rules).double = {gte: 0}
+  ];
+}
+
+message AgentSelector {
+  oneof sealed_value {
+    option (validate.required) = true;
+
+    AgentIdSelector agent_id_selector = 1;
+    AgentKindSelector agent_kind_selector = 2;
+  }
+}
+
+message AgentIdSelector {
+  string regex = 1;
+}
+
+message AgentKindSelector {
+  string regex = 1;
+}
