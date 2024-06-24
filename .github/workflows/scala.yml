@@ -25,6 +25,9 @@ jobs:
     - name: Run tests
       working-directory: arktwin
       run: sbt test
+    - name: Test to compile e2e
+      working-directory: arktwin
+      run: sbt e2e/compile
     - uses: scalacenter/sbt-dependency-submission@v3
       with:
         working-directory: arktwin
