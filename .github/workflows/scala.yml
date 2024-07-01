@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - uses: actions/setup-java@v4
       with:
@@ -37,6 +39,40 @@ jobs:
     - name: sbt test
       working-directory: arktwin
       run: sbt test
+
+    - name: Generate OpenAPI YAML files 
+      working-directory: arktwin
+      run: |
+        sbt "edge/run openapi-center ../temp/arktwin-center-head.yaml" "edge/run openapi-edge ../temp/arktwin-edge-head.yaml"
+        git checkout main
+        sbt clean "edge/run openapi-center ../temp/arktwin-center-main.yaml" "edge/run openapi-edge ../temp/arktwin-edge-main.yaml"
+        git checkout $(git tag -l "v*" --sort=-v:refname | head -n 1)
+        sbt clean "edge/run openapi-center ../temp/arktwin-center-release.yaml" "edge/run openapi-edge ../temp/arktwin-edge-release.yaml"
+        git checkout $GITHUB_SHA
+
+    - name: Display /api/center changelog from main
+      uses: oasdiff/oasdiff-action/changelog@v0.0.19
+      with:
+        base: arktwin/temp/arktwin-center-main.yaml
+        revision: arktwin/temp/arktwin-center-head.yaml
+
+    - name: Display /api/edge changelog from main
+      uses: oasdiff/oasdiff-action/changelog@v0.0.19
+      with:
+        base: arktwin/temp/arktwin-edge-main.yaml
+        revision: arktwin/temp/arktwin-edge-head.yaml
+
+    - name: Display /api/center changelog from latest relase
+      uses: oasdiff/oasdiff-action/changelog@v0.0.19
+      with:
+        base: arktwin/temp/arktwin-center-release.yaml
+        revision: arktwin/temp/arktwin-center-head.yaml
+
+    - name: Display /api/edge changelog from latest relase
+      uses: oasdiff/oasdiff-action/changelog@v0.0.19
+      with:
+        base: arktwin/temp/arktwin-edge-release.yaml
+        revision: arktwin/temp/arktwin-edge-head.yaml
 
     - uses: scalacenter/sbt-dependency-submission@v3
       with:
