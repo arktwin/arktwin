@@ -23,14 +23,14 @@ object ChartConnector:
   case class Publish(agents: Seq[ChartAgent], putReceptionMachineTimestamp: Timestamp)
 
 // TODO retry connection in actor?
-case class ChartConnector(client: ChartClient, staticConfig: StaticEdgeConfig, edgeId: String)(using
+case class ChartConnector(client: ChartClient, staticConfig: StaticEdgeConfig, edgeId: String, kamon: EdgeKamon)(using
     Materializer
 ):
   import ChartConnector.*
 
-  private val publishAgentNumCounter = EdgeKamon.chartPublishAgentNumCounter(edgeId)
-  private val publishBatchNumCounter = EdgeKamon.chartPublishBatchNumCounter(edgeId)
-  private val publishMachineLatencyHistogram = EdgeKamon.chartPublishMachineLatencyHistogram(edgeId)
+  private val publishAgentNumCounter = kamon.chartPublishAgentNumCounter()
+  private val publishBatchNumCounter = kamon.chartPublishBatchNumCounter()
+  private val publishMachineLatencyHistogram = kamon.chartPublishMachineLatencyHistogram()
 
   def publish(): ActorRef[Publish] =
     // micro-batch to reduce overhead of stream processing
@@ -61,8 +61,8 @@ case class ChartConnector(client: ChartClient, staticConfig: StaticEdgeConfig, e
       .invoke(source)
     actorRef
 
-  private val subscribeAgentNumCounter = EdgeKamon.chartSubscribeAgentNumCounter(edgeId)
-  private val subscribeMachineLatencyHistogram = EdgeKamon.chartSubscribeMachineLatencyHistogram(edgeId)
+  private val subscribeAgentNumCounter = kamon.chartSubscribeAgentNumCounter()
+  private val subscribeMachineLatencyHistogram = kamon.chartSubscribeMachineLatencyHistogram()
 
   def subscribe(chart: ActorRef[Chart.Message]): Unit =
     // TODO maicro-batch?

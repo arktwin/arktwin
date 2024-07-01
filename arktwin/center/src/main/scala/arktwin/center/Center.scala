@@ -7,6 +7,7 @@ package arktwin.center
 
 import arktwin.center.actors.{Clock, Register, *}
 import arktwin.center.services.*
+import arktwin.center.util.CenterKamon
 import arktwin.center.util.CenterReporter
 import buildinfo.BuildInfo
 import kamon.Kamon
@@ -19,6 +20,7 @@ import org.apache.pekko.util.Timeout
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.concurrent.duration.DurationInt
+import scala.util.Random
 
 object Center:
   def main(args: Array[String]): Unit =
@@ -36,16 +38,21 @@ object Center:
     given Scheduler = actorSystem.scheduler
     given Timeout = 10.seconds
 
-    Kamon.addReporter(CenterReporter.getClass.getSimpleName, CenterReporter(actorSystem.log))
-
     actorSystem.log.info(BuildInfo.toString)
     actorSystem.log.info(config.toString)
     actorSystem.log.debug(rawConfig.toString)
 
+    val runId = issueRunId(config.static.runIdPrefix)
+    actorSystem.log.info(s"Run ID: $runId")
+
+    val kamon = CenterKamon(runId)
+    val reporter = CenterReporter(actorSystem.log, kamon)
+    Kamon.addReporter(reporter.getClass.getSimpleName, reporter)
+
     for
-      atlas <- actorSystem ? Atlas.spawn(config.dynamic.atlas)
+      atlas <- actorSystem ? Atlas.spawn(config.dynamic.atlas, kamon)
       clock <- actorSystem ? Clock.spawn(config.static.clock)
-      register <- actorSystem ? Register.spawn()
+      register <- actorSystem ? Register.spawn(runId)
     do
       Http()
         .newServerAt(config.static.host, config.static.port)
@@ -57,7 +64,8 @@ object Center:
                 actorSystem.receptionist,
                 atlas,
                 config.static,
-                actorSystem.log
+                actorSystem.log,
+                kamon
               )
             ),
             ClockPowerApiHandler.partial(ClockService(actorSystem.receptionist, config.static, actorSystem.log)),
@@ -67,3 +75,8 @@ object Center:
           )
         )
         .foreach(server => actorSystem.log.info(server.localAddress.toString))
+
+  private def issueRunId(runIdPrefix: String): String =
+    val characters = "0123456789abcdefghijklmnopqrstuvwxyz"
+    val idSuffix = (0 until 7).map(_ => characters(Random.nextInt(characters.size))).mkString
+    (if runIdPrefix.isEmpty then "" else runIdPrefix + "-") + idSuffix

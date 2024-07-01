@@ -18,6 +18,7 @@ import arktwin.edge.data.Vector3Config.TimeUnit.Second
 import arktwin.edge.endpoints.EdgeConfigGet
 import arktwin.edge.endpoints.EdgeNeighborsQuery.{Request, Response, ResponseAgent}
 import arktwin.edge.endpoints.NeighborChange.{Recognized, Unrecognized, Updated}
+import arktwin.edge.util.EdgeKamon
 import arktwin.edge.util.ErrorStatus
 import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
@@ -46,7 +47,16 @@ class EdgeNeighborsQueryAdapterSuite extends ScalaTestWithActorTestKit() with An
       Behaviors.same
     })
     val adapter =
-      testKit.spawn(EdgeNeighborsQueryAdapter(chart, clock, register, "edge", config.static, config.dynamic.coordinate))
+      testKit.spawn(
+        EdgeNeighborsQueryAdapter(
+          chart,
+          clock,
+          register,
+          config.static,
+          config.dynamic.coordinate,
+          EdgeKamon("run", "edge")
+        )
+      )
     val endpoint = testKit.createTestProbe[Either[ErrorStatus, Response]]()
 
     adapter ! CoordinateConfig(Vector3Config(Meter, Second, East, North, Up), EulerAnglesConfig(Degree, XYZ))

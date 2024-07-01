@@ -19,6 +19,7 @@ message EdgeCreateRequest {
 
 message EdgeCreateResponse {
   string edge_id = 1;
+  string run_id = 2;
 }
 
 message EdgeAgentsPostRequests {

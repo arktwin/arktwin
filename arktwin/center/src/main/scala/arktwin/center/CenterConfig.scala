@@ -37,6 +37,7 @@ object CenterConfig:
 case class StaticCenterConfig(
     bufferSize: Int,
     clock: StaticCenterConfig.ClockConfig,
+    runIdPrefix: String,
     host: String,
     port: Int,
     subscribeStreamBatchSize: Int,

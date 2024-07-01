@@ -31,7 +31,8 @@ class ChartService(
     receptionist: ActorRef[Receptionist.Command],
     atlas: ActorRef[Atlas.Message],
     config: StaticCenterConfig,
-    log: Logger
+    log: Logger,
+    kamon: CenterKamon
 )(using
     Materializer,
     ExecutionContext,
@@ -43,9 +44,9 @@ class ChartService(
     val edgeId = metadata.getText(GrpcHeaderKey.edgeId).getOrElse("")
     val logName = s"${getClass.getSimpleName}.publish/$edgeId"
 
-    val publishAgentNumCounter = CenterKamon.chartPublishAgentNumCounter(edgeId)
-    val publishBatchNumCounter = CenterKamon.chartPublishBatchNumCounter(edgeId)
-    val publishMachineLatencyHistogram = CenterKamon.chartPublishMachineLatencyHistogram(edgeId)
+    val publishAgentNumCounter = kamon.chartPublishAgentNumCounter(edgeId)
+    val publishBatchNumCounter = kamon.chartPublishBatchNumCounter(edgeId)
+    val publishMachineLatencyHistogram = kamon.chartPublishMachineLatencyHistogram(edgeId)
 
     val chartRecorderFuture = atlas ? (Atlas.SpawnRecorder(
       edgeId,
@@ -86,9 +87,9 @@ class ChartService(
     val edgeId = metadata.getText(GrpcHeaderKey.edgeId).getOrElse("")
     val logName = s"${getClass.getSimpleName}.subscribe/$edgeId"
 
-    val subscribeAgentNumCounter = CenterKamon.chartSubscribeAgentNumCounter(edgeId)
-    val subscribeBatchNumCounter = CenterKamon.chartSubscribeBatchNumCounter(edgeId)
-    val subscribeMachineLatencyHistogram = CenterKamon.chartSubscribeMachineLatencyHistogram(edgeId)
+    val subscribeAgentNumCounter = kamon.chartSubscribeAgentNumCounter(edgeId)
+    val subscribeBatchNumCounter = kamon.chartSubscribeBatchNumCounter(edgeId)
+    val subscribeMachineLatencyHistogram = kamon.chartSubscribeMachineLatencyHistogram(edgeId)
 
     val (subscriber, source) = ActorSource
       .actorRef[ChartSender.Subscribe](

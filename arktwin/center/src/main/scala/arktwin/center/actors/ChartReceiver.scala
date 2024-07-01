@@ -21,11 +21,11 @@ object ChartReceiver:
   trait Forwarder:
     def apply(vector3: Vector3Enu): Seq[ActorRef[ChartSender.Message]]
 
-  def apply(edgeId: String, initialForwarder: Forwarder): Behavior[Message] =
+  def apply(edgeId: String, initialForwarder: Forwarder, kamon: CenterKamon): Behavior[Message] =
     var forwarder = initialForwarder
-    val forwardAgentNumCounter = CenterKamon.chartForwardAgentNumCounter(edgeId)
-    val forwardBatchNumCounter = CenterKamon.chartForwardBatchNumCounter(edgeId)
-    val forwardMachineLatencyHistogram = CenterKamon.chartForwardMachineLatencyHistogram(edgeId)
+    val forwardAgentNumCounter = kamon.chartForwardAgentNumCounter(edgeId)
+    val forwardBatchNumCounter = kamon.chartForwardBatchNumCounter(edgeId)
+    val forwardMachineLatencyHistogram = kamon.chartForwardMachineLatencyHistogram(edgeId)
 
     Behaviors.receiveMessage:
       case newForwarder: Forwarder =>

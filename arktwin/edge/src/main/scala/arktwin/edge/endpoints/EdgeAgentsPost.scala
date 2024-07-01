@@ -62,12 +62,12 @@ object EdgeAgentsPost:
         )
       )
 
-  def route(client: RegisterClient, edgeId: String)(using
+  def route(client: RegisterClient, kamon: EdgeKamon)(using
       ExecutionContext
   ): Route =
-    val requestNumCounter = EdgeKamon.restRequestNumCounter(edgeId, endpoint.showShort)
-    val agentNumCounter = EdgeKamon.restAgentNumCounter(edgeId, endpoint.showShort)
-    val processMachineTimeHistogram = EdgeKamon.restProcessMachineTimeHistogram(edgeId, endpoint.showShort)
+    val requestNumCounter = kamon.restRequestNumCounter(endpoint.showShort)
+    val agentNumCounter = kamon.restAgentNumCounter(endpoint.showShort)
+    val processMachineTimeHistogram = kamon.restProcessMachineTimeHistogram(endpoint.showShort)
 
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogic: requests =>

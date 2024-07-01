@@ -47,11 +47,11 @@ object CenterAgentsDelete:
         )
       )
 
-  def route(client: AdminClient, edgeId: String)(using
+  def route(client: AdminClient, kamon: EdgeKamon)(using
       ExecutionContext
   ): Route =
-    val requestNumCounter = EdgeKamon.restRequestNumCounter(edgeId, endpoint.showShort)
-    val processMachineTimeHistogram = EdgeKamon.restProcessMachineTimeHistogram(edgeId, endpoint.showShort)
+    val requestNumCounter = kamon.restRequestNumCounter(endpoint.showShort)
+    val processMachineTimeHistogram = kamon.restProcessMachineTimeHistogram(endpoint.showShort)
 
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogic: request =>

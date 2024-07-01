@@ -11,6 +11,7 @@ import arktwin.edge.actors.adapters.*
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
 import arktwin.edge.connectors.{ChartConnector, ClockConnector, RegisterConnector}
 import arktwin.edge.endpoints.*
+import arktwin.edge.util.EdgeKamon
 import arktwin.edge.util.EdgeReporter
 import buildinfo.BuildInfo
 import io.grpc.StatusRuntimeException
@@ -94,8 +95,6 @@ object Edge:
     given Scheduler = actorSystem.scheduler
     given Timeout = config.static.actorTimeout
 
-    Kamon.addReporter(EdgeReporter.getClass.getSimpleName, EdgeReporter(actorSystem.log))
-
     actorSystem.log.info(BuildInfo.toString)
     actorSystem.log.info(config.toString)
     actorSystem.log.debug(rawConfig.toString)
@@ -105,11 +104,16 @@ object Edge:
     val registerClient = RegisterClient(grpcSettings)
 
     try
-      val edgeId =
-        Await.result(registerClient.edgeCreate(EdgeCreateRequest(config.static.edgeIdPrefix)), 1.minute).edgeId
+      val EdgeCreateResponse(edgeId, runId) =
+        Await.result(registerClient.edgeCreate(EdgeCreateRequest(config.static.edgeIdPrefix)), 1.minute)
+      actorSystem.log.info(s"Run ID: $runId")
       actorSystem.log.info(s"Edge ID: $edgeId")
 
-      val chartConnector = ChartConnector(ChartClient(grpcSettings), config.static, edgeId)
+      val kamon = EdgeKamon(runId, edgeId)
+      val reporter = EdgeReporter(actorSystem.log, kamon)
+      Kamon.addReporter(reporter.getClass.getSimpleName(), reporter)
+
+      val chartConnector = ChartConnector(ChartClient(grpcSettings), config.static, edgeId, kamon)
       val clockConnector = ClockConnector(ClockClient(grpcSettings), edgeId)
       val registerConnector = RegisterConnector(registerClient, config.static, edgeId)
 
@@ -126,12 +130,12 @@ object Edge:
             chartPublish,
             registerPublish,
             clock,
-            edgeId,
             config.static,
-            config.dynamic.coordinate
+            config.dynamic.coordinate,
+            kamon
           )
         edgeNeighborsAdapter <- actorSystem ?
-          EdgeNeighborsQueryAdapter.spawn(chart, clock, register, edgeId, config.static, config.dynamic.coordinate)
+          EdgeNeighborsQueryAdapter.spawn(chart, clock, register, config.static, config.dynamic.coordinate, kamon)
       do
         clockConnector.subscribe(clock)
         registerConnector.subscribe(register)
@@ -146,14 +150,14 @@ object Edge:
                 SwaggerUI[Future](centerYaml, SwaggerUIOptions.default.pathPrefix(List("docs", "center"))) ++
                   SwaggerUI[Future](edgeYaml, SwaggerUIOptions.default.pathPrefix(List("docs", "edge")))
               ) ~
-              CenterAgentsDelete.route(adminClient, edgeId) ~
-              CenterClockSpeedPut.route(adminClient, edgeId) ~
-              EdgeAgentsPost.route(registerClient, edgeId) ~
-              EdgeAgentsPut.route(edgeAgentsTransformAdapter, edgeId, config.static) ~
-              EdgeConfigCoordinatePut.route(configurator, edgeId) ~
-              EdgeConfigCullingPut.route(configurator, edgeId) ~
-              EdgeConfigGet.route(configurator, edgeId, config.static) ~
-              EdgeNeighborsQuery.route(edgeNeighborsAdapter, edgeId, config.static)
+              CenterAgentsDelete.route(adminClient, kamon) ~
+              CenterClockSpeedPut.route(adminClient, kamon) ~
+              EdgeAgentsPost.route(registerClient, kamon) ~
+              EdgeAgentsPut.route(edgeAgentsTransformAdapter, config.static, kamon) ~
+              EdgeConfigCoordinatePut.route(configurator, kamon) ~
+              EdgeConfigCullingPut.route(configurator, kamon) ~
+              EdgeConfigGet.route(configurator, config.static, kamon) ~
+              EdgeNeighborsQuery.route(edgeNeighborsAdapter, config.static, kamon)
           )
           .foreach(server => actorSystem.log.info(server.localAddress.toString))
     catch
