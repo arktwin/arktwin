@@ -11,7 +11,7 @@ import kamon.module.MetricReporter
 import kamon.tag.Tag
 import org.slf4j.Logger
 
-class CenterReporter(kamon: CenterKamon, log: Logger) extends MetricReporter:
+class CenterReporter(log: Logger, kamon: CenterKamon) extends MetricReporter:
   private val reportIndexes =
     import CenterKamon.*
     Seq(edgeIdKey, runIdKey).zipWithIndex.toMap.withDefaultValue(Int.MaxValue)

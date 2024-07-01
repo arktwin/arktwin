@@ -110,7 +110,7 @@ object Edge:
       actorSystem.log.info(s"Edge ID: $edgeId")
 
       val kamon = EdgeKamon(runId, edgeId)
-      val reporter = EdgeReporter(kamon, actorSystem.log)
+      val reporter = EdgeReporter(actorSystem.log, kamon)
       Kamon.addReporter(reporter.getClass.getSimpleName(), reporter)
 
       val chartConnector = ChartConnector(ChartClient(grpcSettings), config.static, edgeId, kamon)
@@ -153,11 +153,11 @@ object Edge:
               CenterAgentsDelete.route(adminClient, kamon) ~
               CenterClockSpeedPut.route(adminClient, kamon) ~
               EdgeAgentsPost.route(registerClient, kamon) ~
-              EdgeAgentsPut.route(edgeAgentsTransformAdapter, kamon, config.static) ~
+              EdgeAgentsPut.route(edgeAgentsTransformAdapter, config.static, kamon) ~
               EdgeConfigCoordinatePut.route(configurator, kamon) ~
               EdgeConfigCullingPut.route(configurator, kamon) ~
-              EdgeConfigGet.route(configurator, kamon, config.static) ~
-              EdgeNeighborsQuery.route(edgeNeighborsAdapter, kamon, config.static)
+              EdgeConfigGet.route(configurator, config.static, kamon) ~
+              EdgeNeighborsQuery.route(edgeNeighborsAdapter, config.static, kamon)
           )
           .foreach(server => actorSystem.log.info(server.localAddress.toString))
     catch

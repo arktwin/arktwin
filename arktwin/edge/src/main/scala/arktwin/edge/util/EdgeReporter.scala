@@ -11,7 +11,7 @@ import kamon.module.MetricReporter
 import kamon.tag.Tag
 import org.slf4j.Logger
 
-class EdgeReporter(kamon: EdgeKamon, log: Logger) extends MetricReporter:
+class EdgeReporter(log: Logger, kamon: EdgeKamon) extends MetricReporter:
   private val reportIndexes =
     import EdgeKamon.*
     Seq(endpointKey, edgeIdKey, runIdKey).zipWithIndex.toMap.withDefaultValue(Int.MaxValue)

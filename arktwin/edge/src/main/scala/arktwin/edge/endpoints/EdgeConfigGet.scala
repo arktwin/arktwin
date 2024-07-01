@@ -59,7 +59,7 @@ object EdgeConfigGet:
         )
       )
 
-  def route(configurator: ActorRef[EdgeConfigurator.Message], kamon: EdgeKamon, staticConfig: StaticEdgeConfig)(using
+  def route(configurator: ActorRef[EdgeConfigurator.Message], staticConfig: StaticEdgeConfig, kamon: EdgeKamon)(using
       ExecutionContext,
       Scheduler
   ): Route =

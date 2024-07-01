@@ -82,7 +82,7 @@ object EdgeNeighborsQuery:
         )
       )
 
-  def route(adapter: ActorRef[EdgeNeighborsQueryAdapter.Message], kamon: EdgeKamon, staticConfig: StaticEdgeConfig)(
+  def route(adapter: ActorRef[EdgeNeighborsQueryAdapter.Message], staticConfig: StaticEdgeConfig, kamon: EdgeKamon)(
       using
       ExecutionContext,
       Scheduler

@@ -95,7 +95,7 @@ object EdgeAgentsPut:
         )
       )
 
-  def route(adapter: ActorRef[EdgeAgentsPutAdapter.Message], kamon: EdgeKamon, staticConfig: StaticEdgeConfig)(using
+  def route(adapter: ActorRef[EdgeAgentsPutAdapter.Message], staticConfig: StaticEdgeConfig, kamon: EdgeKamon)(using
       ExecutionContext,
       Scheduler
   ): Route =

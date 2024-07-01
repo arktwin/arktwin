@@ -46,7 +46,7 @@ object Center:
     actorSystem.log.info(s"Run ID: $runId")
 
     val kamon = CenterKamon(runId)
-    val reporter = CenterReporter(kamon, actorSystem.log)
+    val reporter = CenterReporter(actorSystem.log, kamon)
     Kamon.addReporter(reporter.getClass.getSimpleName, reporter)
 
     for
