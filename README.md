@@ -1,9 +1,9 @@
 # ArkTwin: Distributed Multi-Agent Messaging Framework
 
-[![Scala CI](https://github.com/arktwin/arktwin/actions/workflows/scala.yml/badge.svg)](https://github.com/arktwin/arktwin/actions/workflows/scala.yml)
+[![Scala CI](https://github.com/arktwin/arktwin/actions/workflows/scala.yml/badge.svg?branch=main)](https://github.com/arktwin/arktwin/actions/workflows/scala.yml)
 
 ArkTwin is a distributed messaging framework designed to connect various agent-based software, such as traffic simulators, pedestrian simulators, virtual camera video generators, virtual reality devices, etc.
-Its primary applications are city-scale simulations and digital twins.
+Its primary applications are city-scale co-simulations and digital twins.
 
 ArkTwin consists of two modules: Center and Edge.
 
@@ -17,7 +17,7 @@ However, each agent-based software can connect to ArkTwin via local REST API pro
 
 ### Prerequisites
 
-- Install Java Development Kit (recommended: [Eclipse Temurin 21 LTS](https://adoptium.net/temurin/releases/?variant=openjdk21&jvmVariant=hotspot)
+- Install Java Development Kit (recommended: [Eclipse Temurin 21 LTS](https://adoptium.net/temurin/releases/?variant=openjdk21&jvmVariant=hotspot))
 - Install [sbt](https://www.scala-sbt.org/download)
 
 ### Docker
@@ -60,7 +60,7 @@ If you want to change the host and port settings, see [# Environment Variables](
 - `java [-Dconfig.file=center.conf] -XX:+UseZGC -XX:+ZGenerational -jar arktwin-center.jar`
 - `ARKTWIN_CENTER_STATIC_HOST=<CENTER_HOST> java [-Dconfig.file=edge.conf] -XX:+UseZGC -XX:+ZGenerational -jar arktwin-edge.jar`
 
-## Integration Flow
+## Integrating
 
 - Synchronize the clocks of all machines via NTP (Network Time Protocol)
 - Run an ArkTwin Center
@@ -187,6 +187,10 @@ Some configuration can be dynamically overridden via REST API.
 ## Messaging Architecture
 
 ![](docs/diagrams/messaging.png)
+
+## Publications
+
+- Akira Yoshioka, Takatomo Torigoe, Naoki Akiyama, Hideki Fujii, Takashi Machida, Satoru Nakanishi, Takayoshi Yoshimura. ArkTwin: Distributed Heterogeneous Multi-Agent Simulation Platform. [Multimedia, Distributed, Cooperative, and Mobile Symposium 2024 (in Japanese)](https://www.dicomo.org/2024/). (awarded first prize at the Noguchi Awards)
 
 ## Contributing
 
