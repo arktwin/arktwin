@@ -15,6 +15,7 @@ import arktwin.edge.data.Vector3Config.LengthUnit.Meter
 import arktwin.edge.data.Vector3Config.TimeUnit.Second
 import arktwin.edge.endpoints.EdgeAgentsPut.{Request, Response}
 import arktwin.edge.endpoints.{EdgeAgentsPutRequestAgent, EdgeConfigGet}
+import arktwin.edge.util.EdgeKamon
 import arktwin.edge.util.ErrorStatus
 import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
@@ -42,7 +43,7 @@ class EdgeAgentsPutAdapterSuite extends ScalaTestWithActorTestKit() with AnyFunS
           chartPublish.ref,
           registerPublish.ref,
           clock.ref,
-          "edge",
+          EdgeKamon("edge", "run"),
           config.static,
           config.dynamic.coordinate
         )
