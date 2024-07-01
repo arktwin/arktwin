@@ -41,12 +41,12 @@ object EdgeNeighborsQueryAdapter:
       chart: ActorRef[Chart.Read],
       clock: ActorRef[Clock.Read],
       register: ActorRef[Register.Read],
-      edgeId: String,
+      kamon: EdgeKamon,
       staticConfig: StaticEdgeConfig,
       initCoordinateConfig: CoordinateConfig
   ): ActorRef[ActorRef[Message]] => Spawn[Message] =
     Spawn(
-      apply(chart, clock, register, edgeId, staticConfig, initCoordinateConfig),
+      apply(chart, clock, register, kamon, staticConfig, initCoordinateConfig),
       getClass.getSimpleName,
       Props.empty,
       _
@@ -56,7 +56,7 @@ object EdgeNeighborsQueryAdapter:
       chart: ActorRef[Chart.Read],
       clock: ActorRef[Clock.Read],
       register: ActorRef[Register.Read],
-      edgeId: String,
+      kamon: EdgeKamon,
       staticConfig: StaticEdgeConfig,
       initCoordinateConfig: CoordinateConfig
   ): Behavior[Message] = Behaviors.setup: context =>
@@ -65,7 +65,7 @@ object EdgeNeighborsQueryAdapter:
     var coordinateConfig = initCoordinateConfig
     var optionalPreviousAgents: Option[Set[String]] = Some(Set())
     val simulationLatencyHistogram =
-      EdgeKamon.restSimulationLatencyHistogram(edgeId, EdgeNeighborsQuery.endpoint.showShort)
+      kamon.restSimulationLatencyHistogram(EdgeNeighborsQuery.endpoint.showShort)
 
     Behaviors.receiveMessage:
       case QueryMessage(request, replyTo) =>

@@ -82,12 +82,13 @@ object EdgeNeighborsQuery:
         )
       )
 
-  def route(adapter: ActorRef[EdgeNeighborsQueryAdapter.Message], edgeId: String, staticConfig: StaticEdgeConfig)(using
+  def route(adapter: ActorRef[EdgeNeighborsQueryAdapter.Message], kamon: EdgeKamon, staticConfig: StaticEdgeConfig)(
+      using
       ExecutionContext,
       Scheduler
   ): Route =
-    val requestNumCounter = EdgeKamon.restRequestNumCounter(edgeId, endpoint.showShort)
-    val processMachineTimeHistogram = EdgeKamon.restProcessMachineTimeHistogram(edgeId, endpoint.showShort)
+    val requestNumCounter = kamon.restRequestNumCounter(endpoint.showShort)
+    val processMachineTimeHistogram = kamon.restProcessMachineTimeHistogram(endpoint.showShort)
 
     given Timeout = staticConfig.endpointTimeout
     PekkoHttpServerInterpreter().toRoute:

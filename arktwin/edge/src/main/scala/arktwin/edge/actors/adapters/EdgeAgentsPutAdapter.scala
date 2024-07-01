@@ -39,12 +39,12 @@ object EdgeAgentsPutAdapter:
       chartPublish: ActorRef[ChartConnector.Publish],
       registerPublish: ActorRef[RegisterConnector.Publish],
       clock: ActorRef[Clock.Read],
-      edgeId: String,
+      kamon: EdgeKamon,
       staticConfig: StaticEdgeConfig,
       initCoordinateConfig: CoordinateConfig
   ): ActorRef[ActorRef[Message]] => Spawn[Message] =
     Spawn(
-      apply(chart, chartPublish, registerPublish, clock, edgeId, staticConfig, initCoordinateConfig),
+      apply(chart, chartPublish, registerPublish, clock, kamon, staticConfig, initCoordinateConfig),
       getClass.getSimpleName,
       Props.empty,
       _
@@ -55,7 +55,7 @@ object EdgeAgentsPutAdapter:
       chartPublish: ActorRef[ChartConnector.Publish],
       registerPublish: ActorRef[RegisterConnector.Publish],
       clock: ActorRef[Clock.Read],
-      edgeId: String,
+      kamon: EdgeKamon,
       staticConfig: StaticEdgeConfig,
       initCoordinateConfig: CoordinateConfig
   ): Behavior[Message] = Behaviors.setup: context =>
@@ -63,7 +63,7 @@ object EdgeAgentsPutAdapter:
 
     var coordinateConfig = initCoordinateConfig
     var optionalPreviousAgents: Option[Map[String, TransformEnu]] = Some(Map())
-    val simulationLatencyHistogram = EdgeKamon.restSimulationLatencyHistogram(edgeId, EdgeAgentsPut.endpoint.showShort)
+    val simulationLatencyHistogram = kamon.restSimulationLatencyHistogram(EdgeAgentsPut.endpoint.showShort)
 
     Behaviors.receiveMessage:
       // TODO filter registered agents

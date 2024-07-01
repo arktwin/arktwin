@@ -138,6 +138,7 @@ Some configuration can be overridden using environment variables.
 | ARKTWIN_CENTER_PROMETHEUS_PORT | kamon.prometheus.embedded-server.port | 12236 |
 | ARKTWIN_CENTER_STATIC_HOST | arktwin.center.static.host | 0.0.0.0 |
 | ARKTWIN_CENTER_STATIC_PORT | arktwin.center.static.port | 2236 |
+| ARKTWIN_CENTER_STATIC_RUN_ID_PREFIX | arktwin.center.static.run-id-prefix | run |
 | ARKTWIN_LOGLEVEL | pekko.loglevel | INFO |
 
 #### Edge
@@ -163,25 +164,25 @@ Some configuration can be dynamically overridden via REST API.
 ## Metrics for Prometheus
 
 - Chart metrics
-  - arktwin_edge_chart_1_publish_agent_num {edge_id}
-  - arktwin_edge_chart_1_publish_batch_num {edge_id}
-  - arktwin_edge_chart_1_publish_from_put_machine_latency {edge_id}
-  - arktwin_center_chart_2_publish_agent_num {edge_id}
-  - arktwin_center_chart_2_publish_batch_num {edge_id}
-  - arktwin_center_chart_2_publish_from_edge_machine_latency {edge_id}
-  - arktwin_center_chart_3_forward_agent_num {edge_id}
-  - arktwin_center_chart_3_forward_batch_num {edge_id}
-  - arktwin_center_chart_3_forward_machine_from_publish_machine_latency {edge_id}
-  - arktwin_center_chart_4_subscribe_agent_num {edge_id}
-  - arktwin_center_chart_4_subscribe_batch_num {edge_id}
-  - arktwin_center_chart_4_subscribe_from_forward_machine_latency {edge_id}
-  - arktwin_edge_chart_5_subscribe_agent_num {edge_id}
-  - arktwin_edge_chart_5_subscribe_from_center_machine_latency {edge_id}
+  - arktwin_edge_chart_1_publish_agent_num {edge_id, run_id}
+  - arktwin_edge_chart_1_publish_batch_num {edge_id, run_id}
+  - arktwin_edge_chart_1_publish_from_put_machine_latency {edge_id, run_id}
+  - arktwin_center_chart_2_publish_agent_num {edge_id, run_id}
+  - arktwin_center_chart_2_publish_batch_num {edge_id, run_id}
+  - arktwin_center_chart_2_publish_from_edge_machine_latency {edge_id, run_id}
+  - arktwin_center_chart_3_forward_agent_num {edge_id, run_id}
+  - arktwin_center_chart_3_forward_batch_num {edge_id, run_id}
+  - arktwin_center_chart_3_forward_machine_from_publish_machine_latency {edge_id, run_id}
+  - arktwin_center_chart_4_subscribe_agent_num {edge_id, run_id}
+  - arktwin_center_chart_4_subscribe_batch_num {edge_id, run_id}
+  - arktwin_center_chart_4_subscribe_from_forward_machine_latency {edge_id, run_id}
+  - arktwin_edge_chart_5_subscribe_agent_num {edge_id, run_id}
+  - arktwin_edge_chart_5_subscribe_from_center_machine_latency {edge_id, run_id}
 - REST API metrics
-  - arktwin_edge_rest_agent_num {edge_id, endpoint}
-  - arktwin_edge_rest_request_num {edge_id, endpoint}
-  - arktwin_edge_rest_process_machine_time {edge_id, endpoint}
-  - arktwin_edge_rest_simulation_latency {edge_id, endpoint}
+  - arktwin_edge_rest_agent_num {edge_id, run_id, endpoint}
+  - arktwin_edge_rest_request_num {edge_id, run_id, endpoint}
+  - arktwin_edge_rest_process_machine_time {edge_id, run_id, endpoint}
+  - arktwin_edge_rest_simulation_latency {edge_id, run_id, endpoint}
 
 ## Messaging Architecture
 

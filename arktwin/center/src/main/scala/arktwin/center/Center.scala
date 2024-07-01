@@ -45,7 +45,7 @@ object Center:
     for
       atlas <- actorSystem ? Atlas.spawn(config.dynamic.atlas)
       clock <- actorSystem ? Clock.spawn(config.static.clock)
-      register <- actorSystem ? Register.spawn()
+      register <- actorSystem ? Register.spawn(config.static.runIdPrefix)
     do
       Http()
         .newServerAt(config.static.host, config.static.port)

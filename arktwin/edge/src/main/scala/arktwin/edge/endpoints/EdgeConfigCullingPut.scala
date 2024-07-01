@@ -44,11 +44,11 @@ object EdgeConfigCullingPut:
         )
       )
 
-  def route(configurator: ActorRef[EdgeConfigurator.Message], edgeId: String)(using
+  def route(configurator: ActorRef[EdgeConfigurator.Message], kamon: EdgeKamon)(using
       ExecutionContext
   ): Route =
-    val requestNumCounter = EdgeKamon.restRequestNumCounter(edgeId, endpoint.showShort)
-    val processMachineTimeHistogram = EdgeKamon.restProcessMachineTimeHistogram(edgeId, endpoint.showShort)
+    val requestNumCounter = kamon.restRequestNumCounter(endpoint.showShort)
+    val processMachineTimeHistogram = kamon.restProcessMachineTimeHistogram(endpoint.showShort)
 
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogic: request =>
