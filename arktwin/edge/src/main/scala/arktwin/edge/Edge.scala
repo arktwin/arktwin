@@ -108,8 +108,10 @@ object Edge:
         Await.result(registerClient.edgeCreate(EdgeCreateRequest(config.static.edgeIdPrefix)), 1.minute)
       actorSystem.log.info(s"Run ID: $runId")
       actorSystem.log.info(s"Edge ID: $edgeId")
-      val kamon = EdgeKamon(edgeId, runId)
-      Kamon.addReporter(EdgeReporter.getClass.getSimpleName, EdgeReporter(kamon, actorSystem.log))
+
+      val kamon = EdgeKamon(runId, edgeId)
+      val reporter = EdgeReporter(kamon, actorSystem.log)
+      Kamon.addReporter(reporter.getClass.getSimpleName(), reporter)
 
       val chartConnector = ChartConnector(ChartClient(grpcSettings), config.static, edgeId, kamon)
       val clockConnector = ClockConnector(ClockClient(grpcSettings), edgeId)
@@ -128,12 +130,12 @@ object Edge:
             chartPublish,
             registerPublish,
             clock,
-            kamon,
             config.static,
-            config.dynamic.coordinate
+            config.dynamic.coordinate,
+            kamon
           )
         edgeNeighborsAdapter <- actorSystem ?
-          EdgeNeighborsQueryAdapter.spawn(chart, clock, register, kamon, config.static, config.dynamic.coordinate)
+          EdgeNeighborsQueryAdapter.spawn(chart, clock, register, config.static, config.dynamic.coordinate, kamon)
       do
         clockConnector.subscribe(clock)
         registerConnector.subscribe(register)

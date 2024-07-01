@@ -6,6 +6,7 @@
 package arktwin.center.actors
 
 import arktwin.center.DynamicCenterConfig.AtlasConfig
+import arktwin.center.util.CenterKamon
 import arktwin.common.MailboxConfig
 import arktwin.common.data.Vector3Enu
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
@@ -33,16 +34,18 @@ object Atlas:
   case class ChartRecord(edgeId: String, config: AtlasConfig, indexes: Set[PartitionIndex])
 
   def spawn(
-      config: AtlasConfig
+      config: AtlasConfig,
+      kamon: CenterKamon
   ): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
-    apply(config),
+    apply(config, kamon),
     getClass.getSimpleName,
     MailboxSelector.fromConfig(MailboxConfig.UnboundedControlAwareMailbox),
     _
   )
 
   private def apply(
-      config: AtlasConfig
+      config: AtlasConfig,
+      kamon: CenterKamon
   ): Behavior[Message] =
     Behaviors.setup: context =>
       Behaviors.withTimers: timer =>
@@ -53,7 +56,7 @@ object Atlas:
           ChartRecorderParent.getClass.getSimpleName
         )
         val chartReceiverParent = context.spawn(
-          ChartReceiverParent(),
+          ChartReceiverParent(kamon),
           ChartReceiverParent.getClass.getSimpleName
         )
         val chartSenderParent = context.spawn(

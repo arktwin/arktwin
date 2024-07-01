@@ -52,9 +52,9 @@ class EdgeNeighborsQueryAdapterSuite extends ScalaTestWithActorTestKit() with An
           chart,
           clock,
           register,
-          EdgeKamon("edge", "run"),
           config.static,
-          config.dynamic.coordinate
+          config.dynamic.coordinate,
+          EdgeKamon("run", "edge")
         )
       )
     val endpoint = testKit.createTestProbe[Either[ErrorStatus, Response]]()

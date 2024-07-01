@@ -24,8 +24,8 @@ object Register:
   case class AgentsUpdate(request: RegisterAgentsPublish)
   case class AgentsDelete(agentSelector: AgentSelector)
 
-  def spawn(runIdPrefix: String): ActorRef[ActorRef[Message]] => Spawn[Message] =
-    Spawn(apply(runIdPrefix), getClass.getSimpleName, Props.empty, _)
+  def spawn(runId: String): ActorRef[ActorRef[Message]] => Spawn[Message] =
+    Spawn(apply(runId), getClass.getSimpleName, Props.empty, _)
 
   val subscriberKey: ServiceKey[RegisterAgentsSubscribe] = ServiceKey(getClass.getName)
 
@@ -39,12 +39,8 @@ object Register:
       temp /= idSuffixCharacters.size
     (if (prefix.isEmpty()) "" else prefix + "-") + suffix.toString()
 
-  private def apply(runIdPrefix: String): Behavior[Message] = Behaviors.setup: context =>
+  private def apply(runId: String): Behavior[Message] = Behaviors.setup: context =>
     context.system.receptionist ! Receptionist.subscribe(subscriberKey, context.self)
-
-    val runId = (if (runIdPrefix.isEmpty()) "" else runIdPrefix + "-") +
-      (0 to 7).map(_ => idSuffixCharacters(Random.nextInt(idSuffixCharacters.size))).mkString
-    context.log.info(s"Run ID: $runId")
 
     var edgeNum = 0
     var agentNum = 0

@@ -43,9 +43,9 @@ class EdgeAgentsPutAdapterSuite extends ScalaTestWithActorTestKit() with AnyFunS
           chartPublish.ref,
           registerPublish.ref,
           clock.ref,
-          EdgeKamon("edge", "run"),
           config.static,
-          config.dynamic.coordinate
+          config.dynamic.coordinate,
+          EdgeKamon("run", "edge")
         )
       )
     val endpoint = testKit.createTestProbe[Either[ErrorStatus, Response]]()

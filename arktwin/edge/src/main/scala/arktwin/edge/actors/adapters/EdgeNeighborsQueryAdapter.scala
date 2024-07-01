@@ -41,12 +41,12 @@ object EdgeNeighborsQueryAdapter:
       chart: ActorRef[Chart.Read],
       clock: ActorRef[Clock.Read],
       register: ActorRef[Register.Read],
-      kamon: EdgeKamon,
       staticConfig: StaticEdgeConfig,
-      initCoordinateConfig: CoordinateConfig
+      initCoordinateConfig: CoordinateConfig,
+      kamon: EdgeKamon
   ): ActorRef[ActorRef[Message]] => Spawn[Message] =
     Spawn(
-      apply(chart, clock, register, kamon, staticConfig, initCoordinateConfig),
+      apply(chart, clock, register, staticConfig, initCoordinateConfig, kamon),
       getClass.getSimpleName,
       Props.empty,
       _
@@ -56,9 +56,9 @@ object EdgeNeighborsQueryAdapter:
       chart: ActorRef[Chart.Read],
       clock: ActorRef[Clock.Read],
       register: ActorRef[Register.Read],
-      kamon: EdgeKamon,
       staticConfig: StaticEdgeConfig,
-      initCoordinateConfig: CoordinateConfig
+      initCoordinateConfig: CoordinateConfig,
+      kamon: EdgeKamon
   ): Behavior[Message] = Behaviors.setup: context =>
     context.system.receptionist ! Receptionist.Register(EdgeConfigurator.coordinateObserverKey, context.self)
 

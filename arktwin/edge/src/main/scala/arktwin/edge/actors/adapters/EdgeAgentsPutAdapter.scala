@@ -39,12 +39,12 @@ object EdgeAgentsPutAdapter:
       chartPublish: ActorRef[ChartConnector.Publish],
       registerPublish: ActorRef[RegisterConnector.Publish],
       clock: ActorRef[Clock.Read],
-      kamon: EdgeKamon,
       staticConfig: StaticEdgeConfig,
-      initCoordinateConfig: CoordinateConfig
+      initCoordinateConfig: CoordinateConfig,
+      kamon: EdgeKamon
   ): ActorRef[ActorRef[Message]] => Spawn[Message] =
     Spawn(
-      apply(chart, chartPublish, registerPublish, clock, kamon, staticConfig, initCoordinateConfig),
+      apply(chart, chartPublish, registerPublish, clock, staticConfig, initCoordinateConfig, kamon),
       getClass.getSimpleName,
       Props.empty,
       _
@@ -55,9 +55,9 @@ object EdgeAgentsPutAdapter:
       chartPublish: ActorRef[ChartConnector.Publish],
       registerPublish: ActorRef[RegisterConnector.Publish],
       clock: ActorRef[Clock.Read],
-      kamon: EdgeKamon,
       staticConfig: StaticEdgeConfig,
-      initCoordinateConfig: CoordinateConfig
+      initCoordinateConfig: CoordinateConfig,
+      kamon: EdgeKamon
   ): Behavior[Message] = Behaviors.setup: context =>
     context.system.receptionist ! Receptionist.Register(EdgeConfigurator.coordinateObserverKey, context.self)
 

@@ -179,10 +179,10 @@ Some configuration can be dynamically overridden via REST API.
   - arktwin_edge_chart_5_subscribe_agent_num {edge_id, run_id}
   - arktwin_edge_chart_5_subscribe_from_center_machine_latency {edge_id, run_id}
 - REST API metrics
-  - arktwin_edge_rest_agent_num {edge_id, run_id, endpoint}
-  - arktwin_edge_rest_request_num {edge_id, run_id, endpoint}
-  - arktwin_edge_rest_process_machine_time {edge_id, run_id, endpoint}
-  - arktwin_edge_rest_simulation_latency {edge_id, run_id, endpoint}
+  - arktwin_edge_rest_agent_num {endpoint, edge_id, run_id}
+  - arktwin_edge_rest_request_num {endpoint, edge_id, run_id}
+  - arktwin_edge_rest_process_machine_time {endpoint, edge_id, run_id}
+  - arktwin_edge_rest_simulation_latency {endpoint, edge_id, run_id}
 
 ## Messaging Architecture
 
