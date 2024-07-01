@@ -1,8 +1,5 @@
-/*
- * Copyright 2024 TOYOTA MOTOR CORPORATION
- *
- * SPDX-License-Identifier: Apache-2.0
- */
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge.actors.adapters
 
 import arktwin.center.services.{ChartAgent, ClockBase}

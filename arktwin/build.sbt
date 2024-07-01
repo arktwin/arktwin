@@ -14,10 +14,10 @@ val scalaTestVersion = "3.2.18"
 val tapirSpecVersion = "0.10.0"
 val tapirVersion = "1.10.9"
 
-val ApacheLicenseV2 = Some(HeaderLicense.ALv2(
-  "2024",
-  "TOYOTA MOTOR CORPORATION",
-  HeaderLicenseStyle.SpdxSyntax
+val apacheLicenseV2 = Some(HeaderLicense.Custom(
+  """|SPDX-License-Identifier: Apache-2.0
+     |Copyright 2024 TOYOTA MOTOR CORPORATION
+     |""".stripMargin
 ))
 
 ThisBuild / scalaVersion := "3.3.3" // should update to same Scala version in Dockerfile
@@ -48,7 +48,8 @@ lazy val common = (project in file("common"))
   .disablePlugins(AssemblyPlugin)
   .settings(
     name := "arktwin-common",
-    headerLicense := ApacheLicenseV2,
+    headerLicense := apacheLicenseV2,
+    headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
       "com.softwaremill.sttp.tapir" %% "tapir-core" % tapirVersion,
       "com.thesamet.scalapb" %% "scalapb-validate-core" % scalapb.validate.compiler.BuildInfo.version % "protobuf",
@@ -83,7 +84,8 @@ lazy val center = (project in file("center"))
         f.data.getName.startsWith("okio") && !f.data.getName.startsWith("okio-jvm")
       }
     },
-    headerLicense := ApacheLicenseV2,
+    headerLicense := apacheLicenseV2,
+    headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % logbackClassicVersion,
       "com.github.pureconfig" %% "pureconfig-core" % pureConfigVersion,
@@ -126,7 +128,8 @@ lazy val edge = (project in file("edge"))
         f.data.getName.startsWith("okio") && !f.data.getName.startsWith("okio-jvm")
       }
     },
-    headerLicense := ApacheLicenseV2,
+    headerLicense := apacheLicenseV2,
+    headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % logbackClassicVersion,
       "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % jsoniterScalaVersion % Provided,
@@ -153,7 +156,8 @@ lazy val e2e = (project in file("e2e"))
   .enablePlugins(GatlingPlugin, AutomateHeaderPlugin)
   .settings(
     name := "arktwin-e2e",
-    headerLicense := ApacheLicenseV2,
+    headerLicense := apacheLicenseV2,
+    headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
       "io.gatling" % "gatling-test-framework" % gatlingVersion % Test,
       "io.gatling.highcharts" % "gatling-charts-highcharts" % gatlingVersion % Test
