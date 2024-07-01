@@ -16,18 +16,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+
     - uses: actions/setup-java@v4
       with:
         java-version: 21
         distribution: temurin
         cache: sbt
         cache-dependency-path: arktwin/build.sbt
-    - name: Run tests
+
+    # check before automatic execution at compile time
+    - name: sbt scalafmtCheck
+      working-directory: arktwin
+      run: sbt center/scalafmtCheck center/Test/scalafmtCheck common/scalafmtCheck common/Test/scalafmtCheck e2e/Test/scalafmtCheck edge/scalafmtCheck edge/Test/scalafmtCheck
+
+    # check before automatic execution at compile time
+    - name: sbt headerCheck
+      working-directory: arktwin
+      run: sbt center/headerCheck center/Test/headerCheck common/headerCheck common/Test/headerCheck e2e/Test/headerCheck edge/headerCheck edge/Test/headerCheck
+
+    - name: sbt test
       working-directory: arktwin
       run: sbt test
-    - name: Test to compile e2e
-      working-directory: arktwin
-      run: sbt e2e/compile
+
     - uses: scalacenter/sbt-dependency-submission@v3
       with:
         working-directory: arktwin
