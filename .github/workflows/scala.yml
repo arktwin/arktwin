@@ -48,8 +48,8 @@ jobs:
         sbt clean "edge/run openapi-center ../temp/arktwin-center-main.yaml" "edge/run openapi-edge ../temp/arktwin-edge-main.yaml"
         git checkout $(git tag -l "v*" --sort=-v:refname | head -n 1)
         sbt clean "edge/run openapi-center ../temp/arktwin-center-release.yaml" "edge/run openapi-edge ../temp/arktwin-edge-release.yaml"
-        git switch main
         git checkout $GITHUB_SHA
+        sbt clean
 
     - name: Display /api/center changelog from main
       uses: oasdiff/oasdiff-action/changelog@v0.0.19
