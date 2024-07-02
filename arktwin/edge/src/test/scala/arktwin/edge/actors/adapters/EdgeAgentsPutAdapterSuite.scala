@@ -55,7 +55,8 @@ class EdgeAgentsPutAdapterSuite extends ScalaTestWithActorTestKit() with AnyFunS
         Map(
           "a" -> EdgeAgentsPutRequestAgent(Some(transform(Vector3(1, 2, 3), Some(Vector3(1, 1, 1)))), None),
           "b" -> EdgeAgentsPutRequestAgent(Some(transform(Vector3(1, 2, 3), None)), None)
-        )
+        ),
+        "dummy"
       ),
       Timestamp(0, 0),
       endpoint.ref
@@ -76,7 +77,8 @@ class EdgeAgentsPutAdapterSuite extends ScalaTestWithActorTestKit() with AnyFunS
         Map(
           "a" -> EdgeAgentsPutRequestAgent(Some(transform(Vector3(4, 4, 4), None)), None),
           "b" -> EdgeAgentsPutRequestAgent(Some(transform(Vector3(1, 2, 3), None)), None)
-        )
+        ),
+        "dummy"
       ),
       Timestamp(0, 0),
       endpoint.ref
