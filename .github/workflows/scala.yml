@@ -51,6 +51,15 @@ jobs:
         git checkout $GITHUB_SHA
         sbt clean
 
+    - name: Check OpenAPI YAML files
+      run: |
+        cat arktwin/temp/arktwin-center-main.yaml
+        cat arktwin/temp/arktwin-center-head.yaml
+        diff arktwin/temp/arktwin-center-main.yaml arktwin/temp/arktwin-center-head.yaml
+        cat arktwin/temp/arktwin-edge-main.yaml
+        cat arktwin/temp/arktwin-edge-head.yaml
+        diff arktwin/temp/arktwin-edge-main.yaml arktwin/temp/arktwin-edge-head.yaml
+
     - name: Display /api/center changelog from main
       uses: oasdiff/oasdiff-action/changelog@v0.0.19
       with:
