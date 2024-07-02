@@ -51,29 +51,41 @@ jobs:
         git checkout $GITHUB_SHA
         sbt clean
 
-    - name: Display /api/center changelog from main
+    - name: Generate /api/center changelog from main
       uses: oasdiff/oasdiff-action/changelog@v0.0.19
       with:
         base: arktwin/temp/arktwin-center-main.yaml
         revision: arktwin/temp/arktwin-center-head.yaml
+        output-to-file: arktwin/temp/arktwin-center-changelog-from-main.txt
 
-    - name: Display /api/edge changelog from main
+    - name: Generate /api/edge changelog from main
       uses: oasdiff/oasdiff-action/changelog@v0.0.19
       with:
         base: arktwin/temp/arktwin-edge-main.yaml
         revision: arktwin/temp/arktwin-edge-head.yaml
+        output-to-file: arktwin/temp/arktwin-edge-changelog-from-main.txt
 
-    - name: Display /api/center changelog from latest relase
+    - name: Generate /api/center changelog from latest relase
       uses: oasdiff/oasdiff-action/changelog@v0.0.19
       with:
         base: arktwin/temp/arktwin-center-release.yaml
         revision: arktwin/temp/arktwin-center-head.yaml
+        output-to-file: arktwin/temp/arktwin-center-changelog-from-release.txt
 
-    - name: Display /api/edge changelog from latest relase
+    - name: Generate /api/edge changelog from latest relase
       uses: oasdiff/oasdiff-action/changelog@v0.0.19
       with:
         base: arktwin/temp/arktwin-edge-release.yaml
         revision: arktwin/temp/arktwin-edge-head.yaml
+        output-to-file: arktwin/temp/arktwin-edge-changelog-from-release.txt
+
+    - name: Display changelogs
+      working-directory: arktwin/temp
+      run: |
+        cat arktwin/temp/arktwin-center-changelog-from-main.txt
+        cat arktwin/temp/arktwin-edge-changelog-from-main.txt
+        cat arktwin/temp/arktwin-center-changelog-from-release.txt
+        cat arktwin/temp/arktwin-edge-changelog-from-release.txt
 
     - uses: scalacenter/sbt-dependency-submission@v3
       with:
