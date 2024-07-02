@@ -93,14 +93,14 @@ jobs:
         revision: arktwin/temp/arktwin-edge-head.yaml
         output-to-file: arktwin/temp/arktwin-edge-changelog-from-release.txt
 
-    - name: Display /api changelogs from main
-      run: |
-        cat arktwin/temp/arktwin-center-changelog-from-main.txt
-        echo
-        cat arktwin/temp/arktwin-edge-changelog-from-main.txt
+    - name: Display /api/center changelog from main
+      run: cat arktwin/temp/arktwin-center-changelog-from-main.txt
 
-    - name: Display /api changelogs from latest release
-      run: |
-        cat arktwin/temp/arktwin-center-changelog-from-release.txt
-        echo
-        cat arktwin/temp/arktwin-edge-changelog-from-release.txt
+    - name: Display /api/edge changelog from main
+      run: cat arktwin/temp/arktwin-edge-changelog-from-main.txt
+
+    - name: Display /api/center changelog from latest release
+      run: cat arktwin/temp/arktwin-center-changelog-from-release.txt
+
+    - name: Display /api/edge changelog from latest release
+      run: cat arktwin/temp/arktwin-edge-changelog-from-release.txt
