@@ -42,7 +42,7 @@ object EdgeAgentsPost:
 
   val endpoint: PublicEndpoint[Seq[Request], ErrorStatus, Seq[Response], Any] =
     tapir.endpoint.post
-      .in("api" / "edge" / "agents")
+      .in("api" / "edge" / "agents2")
       .in(jsonBody[Seq[Request]].example(inExample))
       .out(
         oneOf(

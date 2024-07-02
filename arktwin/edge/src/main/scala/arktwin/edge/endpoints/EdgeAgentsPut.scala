@@ -67,7 +67,8 @@ object EdgeAgentsPut:
         ),
         None
       )
-    )
+    ),
+    "dummy"
   )
 
   val outExample: Response = Response(Timestamp(123, 0))
@@ -115,7 +116,8 @@ object EdgeAgentsPut:
 case class EdgeAgentsPutRequest(
     @description("If it is omitted, a current timestamp of the edge simulation clock is used.")
     timestamp: Option[Timestamp],
-    agents: Map[String, EdgeAgentsPutRequestAgent]
+    agents: Map[String, EdgeAgentsPutRequestAgent],
+    dummy: String
 )
 
 case class EdgeAgentsPutRequestAgent(

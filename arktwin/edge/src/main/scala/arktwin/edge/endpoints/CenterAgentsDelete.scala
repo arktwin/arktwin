@@ -14,7 +14,7 @@ import cats.implicits.toTraverseOps
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import org.apache.pekko.http.scaladsl.server.Route
-import sttp.model.StatusCode.Accepted
+import sttp.model.StatusCode.Ok
 import sttp.tapir
 import sttp.tapir.*
 import sttp.tapir.json.jsoniter.jsonBody
@@ -36,7 +36,7 @@ object CenterAgentsDelete:
     tapir.endpoint.delete
       .in("api" / "center" / "agents")
       .in(jsonBody[Request].example(inExample))
-      .out(statusCode(Accepted))
+      .out(statusCode(Ok))
       .errorOut(
         oneOf[ErrorStatus](
           ErrorStatus.badRequest,
