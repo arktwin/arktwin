@@ -10,5 +10,5 @@ addSbtPlugin("org.apache.pekko" % "pekko-grpc-sbt-plugin" % "1.0.1")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
 
 libraryDependencies ++= Seq(
-  "com.thesamet.scalapb" %% "scalapb-validate-codegen" % "0.3.4"
+  "com.thesamet.scalapb" %% "scalapb-validate-codegen" % "0.3.5"
 )
