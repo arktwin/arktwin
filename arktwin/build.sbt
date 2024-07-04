@@ -8,26 +8,29 @@ val jsoniterScalaVersion = "2.30.1"
 val kamonVersion = "2.7.3"
 val logbackClassicVersion = "1.5.6"
 val pekkoHttpVersion = "1.0.1"
-val pekkoVersion = "1.0.2"
+val pekkoVersion = "1.0.3"
 val pureConfigVersion = "0.17.7"
 val scalaTestVersion = "3.2.18"
 val tapirSpecVersion = "0.10.0"
 val tapirVersion = "1.10.9"
 
-val apacheLicenseV2 = Some(HeaderLicense.Custom(
-  """|SPDX-License-Identifier: Apache-2.0
+val apacheLicenseV2 = Some(
+  HeaderLicense.Custom(
+    """|SPDX-License-Identifier: Apache-2.0
      |Copyright 2024 TOYOTA MOTOR CORPORATION
      |""".stripMargin
-))
+  )
+)
 
 ThisBuild / scalaVersion := "3.3.3" // should update to same Scala version in Dockerfile
 ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
   "-feature",
   "-unchecked",
-  "-Xmax-inlines", "64",
-  //"-Wconf:src=pekko-grpc/.*:silent", // try after Scala 3.5.0
-  //"-Wunused:all"
+  "-Xmax-inlines",
+  "64"
+  // "-Wconf:src=pekko-grpc/.*:silent", // try after Scala 3.5.0
+  // "-Wunused:all"
 )
 ThisBuild / scalafmtOnCompile := true
 ThisBuild / headerEmptyLine := false
