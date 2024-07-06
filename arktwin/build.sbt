@@ -3,7 +3,7 @@ import scalapb.GeneratorOption.FlatPackage
 // avoid conflict with io.gatling.sbt.GatlingPlugin.autoImport.assembly
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
-val gatlingVersion = "3.11.4"
+val gatlingVersion = "3.11.5"
 val jsoniterScalaVersion = "2.30.3"
 val kamonVersion = "2.7.3"
 val logbackClassicVersion = "1.5.6"
