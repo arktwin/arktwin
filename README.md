@@ -203,3 +203,5 @@ Please feel free to share them in [Show and tell](https://github.com/arktwin/ark
 ## License
 
 ArkTwin is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+Copyright 2024 TOYOTA MOTOR CORPORATION
