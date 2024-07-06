@@ -8,9 +8,6 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write # this permission is needed to submit the dependency graph
-
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -37,10 +34,6 @@ jobs:
     - name: sbt test
       working-directory: arktwin
       run: sbt test
-
-    - uses: scalacenter/sbt-dependency-submission@v3
-      with:
-        working-directory: arktwin
 
   changelogs:
     runs-on: ubuntu-latest
