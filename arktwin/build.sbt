@@ -4,15 +4,15 @@ import scalapb.GeneratorOption.FlatPackage
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val gatlingVersion = "3.11.4"
-val jsoniterScalaVersion = "2.30.1"
+val jsoniterScalaVersion = "2.30.3"
 val kamonVersion = "2.7.3"
 val logbackClassicVersion = "1.5.6"
 val pekkoHttpVersion = "1.0.1"
 val pekkoVersion = "1.0.3"
 val pureConfigVersion = "0.17.7"
-val scalaTestVersion = "3.2.18"
+val scalaTestVersion = "3.2.19"
 val tapirSpecVersion = "0.10.0"
-val tapirVersion = "1.10.9"
+val tapirVersion = "1.10.12"
 
 val apacheLicenseV2 = Some(
   HeaderLicense.Custom(
