@@ -47,16 +47,16 @@ jobs:
         cache: sbt
         cache-dependency-path: arktwin/build.sbt
 
-    - name: sbt center/run &
+    - name: sbt center/run in the background
       working-directory: arktwin
       run: |
-        sbt center/run &
+        nohup sbt center/run &
         sleep 10
 
-    - name: sbt edge/run &
+    - name: sbt edge/run in the background
       working-directory: arktwin
       run: |
-        sbt edge/run &
+        nohup sbt edge/run &
         sleep 10
 
     - name: sbt e2e/Gatling/test

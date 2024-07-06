@@ -15,3 +15,4 @@ class AtOnceSimulation extends Simulation:
       EdgeConfigCullingPutScenario.builder
     ).map(_.inject(atOnceUsers(1))).reduceRight(_ andThen _)
   ).protocols(http.baseUrl("http://localhost:2237"))
+    .assertions(global.failedRequests.count.is(0))
