@@ -51,14 +51,14 @@ jobs:
       working-directory: arktwin
       run: |
         nohup sbt center/run &
-        curl --retry 60 --retry-delay 1 --retry-all-errors http://localhost:12236/metrics
+        curl --retry 180 --retry-delay 1 --retry-all-errors http://localhost:12236/metrics
         sleep 1
 
     - name: sbt edge/run in the background
       working-directory: arktwin
       run: |
         nohup sbt edge/run &
-        curl --retry 60 --retry-delay 1 --retry-all-errors http://localhost:2237/
+        curl --retry 180 --retry-delay 1 --retry-all-errors http://localhost:2237/
         sleep 1
 
     - name: sbt e2e/Gatling/test
