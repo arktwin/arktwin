@@ -128,3 +128,33 @@ jobs:
 
     - name: Display /api/edge changelog from latest release
       run: cat arktwin/temp/arktwin-edge-changelog-from-release.txt
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-java@v4
+      with:
+        java-version: 21
+        distribution: temurin
+        cache: sbt
+        cache-dependency-path: arktwin/build.sbt
+    
+    - name: sbt assembly
+      working-directory: arktwin
+      run: sbt assembly
+
+    - uses: docker/build-push-action@v6
+      with:
+        file: arktwin/docker/center.dockerfile
+        context: arktwin
+        tags: arktwin/center:latest
+        push: false
+
+    - uses: docker/build-push-action@v6
+      with:
+        file: arktwin/docker/edge.dockerfile
+        context: arktwin
+        tags: arktwin/edge:latest
+        push: false
