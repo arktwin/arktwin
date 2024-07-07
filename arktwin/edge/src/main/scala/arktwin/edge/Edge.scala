@@ -13,6 +13,7 @@ import arktwin.edge.util.EdgeReporter
 import buildinfo.BuildInfo
 import io.grpc.StatusRuntimeException
 import kamon.Kamon
+import kamon.prometheus.PrometheusReporter
 import org.apache.pekko.actor.typed.*
 import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
@@ -154,7 +155,9 @@ object Edge:
               EdgeConfigCoordinatePut.route(configurator, kamon) ~
               EdgeConfigCullingPut.route(configurator, kamon) ~
               EdgeConfigGet.route(configurator, config.static, kamon) ~
-              EdgeNeighborsQuery.route(edgeNeighborsAdapter, config.static, kamon)
+              EdgeNeighborsQuery.route(edgeNeighborsAdapter, config.static, kamon) ~
+              path("metrics")(complete(PrometheusReporter.latestScrapeData())) ~
+              path("health")(complete("OK\n"))
           )
           .foreach(server => actorSystem.log.info(server.localAddress.toString))
     catch

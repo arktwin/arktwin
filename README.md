@@ -43,10 +43,12 @@ The default endpoints for ArkTwin is as follows:
 | Module | Role | Endpoint |
 | --- | --- | --- |
 | ArkTwin Center | gRPC Server | localhost:2236 |
-| ArkTwin Center | Prometheus Exporter | [localhost:12236/metrics](http://localhost:12236/metrics) |
-| ArkTwin Edge | REST Docs Server | [localhost:2237/docs/](http://localhost:2237/docs/) |
-| ArkTwin Edge | REST API | localhost:2237/api/ |
-| ArkTwin Edge | Prometheus Exporter | [localhost:12237/metrics](http://localhost:12237/metrics) |
+| ArkTwin Center | Health | [localhost:2236/health](http://localhost:2236/health) |
+| ArkTwin Center | Prometheus Exporter | [localhost:2236/metrics](http://localhost:2236/metrics) |
+| ArkTwin Edge | REST API Server | localhost:2237/api/ |
+| ArkTwin Edge | REST Docs | [localhost:2237/docs/](http://localhost:2237/docs/) |
+| ArkTwin Edge | Health | [localhost:2237/health](http://localhost:2237/health) |
+| ArkTwin Edge | Prometheus Exporter | [localhost:2237/metrics](http://localhost:2237/metrics) |
 
 If you want to change the host and port settings, see [# Environment Variables](#environment-variables).
 
@@ -134,8 +136,8 @@ Some configuration can be overridden using environment variables.
 
 | Environment Variable | Configuration Path | Default Value |
 | --- | --- | --- |
-| ARKTWIN_CENTER_PROMETHEUS_HOST | kamon.prometheus.embedded-server.hostname | 0.0.0.0 |
-| ARKTWIN_CENTER_PROMETHEUS_PORT | kamon.prometheus.embedded-server.port | 12236 |
+| ARKTWIN_CENTER_PROMETHEUS_PUSHGATEWAY_API_URL | kamon.prometheus.pushgateway.api-url | http://localhost:9091/metrics/job/arktwin-center |
+| ARKTWIN_CENTER_PROMETHEUS_PUSHGATEWAY_ENABLED | kamon.modules.pushgateway-reporter.enabled | false |
 | ARKTWIN_CENTER_STATIC_HOST | arktwin.center.static.host | 0.0.0.0 |
 | ARKTWIN_CENTER_STATIC_PORT | arktwin.center.static.port | 2236 |
 | ARKTWIN_CENTER_STATIC_RUN_ID_PREFIX | arktwin.center.static.run-id-prefix | run |
@@ -147,8 +149,8 @@ Some configuration can be overridden using environment variables.
 | --- | --- | --- |
 | ARKTWIN_CENTER_STATIC_HOST | pekko.grpc.client.arktwin.host | 127.0.0.1 |
 | ARKTWIN_CENTER_STATIC_PORT | pekko.grpc.client.arktwin.port  | 2236 |
-| ARKTWIN_EDGE_PROMETHEUS_HOST | kamon.prometheus.embedded-server.hostname | 0.0.0.0 |
-| ARKTWIN_EDGE_PROMETHEUS_PORT | kamon.prometheus.embedded-server.port | 12237 |
+| ARKTWIN_EDGE_PROMETHEUS_PUSHGATEWAY_API_URL | kamon.prometheus.pushgateway.api-url | http://localhost:9091/metrics/job/arktwin-edge |
+| ARKTWIN_EDGE_PROMETHEUS_PUSHGATEWAY_ENABLED | kamon.modules.pushgateway-reporter.enabled | false |
 | ARKTWIN_EDGE_STATIC_EDGE_ID_PREFIX | arktwin.edge.static.edgeIdPrefix | edge |
 | ARKTWIN_EDGE_STATIC_HOST | arktwin.edge.static.host | 0.0.0.0 |
 | ARKTWIN_EDGE_STATIC_PORT | arktwin.edge.static.port | 2237 |
