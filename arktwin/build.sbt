@@ -100,7 +100,8 @@ lazy val center = (project in file("center"))
       "org.apache.pekko" %% "pekko-discovery" % pekkoVersion,
       "org.apache.pekko" %% "pekko-http" % pekkoHttpVersion,
       "org.apache.pekko" %% "pekko-stream-testkit" % pekkoVersion % Test,
-      "org.apache.pekko" %% "pekko-stream-typed" % pekkoVersion
+      "org.apache.pekko" %% "pekko-stream-typed" % pekkoVersion,
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     )
   )
 
@@ -148,9 +149,9 @@ lazy val edge = (project in file("edge"))
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
       "org.apache.pekko" %% "pekko-discovery" % pekkoVersion,
+      "org.apache.pekko" %% "pekko-http" % pekkoHttpVersion,
       "org.apache.pekko" %% "pekko-stream-testkit" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-stream-typed" % pekkoVersion,
-      "org.apache.pekko" %% "pekko-http" % pekkoHttpVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     )
   )

@@ -8,11 +8,13 @@ import arktwin.center.util.CenterKamon
 import arktwin.center.util.CenterReporter
 import buildinfo.BuildInfo
 import kamon.Kamon
+import kamon.prometheus.PrometheusReporter
 import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorSystem, Scheduler, SpawnProtocol}
 import org.apache.pekko.grpc.scaladsl.ServiceHandler
 import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.util.Timeout
 
 import scala.concurrent.ExecutionContextExecutor
@@ -68,12 +70,17 @@ object Center:
             ClockPowerApiHandler.partial(ClockService(actorSystem.receptionist, config.static, actorSystem.log)),
             RegisterPowerApiHandler.partial(
               RegisterService(register, actorSystem.receptionist, config.static, actorSystem.log)
-            )
+            ),
+            (
+              path("")(getFromResource("root.html")) ~
+                path("metrics")(complete(PrometheusReporter.latestScrapeData())) ~
+                path("health")(complete("OK\n"))
+            )(_)
           )
         )
         .foreach(server => actorSystem.log.info(server.localAddress.toString))
 
   private def issueRunId(runIdPrefix: String): String =
     val characters = "0123456789abcdefghijklmnopqrstuvwxyz"
-    val idSuffix = (0 until 7).map(_ => characters(Random.nextInt(characters.size))).mkString
+    val idSuffix = (0 until 7).map(_ => characters.toSeq(Random.nextInt(characters.size))).mkString
     (if runIdPrefix.isEmpty then "" else runIdPrefix + "-") + idSuffix

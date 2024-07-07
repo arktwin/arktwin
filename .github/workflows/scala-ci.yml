@@ -47,24 +47,25 @@ jobs:
         cache: sbt
         cache-dependency-path: arktwin/build.sbt
 
+    - name: sbt compile
+      working-directory: arktwin
+      run: sbt compile
+
     - name: sbt center/run in the background
       working-directory: arktwin
       run: |
         nohup sbt center/run &
-        curl --retry 180 --retry-delay 1 --retry-all-errors http://localhost:12236/metrics
-        sleep 1
+        curl --retry 180 --retry-delay 1 --retry-all-errors http://localhost:2236/health
 
     - name: sbt edge/run in the background
       working-directory: arktwin
       run: |
         nohup sbt edge/run &
-        curl --retry 180 --retry-delay 1 --retry-all-errors http://localhost:2237/
-        sleep 1
+        curl --retry 180 --retry-delay 1 --retry-all-errors http://localhost:2237/health
 
     - name: sbt e2e/Gatling/test
       working-directory: arktwin
-      run: |
-        sbt e2e/Gatling/test
+      run: sbt e2e/Gatling/test
 
   changelogs:
     runs-on: ubuntu-latest
