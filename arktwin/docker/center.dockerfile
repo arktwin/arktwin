@@ -1,6 +1,6 @@
 FROM eclipse-temurin:21 AS jre-build
 RUN $JAVA_HOME/bin/jlink \
-         --add-modules java.se,jdk.httpserver,jdk.unsupported \
+         --add-modules java.se,jdk.httpserver,jdk.jcmd,jdk.unsupported \
          --strip-debug \
          --no-man-pages \
          --no-header-files \
@@ -10,6 +10,7 @@ RUN $JAVA_HOME/bin/jlink \
 FROM debian:bullseye-slim
 ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
+COPY --from=jre-build /javaruntime $JAVA_HOME
 RUN apt-get update && apt-get install -y \
     curl \
     jq \
@@ -17,6 +18,5 @@ RUN apt-get update && apt-get install -y \
 RUN mkdir /opt/arktwin/ && \
     mkdir /etc/opt/arktwin/ && \
     touch /etc/opt/arktwin/center.conf
-COPY --from=jre-build /javaruntime $JAVA_HOME
 COPY center/target/scala-3.3.3/arktwin-center.jar /opt/arktwin/arktwin-center.jar
 ENTRYPOINT ["java", "-Dconfig.file=/etc/opt/arktwin/center.conf", "-XX:MaxRAMPercentage=75", "-XX:+UseZGC", "-XX:+ZGenerational", "-jar", "/opt/arktwin/arktwin-center.jar"]
