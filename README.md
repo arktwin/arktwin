@@ -17,8 +17,8 @@ However, each agent-based software can connect to ArkTwin via local REST API pro
 
 ### Docker
 
-1. `docker build -t arktwin-center -f arktwin/docker/center.dockerfile .`
-1. `docker build -t arktwin-edge -f arktwin/docker/edge.dockerfile .`
+1. `docker build -t arktwin-center -f docker/center.dockerfile .`
+1. `docker build -t arktwin-edge -f docker/edge.dockerfile .`
 
 ### JAR
 
