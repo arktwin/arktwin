@@ -22,7 +22,7 @@ val apacheLicenseV2 = Some(
   )
 )
 
-ThisBuild / scalaVersion := "3.3.3" // should update to same Scala version in Dockerfile
+ThisBuild / scalaVersion := "3.3.3" // should update Dockerfile to the same version
 ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
   "-feature",
