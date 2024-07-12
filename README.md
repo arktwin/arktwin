@@ -43,11 +43,11 @@ The default endpoints for ArkTwin is as follows:
 | Module | Role | Endpoint |
 | --- | --- | --- |
 | ArkTwin Center | gRPC Server | localhost:2236 |
-| ArkTwin Center | Health | [localhost:2236/health](http://localhost:2236/health) |
+| ArkTwin Center | Health Check | [localhost:2236/health](http://localhost:2236/health) |
 | ArkTwin Center | Prometheus Exporter | [localhost:2236/metrics](http://localhost:2236/metrics) |
 | ArkTwin Edge | REST API Server | localhost:2237/api/ |
 | ArkTwin Edge | REST Docs | [localhost:2237/docs/](http://localhost:2237/docs/) |
-| ArkTwin Edge | Health | [localhost:2237/health](http://localhost:2237/health) |
+| ArkTwin Edge | Health Check | [localhost:2237/health](http://localhost:2237/health) |
 | ArkTwin Edge | Prometheus Exporter | [localhost:2237/metrics](http://localhost:2237/metrics) |
 
 If you want to change the host and port settings, see [# Environment Variables](#environment-variables).
