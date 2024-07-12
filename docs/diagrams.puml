@@ -16,7 +16,6 @@ frame "Remote Network" {
 
     storage "Kamon" as KamonC
     agent "CenterReporter" as CenterReporter
-    agent " " as PrometheusReporterC
     
     rectangle "gRPC Services" as center.services {
       interface "Admin" as AdminService
@@ -25,11 +24,15 @@ frame "Remote Network" {
       interface "<color:#gray>Reporter</color>" as ReporterService
       interface "Register" as RegisterService
     }
-    rectangle "Prometheus\nEndpoint" as center.prometheus {
+    rectangle "Prometheus\nExporter" as center.prometheus {
       interface "/metrics" as CenterMetrics
     }
   }
-  node "Prometheus" as prometheusC
+
+  rectangle " " as prometheus {
+    node "Prometheus" as Prometheus
+    node "Prometheus\nPushgateway" as Pushgateway
+  }
 }
 
 frame "Local Network<plain>, which can deny inbound connections</plain>" {
@@ -44,7 +47,6 @@ frame "Local Network<plain>, which can deny inbound connections</plain>" {
 
     storage "Kamon" as Kamon
     agent "EdgeReporter" as EdgeReporter
-    agent " " as PrometheusReporter
 
     rectangle " " as edge.actors {
       agent "Chart" as Chart
@@ -72,7 +74,7 @@ frame "Local Network<plain>, which can deny inbound connections</plain>" {
         interface "<color:#gray>POST</color>\n<color:#gray>/_tick</color>" as EdgeTick
       }
     }
-    rectangle "Prometheus\nEndpoint" as edge.prometheus {
+    rectangle "Prometheus\nExporter" as edge.prometheus {
       interface "/metrics" as EdgeMetrics
     }
   }
@@ -82,8 +84,7 @@ frame "Local Network<plain>, which can deny inbound connections</plain>" {
       rectangle "Swagger"
     }
   }
-  node "<b>Agent Simulator / VR</b>\nwhich can push and pull data synchronously" as simulator
-  node "Prometheus" as prometheus
+  node "<b>Agent Simulator / VR</b>\nwhich can push and pull data synchronously" as Simulator
 }
 
 Conductor -[#gray]-> ClockC
@@ -143,19 +144,21 @@ edge.actors <-- EdgeConfigurator
 
 edge.endpoints <-- webui
 edge.endpoints o--> webui
-edge.endpoints <-- simulator
-edge.endpoints o--> simulator
+edge.endpoints <-- Simulator
+edge.endpoints o--> Simulator
 
 KamonC --> CenterReporter
 CenterReporter -[#gray]-> Conductor
-KamonC --> PrometheusReporterC
-PrometheusReporterC o--> CenterMetrics
-CenterMetrics o--> prometheusC
+KamonC o--> CenterMetrics
+CenterMetrics o..> Prometheus
+KamonC ..> Pushgateway
 
 Kamon --> EdgeReporter
-Kamon --> PrometheusReporter
-PrometheusReporter o--> EdgeMetrics
-EdgeMetrics o--> prometheus
+Kamon o--> EdgeMetrics
+EdgeMetrics o..> Prometheus
+Kamon ..> Pushgateway
+
+Pushgateway o.> Prometheus
 
 !procedure $inlineArrow($arrow)
 {{\nleft to right direction\nlabel " " as A\nlabel " " as B\nA $arrow B\n}}
