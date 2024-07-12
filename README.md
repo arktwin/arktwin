@@ -15,20 +15,15 @@ However, each agent-based software can connect to ArkTwin via local REST API pro
 
 ## Building
 
-### Prerequisites
-
-- Install Java Development Kit (recommended: [Eclipse Temurin 21 LTS](https://adoptium.net/temurin/releases/?variant=openjdk21&jvmVariant=hotspot))
-- Install [sbt](https://www.scala-sbt.org/download)
-
 ### Docker
 
-1. `cd arktwin`
-1. `sbt assembly`
-1. `docker build -t arktwin-center -f docker/center.dockerfile .`
-1. `docker build -t arktwin-edge -f docker/edge.dockerfile .`
+1. `docker build -t arktwin-center -f arktwin/docker/center.dockerfile .`
+1. `docker build -t arktwin-edge -f arktwin/docker/edge.dockerfile .`
 
 ### JAR
 
+1. install Java Development Kit (recommended: [Eclipse Temurin 21 LTS](https://adoptium.net/temurin/releases/?variant=openjdk21&jvmVariant=hotspot))
+1. install [sbt](https://www.scala-sbt.org/download)
 1. `cd arktwin`
 1. `sbt assembly`
 1. pick up `arktwin-center.jar` from `center/target/`
@@ -54,8 +49,8 @@ If you want to change the host and port settings, see [# Environment Variables](
 
 ### Docker
 
-- `docker run --network host [-v $(pwd)/center.conf:/etc/opt/arktwin/center.conf] arktwin-center`
-- `docker run --network host -e ARKTWIN_CENTER_STATIC_HOST=<CENTER_HOST> [-v $(pwd)/edge.conf:/etc/opt/arktwin/edge.conf] arktwin-edge`
+- `docker run [--network host | -p 2236:2236] [-v $(pwd)/center.conf:/etc/opt/arktwin/center.conf] arktwin-center`
+- `docker run [--network host | -p 2237:2237] [-v $(pwd)/edge.conf:/etc/opt/arktwin/edge.conf] -e ARKTWIN_CENTER_STATIC_HOST=<CENTER_HOST> arktwin-edge`
 
 ### JAR
 
