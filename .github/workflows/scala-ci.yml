@@ -135,12 +135,12 @@ jobs:
     steps:
     - uses: docker/build-push-action@v6
       with:
-        file: arktwin/docker/center.dockerfile
+        file: docker/center.dockerfile
         tags: arktwin-center
         push: false
 
     - uses: docker/build-push-action@v6
       with:
-        file: arktwin/docker/edge.dockerfile
+        file: docker/edge.dockerfile
         tags: arktwin-edge
         push: false
