@@ -1,0 +1,7 @@
+language: "en-US"
+reviews:
+  poem: false
+  path_instructions:
+    - path: "**/*.scala"
+      instructions: |
+        Review the Scala 3 code with indentation syntax
