@@ -1,4 +1,4 @@
-language: "en-US"
+language: en-US
 reviews:
   poem: false
   path_instructions:

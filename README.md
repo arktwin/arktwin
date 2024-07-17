@@ -1,6 +1,6 @@
 # ArkTwin: Distributed Multi-Agent Messaging Framework
 
-[![Scala CI](https://github.com/arktwin/arktwin/actions/workflows/scala-ci.yml/badge.svg?branch=main)](https://github.com/arktwin/arktwin/actions/workflows/scala-ci.yml)
+[![Scala CI](https://github.com/arktwin/arktwin/actions/workflows/scala-ci.yaml/badge.svg?branch=main)](https://github.com/arktwin/arktwin/actions/workflows/scala-ci.yaml)
 
 ArkTwin is a distributed messaging framework designed to connect various agent-based software, such as traffic simulators, pedestrian simulators, virtual camera video generators, virtual reality devices, etc.
 Its primary applications are city-scale co-simulations and digital twins.
