@@ -151,12 +151,10 @@ Some configuration can be overridden using environment variables.
 | ARKTWIN_EDGE_STATIC_PORT | arktwin.edge.static.port | 2237 |
 | ARKTWIN_LOGLEVEL | pekko.loglevel | INFO |
 
-### REST API
+## REST API
 
-Some configuration can be dynamically overridden via REST API.
-
-- PUT /api/edge/config/coordinate
-- PUT /api/edge/config/culling
+- https://arktwin.github.io/arktwin/swagger-ui/center/
+- https://arktwin.github.io/arktwin/swagger-ui/edge/
 
 ## Metrics for Prometheus
 
