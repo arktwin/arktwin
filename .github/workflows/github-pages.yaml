@@ -1,0 +1,59 @@
+name: GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - github-pages
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: arktwin
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: sbt
+          cache-dependency-path: arktwin/arktwin/build.sbt
+
+      - name: Generate OpenAPI YAML files 
+        working-directory: arktwin/arktwin
+        run: sbt "edge/run openapi-center ../../pages/dist/swagger-ui/center/arktwin-center.yaml" "edge/run openapi-edge ../../pages/dist/swagger-ui/center/arktwin-edge.yaml"
+
+      - uses: actions/checkout@v4
+        with:
+          repository: swagger-api/swagger-ui
+          ref: v5.17.14
+          path: swagger-ui
+
+      - name: Copy Swagger UI static files
+        run: |
+          cp -n swagger-ui/dist/* arktwin/pages/dist/swagger-ui/center
+          cp -n swagger-ui/dist/* arktwin/pages/dist/swagger-ui/edge
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: arktwin/pages/dist
+
+      - uses: actions/deploy-pages@v4
+        id: deployment
