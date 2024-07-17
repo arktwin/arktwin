@@ -36,7 +36,7 @@ jobs:
 
       - name: Generate OpenAPI YAML files 
         working-directory: arktwin/arktwin
-        run: sbt "edge/run openapi-center ../../pages/dist/swagger-ui/center/arktwin-center.yaml" "edge/run openapi-edge ../../pages/dist/swagger-ui/center/arktwin-edge.yaml"
+        run: sbt "edge/run openapi-center ../../pages/dist/swagger-ui/center/arktwin-center.yaml" "edge/run openapi-edge ../../pages/dist/swagger-ui/edge/arktwin-edge.yaml"
 
       - uses: actions/checkout@v4
         with:
@@ -46,8 +46,9 @@ jobs:
 
       - name: Copy Swagger UI static files
         run: |
-          cp -n swagger-ui/dist/* arktwin/pages/dist/swagger-ui/center
-          cp -n swagger-ui/dist/* arktwin/pages/dist/swagger-ui/edge
+          mkdir arktwin/pages/dist/swagger-ui/bundle
+          cp swagger-ui/dist/* arktwin/pages/dist/swagger-ui/bundle
+          rm arktwin/pages/dist/swagger-ui/bundle/index.html
 
       - uses: actions/configure-pages@v5
 
