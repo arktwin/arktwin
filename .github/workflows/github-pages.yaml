@@ -3,8 +3,9 @@ name: GitHub Pages
 on:
   push:
     branches:
-      - main
       - github-pages
+    tags:
+      - v*
   workflow_dispatch:
 
 permissions:
@@ -26,6 +27,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: arktwin
+          fetch-depth: 0
 
       - uses: actions/setup-java@v4
         with:
@@ -34,9 +36,11 @@ jobs:
           cache: sbt
           cache-dependency-path: arktwin/arktwin/build.sbt
 
-      - name: Generate OpenAPI YAML files 
+      - name: Generate OpenAPI YAML files from latest relase
         working-directory: arktwin/arktwin
-        run: sbt "edge/run openapi-center ../../pages/dist/swagger-ui/center/arktwin-center.yaml" "edge/run openapi-edge ../../pages/dist/swagger-ui/edge/arktwin-edge.yaml"
+        run: |
+          git checkout $(git tag -l "v*" --sort=-v:refname | head -n 1)
+          sbt "edge/run openapi-center ../../pages/dist/swagger-ui/center/arktwin-center.yaml" "edge/run openapi-edge ../../pages/dist/swagger-ui/edge/arktwin-edge.yaml"
 
       - uses: actions/checkout@v4
         with:
