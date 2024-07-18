@@ -3,8 +3,9 @@ name: GitHub Pages
 on:
   push:
     branches:
-      - main
       - github-pages
+    tags:
+      - v*
   workflow_dispatch:
 
 permissions:
@@ -34,7 +35,7 @@ jobs:
           cache: sbt
           cache-dependency-path: arktwin/arktwin/build.sbt
 
-      - name: Generate OpenAPI YAML files 
+      - name: Generate OpenAPI YAML files
         working-directory: arktwin/arktwin
         run: sbt "edge/run openapi-center ../../pages/dist/swagger-ui/center/arktwin-center.yaml" "edge/run openapi-edge ../../pages/dist/swagger-ui/edge/arktwin-edge.yaml"
 
