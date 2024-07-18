@@ -1,6 +1,10 @@
 language: en-US
 reviews:
+  high_level_summary: false
+  collapse_walkthrough: true
   poem: false
+  auto_review:
+    enabled: false
   path_instructions:
     - path: "**/*.scala"
       instructions: |
