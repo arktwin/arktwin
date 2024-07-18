@@ -1,9 +1,0 @@
-language: en-US
-reviews:
-  high_level_summary: false
-  collapse_walkthrough: true
-  poem: false
-  path_instructions:
-    - path: "**/*.scala"
-      instructions: |
-        Review the Scala 3 code with indentation syntax
