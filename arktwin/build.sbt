@@ -11,7 +11,7 @@ val pekkoHttpVersion = "1.0.1"
 val pekkoVersion = "1.0.3"
 val pureConfigVersion = "0.17.7"
 val scalaTestVersion = "3.2.19"
-val tapirSpecVersion = "0.10.0"
+val tapirSpecVersion = "0.11.0"
 val tapirVersion = "1.10.13"
 
 val apacheLicenseV2 = Some(
