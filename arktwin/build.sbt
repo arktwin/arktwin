@@ -6,11 +6,11 @@ import sbtassembly.AssemblyPlugin.autoImport.assembly
 val gatlingVersion = "3.11.5"
 val jsoniterScalaVersion = "2.30.7"
 val kamonVersion = "2.7.3"
-val logbackClassicVersion = "1.5.6"
 val pekkoHttpVersion = "1.0.1"
 val pekkoVersion = "1.0.3"
 val pureConfigVersion = "0.17.7"
 val scalaTestVersion = "3.2.19"
+val scribeVersion = "3.15.0"
 val tapirSpecVersion = "0.11.0"
 val tapirVersion = "1.10.14"
 
@@ -54,6 +54,8 @@ lazy val common = (project in file("common"))
     headerLicense := apacheLicenseV2,
     headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
+      "com.github.pureconfig" %% "pureconfig-core" % pureConfigVersion,
+      "com.outr" %% "scribe" % scribeVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-core" % tapirVersion,
       "com.thesamet.scalapb" %% "scalapb-validate-core" % scalapb.validate.compiler.BuildInfo.version % "protobuf",
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
@@ -90,8 +92,9 @@ lazy val center = (project in file("center"))
     headerLicense := apacheLicenseV2,
     headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
-      "ch.qos.logback" % "logback-classic" % logbackClassicVersion,
       "com.github.pureconfig" %% "pureconfig-core" % pureConfigVersion,
+      "com.outr" %% "scribe" % scribeVersion,
+      "com.outr" %% "scribe-slf4j2" % scribeVersion,
       "io.kamon" %% "kamon-core" % kamonVersion,
       "io.kamon" %% "kamon-prometheus" % kamonVersion,
       "io.kamon" %% "kamon-system-metrics" % kamonVersion,
@@ -135,9 +138,10 @@ lazy val edge = (project in file("edge"))
     headerLicense := apacheLicenseV2,
     headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
-      "ch.qos.logback" % "logback-classic" % logbackClassicVersion,
       "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % jsoniterScalaVersion % Provided,
       "com.github.pureconfig" %% "pureconfig-core" % pureConfigVersion,
+      "com.outr" %% "scribe" % scribeVersion,
+      "com.outr" %% "scribe-slf4j2" % scribeVersion,
       "com.softwaremill.sttp.apispec" %% "openapi-circe-yaml" % tapirSpecVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-jsoniter-scala" % tapirVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,

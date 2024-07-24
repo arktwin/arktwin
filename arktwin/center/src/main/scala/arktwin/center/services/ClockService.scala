@@ -13,12 +13,10 @@ import org.apache.pekko.grpc.scaladsl.Metadata
 import org.apache.pekko.stream.scaladsl.Source
 import org.apache.pekko.stream.typed.scaladsl.ActorSource
 import org.apache.pekko.stream.{Attributes, Materializer, OverflowStrategy}
-import org.slf4j.Logger
 
 class ClockService(
     receptionist: ActorRef[Receptionist.Command],
-    config: StaticCenterConfig,
-    log: Logger
+    config: StaticCenterConfig
 )(using
     Materializer
 ) extends ClockPowerApi:
@@ -34,5 +32,5 @@ class ClockService(
       )
       .preMaterialize()
     receptionist ! Receptionist.Register(Clock.subscriberKey, actorRef)
-    log.info(s"[$logName] connected")
+    scribe.info(s"[$logName] connected")
     source

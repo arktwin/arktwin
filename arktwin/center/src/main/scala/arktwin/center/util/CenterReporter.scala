@@ -6,9 +6,8 @@ import com.typesafe.config.Config
 import kamon.metric.PeriodSnapshot
 import kamon.module.MetricReporter
 import kamon.tag.Tag
-import org.slf4j.Logger
 
-class CenterReporter(log: Logger, kamon: CenterKamon) extends MetricReporter:
+class CenterReporter(kamon: CenterKamon) extends MetricReporter:
   private val reportIndexes =
     import CenterKamon.*
     Seq(edgeIdKey, runIdKey).zipWithIndex.toMap.withDefaultValue(Int.MaxValue)
@@ -34,7 +33,7 @@ class CenterReporter(log: Logger, kamon: CenterKamon) extends MetricReporter:
           .collect:
             case tag: Tag.String => s"${tag.key}=\"${tag.value}\""
           .mkString("{", ", ", "}")
-        log.info(s"${metric.name}: ${instrument.value} $tags")
+        scribe.info(s"${metric.name}: ${instrument.value} $tags")
 
     snapshot.histograms
       .filter: metric =>
@@ -54,7 +53,7 @@ class CenterReporter(log: Logger, kamon: CenterKamon) extends MetricReporter:
             case tag: Tag.String => s"${tag.key}=\"${tag.value}\""
           .mkString("{", ", ", "}")
         val summary = Seq(0, 25, 50, 75, 100).map(instrument.value.percentile(_).value).mkString(", ")
-        log.info(s"${metric.name}: [$summary] ${metric.settings.unit.magnitude.name} $tags")
+        scribe.info(s"${metric.name}: [$summary] ${metric.settings.unit.magnitude.name} $tags")
 
   override def stop(): Unit = {}
 

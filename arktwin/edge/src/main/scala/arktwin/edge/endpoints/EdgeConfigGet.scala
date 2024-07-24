@@ -5,6 +5,7 @@ package arktwin.edge.endpoints
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
+import arktwin.common.LoggerConfigurator.LogLevel
 import arktwin.edge.{DynamicEdgeConfig, EdgeConfig, StaticEdgeConfig}
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.util.EdgeKamon
@@ -42,6 +43,7 @@ object EdgeConfigGet:
       endpointTimeout = 100.milliseconds,
       host = "0.0.0.0",
       port = 2237,
+      logLevel = LogLevel.Info,
       publishStreamBatchSize = 100
     )
   )

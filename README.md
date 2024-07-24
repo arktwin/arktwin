@@ -26,8 +26,8 @@ However, each agent-based software can connect to ArkTwin via local REST API pro
 1. install [sbt](https://www.scala-sbt.org/download)
 1. `cd arktwin`
 1. `sbt assembly`
-1. pick up `arktwin-center.jar` from `center/target/`
-1. pick up `arktwin-edge.jar` from `edge/target/`
+1. pick up `arktwin-center.jar` from `center/target/scala-*.*.*/`
+1. pick up `arktwin-edge.jar` from `edge/target/scala-*.*.*/`
 
 ## Running
 
@@ -134,9 +134,9 @@ Some configuration can be overridden using environment variables.
 | ARKTWIN_CENTER_PROMETHEUS_PUSHGATEWAY_API_URL | kamon.prometheus.pushgateway.api-url | http://localhost:9091/metrics/job/arktwin-center |
 | ARKTWIN_CENTER_PROMETHEUS_PUSHGATEWAY_ENABLED | kamon.modules.pushgateway-reporter.enabled | false |
 | ARKTWIN_CENTER_STATIC_HOST | arktwin.center.static.host | 0.0.0.0 |
+| ARKTWIN_CENTER_STATIC_LOG_LEVEL | arktwin.center.static.log-level | info |
 | ARKTWIN_CENTER_STATIC_PORT | arktwin.center.static.port | 2236 |
 | ARKTWIN_CENTER_STATIC_RUN_ID_PREFIX | arktwin.center.static.run-id-prefix | run |
-| ARKTWIN_LOGLEVEL | pekko.loglevel | INFO |
 
 #### Edge
 
@@ -148,8 +148,8 @@ Some configuration can be overridden using environment variables.
 | ARKTWIN_EDGE_PROMETHEUS_PUSHGATEWAY_ENABLED | kamon.modules.pushgateway-reporter.enabled | false |
 | ARKTWIN_EDGE_STATIC_EDGE_ID_PREFIX | arktwin.edge.static.edgeIdPrefix | edge |
 | ARKTWIN_EDGE_STATIC_HOST | arktwin.edge.static.host | 0.0.0.0 |
+| ARKTWIN_EDGE_STATIC_LOG_LEVEL | arktwin.edge.static.log-level | info |
 | ARKTWIN_EDGE_STATIC_PORT | arktwin.edge.static.port | 2237 |
-| ARKTWIN_LOGLEVEL | pekko.loglevel | INFO |
 
 ## REST API
 

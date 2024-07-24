@@ -5,11 +5,10 @@ package arktwin.edge.actors
 import arktwin.edge.DynamicEdgeConfig.CullingConfig
 import arktwin.edge.data.{CoordinateConfig, QuaternionConfig}
 import arktwin.edge.endpoints.EdgeConfigGet
-import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
+import arktwin.edge.test.ActorTestBase
 import org.apache.pekko.actor.typed.receptionist.Receptionist
-import org.scalatest.funsuite.AnyFunSuiteLike
 
-class EdgeConfiguratorSuite extends ScalaTestWithActorTestKit() with AnyFunSuiteLike:
+class EdgeConfiguratorSuite extends ActorTestBase:
   import arktwin.edge.actors.EdgeConfigurator.*
 
   test("EdgeConfigManager"):

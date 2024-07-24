@@ -5,10 +5,9 @@ package arktwin.edge.actors.sinks
 import arktwin.center.services.ClockBase
 import arktwin.common.data.Timestamp
 import arktwin.edge.endpoints.EdgeConfigGet
-import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
-import org.scalatest.funsuite.AnyFunSuiteLike
+import arktwin.edge.test.ActorTestBase
 
-class ClockSuite extends ScalaTestWithActorTestKit() with AnyFunSuiteLike:
+class ClockSuite extends ActorTestBase:
   import Clock.*
 
   test("Clock"):
