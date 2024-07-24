@@ -10,6 +10,7 @@ import arktwin.edge.connectors.{ChartConnector, ClockConnector, RegisterConnecto
 import arktwin.edge.endpoints.*
 import arktwin.edge.util.EdgeKamon
 import arktwin.edge.util.EdgeReporter
+import arktwin.common.LoggerConfigurator
 import buildinfo.BuildInfo
 import io.grpc.StatusRuntimeException
 import kamon.Kamon
@@ -82,6 +83,7 @@ object Edge:
     val config = EdgeConfig.loadOrThrow()
     val rawConfig = EdgeConfig.loadRawOrThrow()
 
+    LoggerConfigurator.init(config.static.logLevel)
     Kamon.init(rawConfig)
 
     given actorSystem: ActorSystem[SpawnProtocol.Command] = ActorSystem(
@@ -93,9 +95,9 @@ object Edge:
     given Scheduler = actorSystem.scheduler
     given Timeout = config.static.actorTimeout
 
-    actorSystem.log.info(BuildInfo.toString)
-    actorSystem.log.info(config.toString)
-    actorSystem.log.debug(rawConfig.toString)
+    scribe.info(BuildInfo.toString)
+    scribe.info(config.toString)
+    scribe.debug(rawConfig.toString)
 
     val grpcSettings = GrpcClientSettings.fromConfig("arktwin")
     val adminClient = AdminClient(grpcSettings)
@@ -104,11 +106,11 @@ object Edge:
     try
       val EdgeCreateResponse(edgeId, runId) =
         Await.result(registerClient.edgeCreate(EdgeCreateRequest(config.static.edgeIdPrefix)), 1.minute)
-      actorSystem.log.info(s"Run ID: $runId")
-      actorSystem.log.info(s"Edge ID: $edgeId")
+      scribe.info(s"Run ID: $runId")
+      scribe.info(s"Edge ID: $edgeId")
 
       val kamon = EdgeKamon(runId, edgeId)
-      val reporter = EdgeReporter(actorSystem.log, kamon)
+      val reporter = EdgeReporter(kamon)
       Kamon.addReporter(reporter.getClass.getSimpleName(), reporter)
 
       val chartConnector = ChartConnector(ChartClient(grpcSettings), config.static, edgeId, kamon)
@@ -159,7 +161,7 @@ object Edge:
               path("metrics")(complete(PrometheusReporter.latestScrapeData())) ~
               path("health")(complete("OK\n"))
           )
-          .foreach(server => actorSystem.log.info(server.localAddress.toString))
+          .foreach(server => scribe.info(server.localAddress.toString))
     catch
       case e: StatusRuntimeException =>
         Http()

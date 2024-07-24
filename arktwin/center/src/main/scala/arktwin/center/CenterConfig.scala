@@ -3,6 +3,7 @@
 package arktwin.center
 
 import arktwin.common.data.{Duration, Timestamp, Vector3Enu}
+import arktwin.common.LoggerConfigurator.LogLevel
 import com.typesafe.config.Config
 import pureconfig.*
 import pureconfig.error.ConfigReaderFailures
@@ -37,6 +38,7 @@ case class StaticCenterConfig(
     runIdPrefix: String,
     host: String,
     port: Int,
+    logLevel: LogLevel,
     subscribeStreamBatchSize: Int,
     subscribeStreamBatchInterval: FiniteDuration
 )

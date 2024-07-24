@@ -20,7 +20,6 @@ import org.apache.pekko.stream.scaladsl.Source
 import org.apache.pekko.stream.typed.scaladsl.{ActorSink, ActorSource}
 import org.apache.pekko.stream.{Attributes, Materializer, OverflowStrategy}
 import org.apache.pekko.util.Timeout
-import org.slf4j.Logger
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -28,7 +27,6 @@ class ChartService(
     receptionist: ActorRef[Receptionist.Command],
     atlas: ActorRef[Atlas.Message],
     config: StaticCenterConfig,
-    log: Logger,
     kamon: CenterKamon
 )(using
     Materializer,
@@ -76,7 +74,7 @@ class ChartService(
         .wireTap(ActorSink.actorRef(chartRecorder, Complete, a => Failure(a, edgeId)))
         .to(ActorSink.actorRef(chartReceiver, Complete, a => Failure(a, edgeId)))
         .run()
-      log.info(s"[$logName] connected")
+      scribe.info(s"[$logName] connected")
     Future.never
 
   // micro-batch to reduce overhead of stream processing
@@ -114,5 +112,5 @@ class ChartService(
         ChartAgentsSubscribe(subscribes.flatMap(_.agents), currentMachineTimestamp)
       .preMaterialize()
     atlas ! Atlas.SpawnSender(edgeId, subscriber)
-    log.info(s"[$logName] connected")
+    scribe.info(s"[$logName] connected")
     source

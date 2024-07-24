@@ -6,10 +6,9 @@ import arktwin.center.services.ChartAgent
 import arktwin.common.data.{QuaternionEnu, Timestamp, TransformEnu, Vector3Enu}
 import arktwin.edge.DynamicEdgeConfig.CullingConfig
 import arktwin.edge.endpoints.EdgeConfigGet
-import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
-import org.scalatest.funsuite.AnyFunSuiteLike
+import arktwin.edge.test.ActorTestBase
 
-class ChartSuite extends ScalaTestWithActorTestKit() with AnyFunSuiteLike:
+class ChartSuite extends ActorTestBase:
   import Chart.*
 
   test("Chart"):

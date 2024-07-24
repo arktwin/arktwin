@@ -3,6 +3,7 @@
 package arktwin.edge
 
 import arktwin.center.services.EdgeCreateRequest
+import arktwin.common.LoggerConfigurator.LogLevel
 import arktwin.edge.data.CoordinateConfig
 import com.typesafe.config.Config
 import pureconfig.*
@@ -63,5 +64,6 @@ case class StaticEdgeConfig(
     endpointTimeout: FiniteDuration,
     host: String,
     port: Int,
+    logLevel: LogLevel,
     publishStreamBatchSize: Int
 )

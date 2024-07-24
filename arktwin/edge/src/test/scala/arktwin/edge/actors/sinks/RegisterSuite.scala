@@ -3,10 +3,9 @@
 package arktwin.edge.actors.sinks
 
 import arktwin.center.services.{RegisterAgent, RegisterAgentDeleted, RegisterAgentUpdated}
-import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
-import org.scalatest.funsuite.AnyFunSuiteLike
+import arktwin.edge.test.ActorTestBase
 
-class RegisterSuite extends ScalaTestWithActorTestKit() with AnyFunSuiteLike:
+class RegisterSuite extends ActorTestBase:
   import Register.*
 
   test("Register"):

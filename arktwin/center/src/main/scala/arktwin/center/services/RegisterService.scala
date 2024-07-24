@@ -16,15 +16,13 @@ import org.apache.pekko.stream.scaladsl.Source
 import org.apache.pekko.stream.typed.scaladsl.{ActorSink, ActorSource}
 import org.apache.pekko.stream.{Attributes, Materializer, OverflowStrategy}
 import org.apache.pekko.util.Timeout
-import org.slf4j.Logger
 
 import scala.concurrent.Future
 
 class RegisterService(
     register: ActorRef[Register.Message],
     receptionist: ActorRef[Receptionist.Command],
-    config: StaticCenterConfig,
-    log: Logger
+    config: StaticCenterConfig
 )(using
     Materializer,
     Scheduler,
@@ -48,7 +46,7 @@ class RegisterService(
       .map(a => Register.AgentsUpdate(a))
       .to(ActorSink.actorRef(register, Complete, a => Failure(a, edgeId)))
       .run()
-    log.info(s"[$logName] connected")
+    scribe.info(s"[$logName] connected")
     Future.never
 
   override def subscribe(in: Empty, metadata: Metadata): Source[RegisterAgentsSubscribe, NotUsed] =
@@ -68,5 +66,5 @@ class RegisterService(
       )
       .preMaterialize()
     receptionist ! Receptionist.Register(Register.subscriberKey, actorRef)
-    log.info(s"[$logName] connected")
+    scribe.info(s"[$logName] connected")
     source
