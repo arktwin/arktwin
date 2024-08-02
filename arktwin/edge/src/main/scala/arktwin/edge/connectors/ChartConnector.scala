@@ -35,13 +35,13 @@ case class ChartConnector(client: ChartClient, staticConfig: StaticEdgeConfig, e
       .actorRef[Publish](
         PartialFunction.empty,
         PartialFunction.empty,
-        staticConfig.bufferSize,
+        staticConfig.publishBufferSize,
         OverflowStrategy.dropHead
       )
       .mapConcat: a =>
         val currentMachineTimestamp = Timestamp.machineNow()
         val batches = a.agents
-          .grouped(staticConfig.publishStreamBatchSize)
+          .grouped(staticConfig.publishBatchSize)
           .map(agents => ChartAgentsPublish(agents, currentMachineTimestamp))
           .toSeq
         publishAgentNumCounter.increment(a.agents.size)

@@ -58,12 +58,13 @@ object DynamicEdgeConfig:
   )
 
 case class StaticEdgeConfig(
-    actorTimeout: FiniteDuration,
-    bufferSize: Int,
     edgeIdPrefix: String,
-    endpointTimeout: FiniteDuration,
     host: String,
     port: Int,
     logLevel: LogLevel,
-    publishStreamBatchSize: Int
+    actorTimeout: FiniteDuration,
+    endpointTimeout: FiniteDuration,
+    clockInitialStashSize: Int,
+    publishBatchSize: Int,
+    publishBufferSize: Int
 )

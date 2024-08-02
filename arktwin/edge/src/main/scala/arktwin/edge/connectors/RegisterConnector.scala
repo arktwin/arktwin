@@ -37,12 +37,12 @@ case class RegisterConnector(client: RegisterClient, staticConfig: StaticEdgeCon
       .actorRef[Publish](
         PartialFunction.empty,
         PartialFunction.empty,
-        staticConfig.bufferSize,
+        staticConfig.publishBufferSize,
         OverflowStrategy.dropHead
       )
       .mapConcat: a =>
         a.agents
-          .grouped(staticConfig.publishStreamBatchSize)
+          .grouped(staticConfig.publishBatchSize)
           .map(RegisterAgentsPublish.apply)
       .preMaterialize()
     client

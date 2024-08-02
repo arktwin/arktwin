@@ -33,14 +33,14 @@ object CenterConfig:
     configSource.at("arktwin.center").loadOrThrow[CenterConfig]
 
 case class StaticCenterConfig(
-    bufferSize: Int,
     clock: StaticCenterConfig.ClockConfig,
     runIdPrefix: String,
     host: String,
     port: Int,
     logLevel: LogLevel,
-    subscribeStreamBatchSize: Int,
-    subscribeStreamBatchInterval: FiniteDuration
+    subscribeBatchSize: Int,
+    subscribeBatchInterval: FiniteDuration,
+    subscribeBufferSize: Int
 )
 
 // TODO changeable via Admin API

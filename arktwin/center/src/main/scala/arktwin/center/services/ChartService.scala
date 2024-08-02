@@ -90,14 +90,14 @@ class ChartService(
       .actorRef[ChartSender.Subscribe](
         PartialFunction.empty,
         PartialFunction.empty,
-        config.bufferSize,
+        config.subscribeBufferSize,
         OverflowStrategy.dropHead
       )
       .log(logName)
       .addAttributes(
         Attributes.logLevels(onFailure = Attributes.LogLevels.Warning, onFinish = Attributes.LogLevels.Warning)
       )
-      .groupedWeightedWithin(config.subscribeStreamBatchSize, config.subscribeStreamBatchInterval)(_.agents.size)
+      .groupedWeightedWithin(config.subscribeBatchSize, config.subscribeBatchInterval)(_.agents.size)
       .map: subscribes =>
         val currentMachineTimestamp = Timestamp.machineNow()
 

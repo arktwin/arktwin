@@ -24,7 +24,7 @@ object Clock:
   )
 
   def apply(staticConfig: StaticEdgeConfig): Behavior[Message] =
-    Behaviors.withStash(staticConfig.bufferSize): buffer =>
+    Behaviors.withStash(staticConfig.clockInitialStashSize): buffer =>
       Behaviors.receiveMessage:
         case Catch(clockBase) =>
           buffer.unstashAll(active(clockBase))
