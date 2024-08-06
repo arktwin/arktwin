@@ -4,6 +4,7 @@ package arktwin.edge.actors.adapters
 
 import arktwin.center.services.ClockBaseEx.*
 import arktwin.center.services.{ChartAgent, ClockBase, RegisterAgentUpdated}
+import arktwin.common.MailboxConfig
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.{Timestamp, TransformEnu}
@@ -43,7 +44,7 @@ object EdgeAgentsPutAdapter:
     Spawn(
       apply(chart, chartPublish, registerPublish, clock, staticConfig, initCoordinateConfig, kamon),
       getClass.getSimpleName,
-      Props.empty,
+      MailboxConfig(getClass.getName),
       _
     )
 

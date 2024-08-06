@@ -37,14 +37,15 @@ object EdgeConfigGet:
       culling = EdgeConfigCullingPut.inExample
     ),
     static = StaticEdgeConfig(
-      actorTimeout = 90.milliseconds,
-      bufferSize = 10000,
       edgeIdPrefix = "edge",
-      endpointTimeout = 100.milliseconds,
       host = "0.0.0.0",
       port = 2237,
       logLevel = LogLevel.Info,
-      publishStreamBatchSize = 100
+      actorTimeout = 90.milliseconds,
+      endpointTimeout = 100.milliseconds,
+      clockInitialStashSize = 100,
+      publishBatchSize = 100,
+      publishBufferSize = 10000
     )
   )
 

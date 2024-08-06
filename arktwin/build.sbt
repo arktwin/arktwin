@@ -58,6 +58,7 @@ lazy val common = (project in file("common"))
       "com.outr" %% "scribe" % scribeVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-core" % tapirVersion,
       "com.thesamet.scalapb" %% "scalapb-validate-core" % scalapb.validate.compiler.BuildInfo.version % "protobuf",
+      "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     Compile / PB.targets +=

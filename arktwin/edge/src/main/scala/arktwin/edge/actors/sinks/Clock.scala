@@ -8,7 +8,7 @@ import arktwin.edge.StaticEdgeConfig
 import arktwin.edge.actors.CommonMessages.Nop
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.apache.pekko.actor.typed.{ActorRef, Behavior, MailboxSelector}
+import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import org.apache.pekko.dispatch.ControlMessage
 
 object Clock:
@@ -19,12 +19,12 @@ object Clock:
   def spawn(staticConfig: StaticEdgeConfig): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(staticConfig),
     getClass.getSimpleName,
-    MailboxSelector.fromConfig(MailboxConfig.UnboundedControlAwareMailbox),
+    MailboxConfig(getClass.getName),
     _
   )
 
   def apply(staticConfig: StaticEdgeConfig): Behavior[Message] =
-    Behaviors.withStash(staticConfig.bufferSize): buffer =>
+    Behaviors.withStash(staticConfig.clockInitialStashSize): buffer =>
       Behaviors.receiveMessage:
         case Catch(clockBase) =>
           buffer.unstashAll(active(clockBase))

@@ -7,7 +7,7 @@ import arktwin.common.MailboxConfig
 import arktwin.edge.actors.CommonMessages.Nop
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.apache.pekko.actor.typed.{ActorRef, Behavior, MailboxSelector}
+import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import org.apache.pekko.dispatch.ControlMessage
 
 import scala.collection.mutable
@@ -22,7 +22,7 @@ object Register:
   def spawn(): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(),
     getClass.getSimpleName,
-    MailboxSelector.fromConfig(MailboxConfig.UnboundedControlAwareMailbox),
+    MailboxConfig(getClass.getName),
     _
   )
 

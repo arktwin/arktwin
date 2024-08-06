@@ -4,6 +4,7 @@ package arktwin.edge.actors.adapters
 
 import arktwin.center.services.ClockBaseEx.*
 import arktwin.center.services.{ClockBase, RegisterAgent}
+import arktwin.common.MailboxConfig
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.TransformEnuEx.*
@@ -45,7 +46,7 @@ object EdgeNeighborsQueryAdapter:
     Spawn(
       apply(chart, clock, register, staticConfig, initCoordinateConfig, kamon),
       getClass.getSimpleName,
-      Props.empty,
+      MailboxConfig(getClass.getName),
       _
     )
 

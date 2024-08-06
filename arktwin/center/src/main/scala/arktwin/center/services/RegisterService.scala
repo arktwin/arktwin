@@ -57,7 +57,7 @@ class RegisterService(
       .actorRef[RegisterAgentsSubscribe](
         PartialFunction.empty,
         PartialFunction.empty,
-        config.bufferSize,
+        config.subscribeBufferSize,
         OverflowStrategy.dropHead
       )
       .log(logName)

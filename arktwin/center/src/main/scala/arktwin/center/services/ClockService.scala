@@ -25,7 +25,12 @@ class ClockService(
     val logName = s"${getClass.getSimpleName}.subscribe/$edgeId"
 
     val (actorRef, source) = ActorSource
-      .actorRef[ClockBase](PartialFunction.empty, PartialFunction.empty, config.bufferSize, OverflowStrategy.dropHead)
+      .actorRef[ClockBase](
+        PartialFunction.empty,
+        PartialFunction.empty,
+        config.subscribeBufferSize,
+        OverflowStrategy.dropHead
+      )
       .log(logName)
       .addAttributes(
         Attributes.logLevels(onFailure = Attributes.LogLevels.Warning, onFinish = Attributes.LogLevels.Warning)

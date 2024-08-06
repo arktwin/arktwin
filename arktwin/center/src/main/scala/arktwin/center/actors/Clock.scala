@@ -13,21 +13,21 @@ import arktwin.common.data.{Duration, Timestamp}
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.{Receptionist, ServiceKey}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.apache.pekko.actor.typed.{ActorRef, Behavior, MailboxSelector}
+import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import org.apache.pekko.dispatch.ControlMessage
 
 import scala.concurrent.duration.DurationDouble
 
 object Clock:
   type Message = SpeedUpdate | Receptionist.Listing
-  case class SpeedUpdate(clockSpeed: Double) extends ControlMessage
+  case class SpeedUpdate(clockSpeed: Double)
 
   val subscriberKey: ServiceKey[ClockBase] = ServiceKey(getClass.getName)
 
   def spawn(config: ClockConfig): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(config),
     getClass.getSimpleName,
-    MailboxSelector.fromConfig(MailboxConfig.UnboundedControlAwareMailbox),
+    MailboxConfig(getClass.getName),
     _
   )
 

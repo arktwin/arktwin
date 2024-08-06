@@ -8,7 +8,7 @@ import arktwin.common.MailboxConfig
 import arktwin.common.data.Vector3Enu
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.apache.pekko.actor.typed.{ActorRef, Behavior, MailboxSelector}
+import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
 import scala.collection.mutable
 
@@ -36,7 +36,7 @@ object Atlas:
   ): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(config, kamon),
     getClass.getSimpleName,
-    MailboxSelector.fromConfig(MailboxConfig.UnboundedControlAwareMailbox),
+    MailboxConfig(getClass.getName),
     _
   )
 
@@ -50,15 +50,18 @@ object Atlas:
 
         val chartRecorderParent = context.spawn(
           ChartRecorderParent(),
-          ChartRecorderParent.getClass.getSimpleName
+          ChartRecorderParent.getClass.getSimpleName,
+          MailboxConfig(ChartRecorderParent.getClass.getName)
         )
         val chartReceiverParent = context.spawn(
           ChartReceiverParent(kamon),
-          ChartReceiverParent.getClass.getSimpleName
+          ChartReceiverParent.getClass.getSimpleName,
+          MailboxConfig(ChartReceiverParent.getClass.getName)
         )
         val chartSenderParent = context.spawn(
           ChartSenderParent(),
-          ChartSenderParent.getClass.getSimpleName
+          ChartSenderParent.getClass.getSimpleName,
+          MailboxConfig(ChartSenderParent.getClass.getName)
         )
 
         Behaviors.receiveMessage:

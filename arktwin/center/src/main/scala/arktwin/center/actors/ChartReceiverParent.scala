@@ -5,7 +5,7 @@ package arktwin.center.actors
 import arktwin.center.util.CenterKamon
 import arktwin.common.MailboxConfig
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.apache.pekko.actor.typed.{ActorRef, Behavior, MailboxSelector}
+import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
 object ChartReceiverParent:
   type Message = SpawnReceiver | ReadReceivers
@@ -29,7 +29,7 @@ object ChartReceiverParent:
         replyTo ! context.spawn(
           ChartReceiver(edgeId, initialForwarder, kamon),
           edgeId,
-          MailboxSelector.fromConfig(MailboxConfig.UnboundedControlAwareMailbox)
+          MailboxConfig(ChartReceiver.getClass.getName)
         )
         Behaviors.same
 

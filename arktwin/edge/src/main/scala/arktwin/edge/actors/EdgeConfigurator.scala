@@ -9,7 +9,7 @@ import arktwin.edge.data.CoordinateConfig
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.{Receptionist, ServiceKey}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.apache.pekko.actor.typed.{ActorRef, Behavior, MailboxSelector}
+import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
 object EdgeConfigurator:
   type Message = Get | CoordinateConfig | CullingConfig | Receptionist.Listing
@@ -25,7 +25,7 @@ object EdgeConfigurator:
   def spawn(initEdgeConfig: EdgeConfig): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(initEdgeConfig),
     getClass.getSimpleName,
-    MailboxSelector.fromConfig(MailboxConfig.UnboundedControlAwareMailbox),
+    MailboxConfig(getClass.getName),
     _
   )
 
