@@ -179,9 +179,26 @@ Some configuration can be overridden using environment variables.
   - arktwin_edge_rest_process_machine_time {endpoint, edge_id, run_id}
   - arktwin_edge_rest_simulation_latency {endpoint, edge_id, run_id}
 
-## Messaging Architecture
+## Messaging
+
+### Messaging Architecture
 
 ![](docs/diagrams/messaging.png)
+
+### Messaging Control
+
+To control messaging, there are following configurations:
+
+- Buffer size of Pekko Streams (e.g., `arktwin.center.static.subscribe-buffer-size`).
+- Mailbox of Pekko Typed Actors (e.g., `pekko.actor.typed.mailbox.arktwin.center.actors.Atlas`).
+
+The default settings for mailboxes are defined by the following rules:
+
+- Actors exchanging transform data use bounded mailboxes. They have strong at-most-once delivery property because transform data is exchanged in large volumes at high frequency.
+- Actors in `arktwin.edge.actors.sinks` use control-aware mailboxes.
+- Others use `org.apache.pekko.dispatch.SingleConsumerOnlyUnboundedMailbox` as the default mailbox for Pekko Typed Actors.
+
+For more details on mailboxes, see [Pekko Mailboxes documentation](https://pekko.apache.org/docs/pekko/current/typed/mailboxes.html).
 
 ## Publications
 
