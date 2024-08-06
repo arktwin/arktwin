@@ -13,7 +13,7 @@ import arktwin.edge.actors.EdgeConfigurator
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.Receptionist
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.apache.pekko.actor.typed.{ActorRef, Behavior, MailboxSelector}
+import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import org.apache.pekko.dispatch.ControlMessage
 
 import scala.collection.mutable
@@ -32,7 +32,7 @@ object Chart:
   ): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(initCullingConfig),
     getClass.getSimpleName,
-    MailboxSelector.fromConfig(MailboxConfig.UnboundedControlAwareMailbox),
+    MailboxConfig(getClass.getName),
     _
   )
 

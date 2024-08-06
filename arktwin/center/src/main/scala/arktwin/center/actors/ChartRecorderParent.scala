@@ -5,7 +5,7 @@ package arktwin.center.actors
 import arktwin.center.DynamicCenterConfig.AtlasConfig
 import arktwin.common.MailboxConfig
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.apache.pekko.actor.typed.{ActorRef, Behavior, MailboxSelector}
+import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
 object ChartRecorderParent:
   type Message = SpawnRecorder | ReadRecorders
@@ -29,7 +29,7 @@ object ChartRecorderParent:
         replyTo ! context.spawn(
           ChartRecorder(edgeId, config),
           edgeId,
-          MailboxSelector.fromConfig(MailboxConfig.UnboundedControlAwareMailbox)
+          MailboxConfig(ChartRecorder.getClass.getName)
         )
         Behaviors.same
 

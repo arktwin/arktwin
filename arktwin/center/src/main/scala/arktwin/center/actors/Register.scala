@@ -4,6 +4,7 @@ package arktwin.center.actors
 
 import arktwin.center.actors.CommonMessages.*
 import arktwin.center.services.*
+import arktwin.common.MailboxConfig
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.{Receptionist, ServiceKey}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
@@ -22,7 +23,7 @@ object Register:
   case class AgentsDelete(agentSelector: AgentSelector)
 
   def spawn(runId: String): ActorRef[ActorRef[Message]] => Spawn[Message] =
-    Spawn(apply(runId), getClass.getSimpleName, Props.empty, _)
+    Spawn(apply(runId), getClass.getSimpleName, MailboxConfig(getClass.getName), _)
 
   val subscriberKey: ServiceKey[RegisterAgentsSubscribe] = ServiceKey(getClass.getName)
 
