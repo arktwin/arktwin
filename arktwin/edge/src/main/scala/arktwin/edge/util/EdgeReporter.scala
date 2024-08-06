@@ -7,20 +7,23 @@ import kamon.metric.PeriodSnapshot
 import kamon.module.MetricReporter
 import kamon.tag.Tag
 
-class EdgeReporter(kamon: EdgeKamon) extends MetricReporter:
+class EdgeReporter() extends MetricReporter:
   private val reportIndexes =
     import EdgeKamon.*
-    Seq(endpointKey, edgeIdKey, runIdKey).zipWithIndex.toMap.withDefaultValue(Int.MaxValue)
+    Seq(recipientKey, endpointKey, edgeIdKey, runIdKey).zipWithIndex.toMap.withDefaultValue(Int.MaxValue)
 
   override def reportPeriodSnapshot(snapshot: PeriodSnapshot): Unit =
+    import EdgeKamon.*
+
     snapshot.counters
       .filter: metric =>
         Seq(
-          kamon.chartPublishAgentNumName,
-          kamon.chartPublishBatchNumName,
-          kamon.chartSubscribeAgentNumName,
-          kamon.restRequestNumName,
-          kamon.restAgentNumName
+          chartPublishAgentNumName,
+          chartPublishBatchNumName,
+          chartSubscribeAgentNumName,
+          deadLetterNumName,
+          restRequestNumName,
+          restAgentNumName
         ).contains(metric.name)
       .sortBy(_.name)
       .flatMap: metric =>
@@ -32,15 +35,17 @@ class EdgeReporter(kamon: EdgeKamon) extends MetricReporter:
           .collect:
             case tag: Tag.String => s"${tag.key}=\"${tag.value}\""
           .mkString("{", ", ", "}")
-        scribe.info(s"${metric.name}: ${instrument.value} $tags")
+        val message = s"${metric.name}: ${instrument.value} $tags"
+        if metric.name == deadLetterNumName then scribe.warn(message)
+        else scribe.info(message)
 
     snapshot.histograms
       .filter: metric =>
         Seq(
-          kamon.chartPublishMachineLatencyName,
-          kamon.chartSubscribeMachineLatencyName,
-          kamon.restProcessMachineTimeName,
-          kamon.restSimulationLatencyName
+          chartPublishMachineLatencyName,
+          chartSubscribeMachineLatencyName,
+          restProcessMachineTimeName,
+          restSimulationLatencyName
         ).contains(metric.name)
       .sortBy(_.name)
       .flatMap: metric =>

@@ -47,9 +47,10 @@ object Center:
     scribe.info(s"Run ID: $runId")
 
     val kamon = CenterKamon(runId)
-    val reporter = CenterReporter(kamon)
+    val reporter = CenterReporter()
     Kamon.addReporter(reporter.getClass.getSimpleName, reporter)
 
+    actorSystem ? DeadLetterListener.spawn(kamon)
     for
       atlas <- actorSystem ? Atlas.spawn(config.dynamic.atlas, kamon)
       clock <- actorSystem ? Clock.spawn(config.static.clock)
