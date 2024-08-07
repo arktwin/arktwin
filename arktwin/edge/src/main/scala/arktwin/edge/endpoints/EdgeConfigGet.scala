@@ -41,6 +41,7 @@ object EdgeConfigGet:
       host = "0.0.0.0",
       port = 2237,
       logLevel = LogLevel.Info,
+      logLevelColor = true,
       actorTimeout = 90.milliseconds,
       endpointTimeout = 100.milliseconds,
       clockInitialStashSize = 100,

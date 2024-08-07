@@ -4,40 +4,50 @@ package arktwin.common
 
 import pureconfig.generic.derivation.EnumConfigReader
 import scribe.format.FormatBlock
+import scribe.format.FormatBlock.Level.PaddedRight
 import scribe.handler.SynchronousLogHandle
+import scribe.Level
 import scribe.Logger
 import scribe.LogRecord
 import scribe.mdc.MDC
-import scribe.output.LogOutput
+import scribe.output.{Color, ColoredOutput}
 import scribe.output.TextOutput
 
 object LoggerConfigurator:
-  def init(minimumLevel: LogLevel): Unit =
+  enum LogLevel derives EnumConfigReader:
+    // Align with Pekko log levels
+    // see org.apache.pekko.event.Logging.levelFor
+    case Error, Warning, Info, Debug
+
+  def init(minimumLevel: LogLevel, logLevelColor: Boolean): Unit =
     scribe.Logger.root
       .clearModifiers()
       .withMinimumLevel(minimumLevel match
-        case LogLevel.Error   => scribe.Level.Error
-        case LogLevel.Warning => scribe.Level.Warn
-        case LogLevel.Info    => scribe.Level.Info
-        case LogLevel.Debug   => scribe.Level.Debug
+        case LogLevel.Error   => Level.Error
+        case LogLevel.Warning => Level.Warn
+        case LogLevel.Info    => Level.Info
+        case LogLevel.Debug   => Level.Debug
       )
       .clearHandlers()
       .withHandler(
         handle = SynchronousLogHandle,
         formatter =
           import scribe.format.*
-          formatter"$dateFull $levelPaddedRight $messages   - $LogSource"
+          if logLevelColor then formatter"$dateFull $coloredLevelPaddedRight $messages   - $logSource"
+          else formatter"$dateFull $levelPaddedRight $messages   - $logSource"
       )
       .replace()
 
-  enum LogLevel derives EnumConfigReader:
-    // Align with Pekko log levels
-    // see org.apache.pekko.event.Logging.levelFor
-    case Error, Warning, Info, Debug
+  def coloredLevelPaddedRight: FormatBlock = FormatBlock: logRecord =>
+    val output = PaddedRight.format(logRecord)
+    logRecord.level match
+      case Level.Warn  => ColoredOutput(Color.Yellow, output)
+      case Level.Error => ColoredOutput(Color.Red, output)
+      case _           => output
 
-  object LogSource extends FormatBlock:
-    override def format(record: LogRecord): LogOutput = MDC.get("pekkoSource") match
+  def logSource: FormatBlock = FormatBlock: logRecord =>
+    MDC.get("pekkoSource") match
       case Some(value) =>
         TextOutput(value.toString)
       case None =>
-        TextOutput(record.className + record.methodName.map("." + _).getOrElse(""))
+        TextOutput(logRecord.className + logRecord.methodName.map("." + _).getOrElse(""))
