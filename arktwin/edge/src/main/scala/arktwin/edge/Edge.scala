@@ -3,6 +3,7 @@
 package arktwin.edge
 
 import arktwin.center.services.*
+import arktwin.edge.actors.DeadLetterListener
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.adapters.*
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
@@ -110,13 +111,14 @@ object Edge:
       scribe.info(s"Edge ID: $edgeId")
 
       val kamon = EdgeKamon(runId, edgeId)
-      val reporter = EdgeReporter(kamon)
+      val reporter = EdgeReporter()
       Kamon.addReporter(reporter.getClass.getSimpleName(), reporter)
 
       val chartConnector = ChartConnector(ChartClient(grpcSettings), config.static, edgeId, kamon)
       val clockConnector = ClockConnector(ClockClient(grpcSettings), edgeId)
       val registerConnector = RegisterConnector(registerClient, config.static, edgeId)
 
+      actorSystem ? DeadLetterListener.spawn(kamon)
       for
         clock <- actorSystem ? Clock.spawn(config.static)
         register <- actorSystem ? Register.spawn()
