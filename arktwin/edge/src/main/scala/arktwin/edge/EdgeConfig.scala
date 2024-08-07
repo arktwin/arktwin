@@ -62,6 +62,7 @@ case class StaticEdgeConfig(
     host: String,
     port: Int,
     logLevel: LogLevel,
+    logLevelColor: Boolean,
     actorTimeout: FiniteDuration,
     endpointTimeout: FiniteDuration,
     clockInitialStashSize: Int,

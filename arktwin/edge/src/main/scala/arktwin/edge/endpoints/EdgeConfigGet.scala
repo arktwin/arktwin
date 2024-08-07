@@ -5,7 +5,7 @@ package arktwin.edge.endpoints
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
-import arktwin.common.LoggerConfigurator.LogLevel
+import arktwin.common.LoggerConfigurator.{LogLevel, LogLevelColor}
 import arktwin.edge.{DynamicEdgeConfig, EdgeConfig, StaticEdgeConfig}
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.util.EdgeKamon
@@ -41,6 +41,7 @@ object EdgeConfigGet:
       host = "0.0.0.0",
       port = 2237,
       logLevel = LogLevel.Info,
+      logLevelColor = true,
       actorTimeout = 90.milliseconds,
       endpointTimeout = 100.milliseconds,
       clockInitialStashSize = 100,

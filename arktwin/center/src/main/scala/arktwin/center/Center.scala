@@ -27,7 +27,7 @@ object Center:
     val config = CenterConfig.loadOrThrow()
     val rawConfig = CenterConfig.loadRawOrThrow()
 
-    LoggerConfigurator.init(config.static.logLevel)
+    LoggerConfigurator.init(config.static.logLevel, config.static.logLevelColor)
     Kamon.init(rawConfig)
 
     given actorSystem: ActorSystem[SpawnProtocol.Command] = ActorSystem(

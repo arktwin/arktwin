@@ -38,6 +38,7 @@ case class StaticCenterConfig(
     host: String,
     port: Int,
     logLevel: LogLevel,
+    logLevelColor: Boolean,
     subscribeBatchSize: Int,
     subscribeBatchInterval: FiniteDuration,
     subscribeBufferSize: Int
