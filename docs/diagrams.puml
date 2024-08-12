@@ -6,9 +6,8 @@ frame "Remote Network" {
     agent "<color:#gray>Conductor</color>" as Conductor
 
     agent "Atlas" as Atlas
-    collections "Atlas/\nChartRecorderParent/\nChartRecorder" as ChartRecorder
-    collections "Atlas/\nChartReceiverParent/\n<b>ChartReceiver</b>\n<color:#gray>which forwards</color>\n<color:#gray>culled agent transforms</color>" as ChartReceiver
-    collections "Atlas/\nChartSenderParent/\nChartSender" as ChartSender
+    collections "Atlas/\nChartRecorder" as ChartRecorder
+    collections "Atlas/\n<b>ChartRouter</b>\nwhich routes\nculled agent transforms" as ChartRouter
 
     agent "<b>Clock</b>\nwhich delivers\nbase time matching" as ClockC
     agent "<color:#gray>Reporter</color>" as ReporterC
@@ -90,19 +89,19 @@ frame "Local Network<plain>, which can deny inbound connections</plain>" {
 Conductor -[#gray]-> ClockC
 Conductor -[#gray]-> RegisterC
 Conductor <-[#gray]- ReporterC
+Conductor <-[#gray]- ChartRecorder
 
-ChartReceiver <--- ChartService
-ChartReceiver -> ChartSender
-ChartSender ---> ChartService
+ChartRouter <---> ChartService
 ChartRecorder <--- ChartService
 Atlas <--o ChartRecorder
-Atlas --> ChartReceiver
+Atlas --> ChartRouter
 
 ClockC <--- AdminService
 ClockC ---> ClockService
 ReporterC <-[#gray]-- ReporterService
 RegisterC <--- AdminService
 RegisterC <---> RegisterService
+RegisterC <-[#gray] ChartRecorder
 
 AdminService <--> AdminClient
 ChartService <--> ChartClient

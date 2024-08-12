@@ -12,7 +12,6 @@ import arktwin.common.data.TimestampEx.*
 import arktwin.common.GrpcHeaderKey
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.typed.receptionist.Receptionist
 import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable
 import org.apache.pekko.actor.typed.{ActorRef, Scheduler}
 import org.apache.pekko.grpc.scaladsl.Metadata
@@ -24,7 +23,6 @@ import org.apache.pekko.util.Timeout
 import scala.concurrent.{ExecutionContext, Future}
 
 class ChartService(
-    receptionist: ActorRef[Receptionist.Command],
     atlas: ActorRef[Atlas.Message],
     config: StaticCenterConfig,
     kamon: CenterKamon
@@ -47,13 +45,13 @@ class ChartService(
       edgeId,
       _: ActorRef[ActorRef[ChartRecorder.Message]]
     ))
-    val chartReceiverFuture = atlas ? (Atlas.SpawnReceiver(
+    val chartRouterFuture = atlas ? (Atlas.SpawnRouter(
       edgeId,
-      _: ActorRef[ActorRef[ChartReceiver.Message]]
+      _: ActorRef[ActorRef[ChartRouter.Message]]
     ))
     for
       chartRecorder <- chartRecorderFuture
-      chartReceiver <- chartReceiverFuture
+      chartRouter <- chartRouterFuture
     do
       in
         .log(logName)
@@ -70,9 +68,9 @@ class ChartService(
             publishBatch.agents.size
           )
 
-          ChartReceiver.Publish(publishBatch.agents, currentMachineTimestamp)
+          ChartRouter.PublishBatch(publishBatch.agents, currentMachineTimestamp)
         .wireTap(ActorSink.actorRef(chartRecorder, Terminate, _ => Terminate))
-        .to(ActorSink.actorRef(chartReceiver, Terminate, _ => Terminate))
+        .to(ActorSink.actorRef(chartRouter, Terminate, _ => Terminate))
         .run()
       scribe.info(s"[$logName] connected")
     Future.never
@@ -87,7 +85,7 @@ class ChartService(
     val subscribeMachineLatencyHistogram = kamon.chartSubscribeMachineLatencyHistogram(edgeId)
 
     val (subscriber, source) = ActorSource
-      .actorRef[ChartSender.Subscribe](
+      .actorRef[ChartRouter.SubscribeBatch](
         PartialFunction.empty,
         PartialFunction.empty,
         config.subscribeBufferSize,
@@ -104,13 +102,13 @@ class ChartService(
         for subscribe <- subscribeBatch do
           subscribeAgentNumCounter.increment(subscribe.agents.size)
           subscribeMachineLatencyHistogram.record(
-            Math.max(0, (currentMachineTimestamp - subscribe.forwardReceptionMachineTimestamp).millisLong),
+            Math.max(0, (currentMachineTimestamp - subscribe.routeReceptionMachineTimestamp).millisLong),
             subscribe.agents.size
           )
         subscribeBatchNumCounter.increment()
 
         ChartSubscribeBatch(subscribeBatch.flatMap(_.agents), currentMachineTimestamp)
       .preMaterialize()
-    atlas ! Atlas.SpawnSender(edgeId, subscriber)
+    atlas ! Atlas.AddSubscriber(edgeId, subscriber)
     scribe.info(s"[$logName] connected")
     source

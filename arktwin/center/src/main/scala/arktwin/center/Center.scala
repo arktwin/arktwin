@@ -61,18 +61,9 @@ object Center:
         .bind(
           ServiceHandler.concatOrNotFound(
             AdminHandler.partial(AdminService(clock, register)),
-            ChartPowerApiHandler.partial(
-              ChartService(
-                actorSystem.receptionist,
-                atlas,
-                config.static,
-                kamon
-              )
-            ),
-            ClockPowerApiHandler.partial(ClockService(actorSystem.receptionist, config.static)),
-            RegisterPowerApiHandler.partial(
-              RegisterService(register, actorSystem.receptionist, config.static)
-            ),
+            ChartPowerApiHandler.partial(ChartService(atlas, config.static, kamon)),
+            ClockPowerApiHandler.partial(ClockService(clock, config.static)),
+            RegisterPowerApiHandler.partial(RegisterService(register, config.static)),
             (
               path("")(getFromResource("root.html")) ~
                 path("metrics")(complete(PrometheusReporter.latestScrapeData())) ~

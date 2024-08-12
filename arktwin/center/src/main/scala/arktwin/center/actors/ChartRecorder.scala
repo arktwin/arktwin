@@ -11,7 +11,7 @@ import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import scala.collection.mutable
 
 object ChartRecorder:
-  type Message = ChartReceiver.Publish | Collect | Terminate.type
+  type Message = ChartRouter.PublishBatch | Collect | Terminate.type
   case class Collect(
       config: AtlasConfig,
       replyTo: ActorRef[ChartRecord]
@@ -22,7 +22,7 @@ object ChartRecorder:
     var indexes = mutable.Set[PartitionIndex]()
 
     Behaviors.receiveMessage:
-      case publish: ChartReceiver.Publish =>
+      case publish: ChartRouter.PublishBatch =>
         // TODO consider relative coordinates
 
         config.culling match

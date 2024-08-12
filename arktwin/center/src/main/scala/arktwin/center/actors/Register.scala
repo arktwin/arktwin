@@ -6,7 +6,6 @@ import arktwin.center.services.*
 import arktwin.center.util.CommonMessages.Nop
 import arktwin.common.MailboxConfig
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
-import org.apache.pekko.actor.typed.receptionist.{Receptionist, ServiceKey}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior, Props}
 
@@ -15,21 +14,21 @@ import scala.collection.mutable
 import scala.util.Random
 
 object Register:
-  type Message = EdgeCreate | AgentsCreate | AgentsUpdate | AgentsDelete | Receptionist.Listing | Nop.type
+  type Message = EdgeCreate | AgentsCreate | AgentsUpdate | AgentsDelete | AddSubscriber | RemoveSubscriber | Nop.type
   case class EdgeCreate(request: EdgeCreateRequest, replyTo: ActorRef[EdgeCreateResponse])
   case class AgentsCreate(requests: EdgeAgentsPostRequests, replyTo: ActorRef[EdgeAgentsPostResponses])
   case class AgentsUpdate(request: RegisterAgentsPublish)
   case class AgentsDelete(agentSelector: AgentSelector)
+  case class AddSubscriber(edgeId: String, subscriber: ActorRef[RegisterAgentsSubscribe])
+  case class RemoveSubscriber(edgeId: String)
 
   def spawn(runId: String): ActorRef[ActorRef[Message]] => Spawn[Message] =
     Spawn(apply(runId), getClass.getSimpleName, MailboxConfig(getClass.getName), _)
 
-  val subscriberKey: ServiceKey[RegisterAgentsSubscribe] = ServiceKey(getClass.getName)
-
-  // single substitution cipher so that simulators cannot depend on definitive IDs
+  // single substitution cipher so that clients cannot depend on definitive IDs
   private val idSuffixCharacters = Random.shuffle("0123456789abcdefghijklmnopqrstuvwxyz")
   private def issueId(prefix: String, n: Int): String =
-    var suffix = mutable.StringBuilder()
+    val suffix = mutable.StringBuilder()
     var temp = n
     while (temp > 0)
       suffix.insert(0, idSuffixCharacters(temp % idSuffixCharacters.size))
@@ -37,12 +36,10 @@ object Register:
     (if (prefix.isEmpty()) "" else prefix + "-") + suffix.toString()
 
   private def apply(runId: String): Behavior[Message] = Behaviors.setup: context =>
-    context.system.receptionist ! Receptionist.subscribe(subscriberKey, context.self)
-
     var edgeNum = 0
     var agentNum = 0
     val agents = mutable.Map[String, RegisterAgent]()
-    var subscribers = Set[ActorRef[RegisterAgentsSubscribe]]()
+    var subscribers = Map[String, ActorRef[RegisterAgentsSubscribe]]()
 
     Behaviors.receiveMessage:
       case EdgeCreate(request, replyTo) =>
@@ -57,12 +54,12 @@ object Register:
           val id = issueId(request.agentIdPrefix, agentNum)
           RegisterAgent(id, request.kind, request.status, request.assets)
         replyTo ! EdgeAgentsPostResponses(newAgents.map(a => EdgeAgentsPostResponse(a.agentId)))
-        for subscriber <- subscribers do subscriber ! RegisterAgentsSubscribe(newAgents)
+        for subscriber <- subscribers.values do subscriber ! RegisterAgentsSubscribe(newAgents)
         agents ++= newAgents.map(a => a.agentId -> a)
         Behaviors.same
 
       case AgentsUpdate(request) =>
-        for subscriber <- subscribers do subscriber ! RegisterAgentsSubscribe(request.agents)
+        for subscriber <- subscribers.values do subscriber ! RegisterAgentsSubscribe(request.agents)
         for agent <- request.agents do
           for oldAgent <- agents.get(agent.agentId) do
             agents(agent.agentId) =
@@ -89,20 +86,22 @@ object Register:
                 Seq()
           case _ =>
             Seq()
-        for subscriber <- subscribers do
+        for subscriber <- subscribers.values do
           subscriber ! RegisterAgentsSubscribe(
             deletingIds.map(RegisterAgentDeleted.apply).toSeq
           )
         agents --= deletingIds
         Behaviors.same
 
-      case subscriberKey.Listing(newSubscribers) =>
-        for subscriber <- newSubscribers &~ subscribers do subscriber ! RegisterAgentsSubscribe(agents.values.toSeq)
-        subscribers = newSubscribers
+      case AddSubscriber(edgeId, subscriber) =>
+        subscriber ! RegisterAgentsSubscribe(agents.values.toSeq)
+        context.watchWith(subscriber, RemoveSubscriber(edgeId))
+        subscribers += edgeId -> subscriber
         Behaviors.same
 
-      case _: Receptionist.Listing =>
-        Behaviors.unhandled
+      case RemoveSubscriber(edgeId) =>
+        subscribers -= edgeId
+        Behaviors.same
 
       case Nop =>
         Behaviors.same

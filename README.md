@@ -167,12 +167,12 @@ Some configuration can be overridden using environment variables.
   - arktwin_center_chart_2_publish_agent_num {edge_id, run_id}
   - arktwin_center_chart_2_publish_batch_num {edge_id, run_id}
   - arktwin_center_chart_2_publish_from_edge_machine_latency {edge_id, run_id}
-  - arktwin_center_chart_3_forward_agent_num {edge_id, run_id}
-  - arktwin_center_chart_3_forward_batch_num {edge_id, run_id}
-  - arktwin_center_chart_3_forward_machine_from_publish_machine_latency {edge_id, run_id}
+  - arktwin_center_chart_3_route_agent_num {edge_id, run_id}
+  - arktwin_center_chart_3_route_batch_num {edge_id, run_id}
+  - arktwin_center_chart_3_route_machine_from_publish_machine_latency {edge_id, run_id}
   - arktwin_center_chart_4_subscribe_agent_num {edge_id, run_id}
   - arktwin_center_chart_4_subscribe_batch_num {edge_id, run_id}
-  - arktwin_center_chart_4_subscribe_from_forward_machine_latency {edge_id, run_id}
+  - arktwin_center_chart_4_subscribe_from_route_machine_latency {edge_id, run_id}
   - arktwin_edge_chart_5_subscribe_agent_num {edge_id, run_id}
   - arktwin_edge_chart_5_subscribe_from_center_machine_latency {edge_id, run_id}
 - REST API metrics
