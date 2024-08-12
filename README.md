@@ -207,7 +207,7 @@ The default settings for mailboxes are defined by the following rules:
 
 For more details on mailboxes, see [Pekko Mailboxes documentation](https://pekko.apache.org/docs/pekko/current/typed/mailboxes.html).
 
-### ArkTwin Center Culling Algorithm
+### Center Culling Algorithm
 
 ![](docs/center-culling.png)
 
