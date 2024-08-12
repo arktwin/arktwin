@@ -35,7 +35,7 @@ class ChartService(
     Timeout
 ) extends ChartPowerApi:
   // micro-batch to reduce overhead of stream processing
-  override def publish(in: Source[ChartAgentsPublish, NotUsed], metadata: Metadata): Future[Empty] =
+  override def publish(in: Source[ChartPublishBatch, NotUsed], metadata: Metadata): Future[Empty] =
     val edgeId = metadata.getText(GrpcHeaderKey.edgeId).getOrElse("")
     val logName = s"${getClass.getSimpleName}.publish/$edgeId"
 
@@ -60,17 +60,17 @@ class ChartService(
         .addAttributes(
           Attributes.logLevels(onFailure = Attributes.LogLevels.Warning, onFinish = Attributes.LogLevels.Warning)
         )
-        .map: publish =>
+        .map: publishBatch =>
           val currentMachineTimestamp = Timestamp.machineNow()
 
-          publishAgentNumCounter.increment(publish.agents.size)
+          publishAgentNumCounter.increment(publishBatch.agents.size)
           publishBatchNumCounter.increment()
           publishMachineLatencyHistogram.record(
-            Math.max(0, (currentMachineTimestamp - publish.transmissionMachineTimestamp).millisLong),
-            publish.agents.size
+            Math.max(0, (currentMachineTimestamp - publishBatch.transmissionMachineTimestamp).millisLong),
+            publishBatch.agents.size
           )
 
-          ChartReceiver.Publish(publish.agents, currentMachineTimestamp)
+          ChartReceiver.Publish(publishBatch.agents, currentMachineTimestamp)
         .wireTap(ActorSink.actorRef(chartRecorder, Terminate, _ => Terminate))
         .to(ActorSink.actorRef(chartReceiver, Terminate, _ => Terminate))
         .run()
@@ -78,7 +78,7 @@ class ChartService(
     Future.never
 
   // micro-batch to reduce overhead of stream processing
-  override def subscribe(in: Empty, metadata: Metadata): Source[ChartAgentsSubscribe, NotUsed] =
+  override def subscribe(in: Empty, metadata: Metadata): Source[ChartSubscribeBatch, NotUsed] =
     val edgeId = metadata.getText(GrpcHeaderKey.edgeId).getOrElse("")
     val logName = s"${getClass.getSimpleName}.subscribe/$edgeId"
 
@@ -98,10 +98,10 @@ class ChartService(
         Attributes.logLevels(onFailure = Attributes.LogLevels.Warning, onFinish = Attributes.LogLevels.Warning)
       )
       .groupedWeightedWithin(config.subscribeBatchSize, config.subscribeBatchInterval)(_.agents.size)
-      .map: subscribes =>
+      .map: subscribeBatch =>
         val currentMachineTimestamp = Timestamp.machineNow()
 
-        for subscribe <- subscribes do
+        for subscribe <- subscribeBatch do
           subscribeAgentNumCounter.increment(subscribe.agents.size)
           subscribeMachineLatencyHistogram.record(
             Math.max(0, (currentMachineTimestamp - subscribe.forwardReceptionMachineTimestamp).millisLong),
@@ -109,7 +109,7 @@ class ChartService(
           )
         subscribeBatchNumCounter.increment()
 
-        ChartAgentsSubscribe(subscribes.flatMap(_.agents), currentMachineTimestamp)
+        ChartSubscribeBatch(subscribeBatch.flatMap(_.agents), currentMachineTimestamp)
       .preMaterialize()
     atlas ! Atlas.SpawnSender(edgeId, subscriber)
     scribe.info(s"[$logName] connected")

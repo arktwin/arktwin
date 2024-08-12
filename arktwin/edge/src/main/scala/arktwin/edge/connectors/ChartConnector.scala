@@ -2,7 +2,7 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge.connectors
 
-import arktwin.center.services.{ChartAgent, ChartAgentsPublish, ChartClient}
+import arktwin.center.services.{ChartAgent, ChartPublishBatch, ChartClient}
 import arktwin.common.GrpcHeaderKey
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.Timestamp
@@ -42,7 +42,7 @@ case class ChartConnector(client: ChartClient, staticConfig: StaticEdgeConfig, e
         val currentMachineTimestamp = Timestamp.machineNow()
         val batches = a.agents
           .grouped(staticConfig.publishBatchSize)
-          .map(agents => ChartAgentsPublish(agents, currentMachineTimestamp))
+          .map(agents => ChartPublishBatch(agents, currentMachineTimestamp))
           .toSeq
         publishAgentNumCounter.increment(a.agents.size)
         publishBatchNumCounter.increment(batches.size)
