@@ -190,6 +190,8 @@ Some configuration can be overridden using environment variables.
 
 ![](docs/diagrams/messaging.png)
 
+Gray elements are not implemented.
+
 ### Messaging Control
 
 To control messaging, there are following configurations:

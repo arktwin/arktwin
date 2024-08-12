@@ -14,8 +14,10 @@ frame "Remote Network" {
     agent "<b>Register</b>\nwhich delivers\n all agent infomation" as RegisterC
 
     storage "Kamon" as KamonC
+    agent "CenterKamon" as CenterKamon
     agent "CenterReporter" as CenterReporter
-    
+    agent "DeadLetterListener" as DeadLetterListenerC
+
     rectangle "gRPC Services" as center.services {
       interface "Admin" as AdminService
       interface "Chart" as ChartService
@@ -45,7 +47,9 @@ frame "Local Network<plain>, which can deny inbound connections</plain>" {
     }
 
     storage "Kamon" as Kamon
+    agent "EdgeKamon" as EdgeKamon
     agent "EdgeReporter" as EdgeReporter
+    agent "DeadLetterListener" as DeadLetterListener
 
     rectangle " " as edge.actors {
       agent "Chart" as Chart
@@ -151,11 +155,15 @@ CenterReporter -[#gray]-> Conductor
 KamonC o--> CenterMetrics
 CenterMetrics o..> Prometheus
 KamonC ..> Pushgateway
+DeadLetterListenerC -> CenterKamon
+CenterKamon -> KamonC
 
 Kamon --> EdgeReporter
 Kamon o--> EdgeMetrics
 EdgeMetrics o..> Prometheus
 Kamon ..> Pushgateway
+DeadLetterListener -> EdgeKamon
+EdgeKamon -> Kamon
 
 Pushgateway o.> Prometheus
 
