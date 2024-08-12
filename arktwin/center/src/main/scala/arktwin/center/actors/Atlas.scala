@@ -14,14 +14,14 @@ import scala.collection.mutable
 
 object Atlas:
   type Message = SpawnRecorder | RemoveRecorder | SpawnRouter | RemoveRouter | AddSubscriber | RemoveSubscriber |
-    TimerReset.type
+    ResetTimer.type
   case class SpawnRecorder(edgeId: String, replyTo: ActorRef[ActorRef[ChartRecorder.Message]])
   case class RemoveRecorder(edgeId: String)
   case class SpawnRouter(edgeId: String, replyTo: ActorRef[ActorRef[ChartRouter.Message]])
   case class RemoveRouter(edgeId: String)
   case class AddSubscriber(edgeId: String, subscriber: ActorRef[ChartRouter.SubscribeBatch])
   case class RemoveSubscriber(edgeId: String)
-  object TimerReset
+  object ResetTimer
 
   case class PartitionIndex(x: Int, y: Int, z: Int):
     def neighbors: Seq[PartitionIndex] =
@@ -49,7 +49,7 @@ object Atlas:
       kamon: CenterKamon
   ): Behavior[Message] = Behaviors.setup: context =>
     Behaviors.withTimers: timer =>
-      timer.startSingleTimer(TimerReset, config.interval)
+      timer.startSingleTimer(ResetTimer, config.interval)
 
       var recorders = Map[String, ActorRef[ChartRecorder.Message]]()
       var routers = Map[String, ActorRef[ChartRouter.Message]]()
@@ -72,9 +72,17 @@ object Atlas:
           Behaviors.same
 
         case SpawnRouter(edgeId, replyTo) =>
-          val initialRouteTable = new ChartRouter.RouteTable:
-            override def apply(vector3: Vector3Enu): Seq[ActorRef[ChartRouter.SubscribeBatch]] =
-              subscribers.filter(_._1 != edgeId).values.toSeq
+          val initialRouteTable = config.culling match
+            case AtlasConfig.Broadcast() =>
+              new ChartRouter.RouteTable:
+                override def apply(vector3: Vector3Enu): Seq[ActorRef[ChartRouter.SubscribeBatch]] =
+                  subscribers.filter(_._1 != edgeId).values.toSeq
+
+            case AtlasConfig.GridCulling(gridCellSize) =>
+              new ChartRouter.RouteTable:
+                override def apply(vector3: Vector3Enu): Seq[ActorRef[ChartRouter.SubscribeBatch]] =
+                  Seq()
+
           val router = context.spawnAnonymous(
             ChartRouter(edgeId, initialRouteTable, kamon),
             MailboxConfig(ChartRouter.getClass.getName)
@@ -99,10 +107,10 @@ object Atlas:
           subscribers -= edgeId
           Behaviors.same
 
-        case TimerReset =>
-          timer.startSingleTimer(TimerReset, config.interval)
+        case ResetTimer =>
+          timer.startSingleTimer(ResetTimer, config.interval)
           context.spawnAnonymous(
-            child(
+            updateRouteTable(
               recorders,
               routers,
               subscribers,
@@ -112,8 +120,7 @@ object Atlas:
           Behaviors.same
 
   // TODO should time out?
-  // TODO rename function instead of child
-  private def child(
+  private def updateRouteTable(
       recorders: Map[String, ActorRef[ChartRecorder.Message]],
       routers: Map[String, ActorRef[ChartRouter.Message]],
       subscribers: Map[String, ActorRef[ChartRouter.SubscribeBatch]],
