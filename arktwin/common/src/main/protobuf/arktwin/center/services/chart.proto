@@ -8,8 +8,8 @@ import "google/protobuf/empty.proto";
 import "validate/validate.proto";
 
 service Chart {
-  rpc Publish (stream ChartAgentsPublish) returns (google.protobuf.Empty);
-  rpc Subscribe (google.protobuf.Empty) returns (stream ChartAgentsSubscribe);
+  rpc Publish (stream ChartPublishBatch) returns (google.protobuf.Empty);
+  rpc Subscribe (google.protobuf.Empty) returns (stream ChartSubscribeBatch);
 }
 
 message ChartAgent {
@@ -17,12 +17,12 @@ message ChartAgent {
   common.data.TransformEnu transform = 2 [(validate.rules).message.required = true];
 }
 
-message ChartAgentsPublish {
+message ChartPublishBatch {
   repeated ChartAgent agents = 1;
   common.data.Timestamp transmission_machine_timestamp = 2 [(validate.rules).message.required = true];
 }
 
-message ChartAgentsSubscribe {
+message ChartSubscribeBatch {
   repeated ChartAgent agents = 1;
   common.data.Timestamp transmission_machine_timestamp= 2 [(validate.rules).message.required = true];
 }

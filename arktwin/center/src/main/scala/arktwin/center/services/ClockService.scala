@@ -8,14 +8,13 @@ import arktwin.common.GrpcHeaderKey
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.NotUsed
 import org.apache.pekko.actor.typed.ActorRef
-import org.apache.pekko.actor.typed.receptionist.Receptionist
 import org.apache.pekko.grpc.scaladsl.Metadata
 import org.apache.pekko.stream.scaladsl.Source
 import org.apache.pekko.stream.typed.scaladsl.ActorSource
 import org.apache.pekko.stream.{Attributes, Materializer, OverflowStrategy}
 
 class ClockService(
-    receptionist: ActorRef[Receptionist.Command],
+    clock: ActorRef[Clock.Message],
     config: StaticCenterConfig
 )(using
     Materializer
@@ -36,6 +35,6 @@ class ClockService(
         Attributes.logLevels(onFailure = Attributes.LogLevels.Warning, onFinish = Attributes.LogLevels.Warning)
       )
       .preMaterialize()
-    receptionist ! Receptionist.Register(Clock.subscriberKey, actorRef)
+    clock ! Clock.AddSubscriber(edgeId, actorRef)
     scribe.info(s"[$logName] connected")
     source

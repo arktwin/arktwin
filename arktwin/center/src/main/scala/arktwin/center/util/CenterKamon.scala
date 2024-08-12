@@ -15,12 +15,12 @@ object CenterKamon:
   val chartPublishAgentNumName: String = "arktwin_center_chart_2_publish_agent_num"
   val chartPublishBatchNumName: String = "arktwin_center_chart_2_publish_batch_num"
   val chartPublishMachineLatencyName: String = "arktwin_center_chart_2_publish_from_edge_machine_latency"
-  val chartForwardAgentNumName: String = "arktwin_center_chart_3_forward_agent_num"
-  val chartForwardBatchNumName: String = "arktwin_center_chart_3_forward_batch_num"
-  val chartForwardMachineLatencyName: String = "arktwin_center_chart_3_forward_machine_from_publish_machine_latency"
+  val chartRouteAgentNumName: String = "arktwin_center_chart_3_route_agent_num"
+  val chartRouteBatchNumName: String = "arktwin_center_chart_3_route_batch_num"
+  val chartRouteMachineLatencyName: String = "arktwin_center_chart_3_route_machine_from_publish_machine_latency"
   val chartSubscribeAgentNumName: String = "arktwin_center_chart_4_subscribe_agent_num"
   val chartSubscribeBatchNumName: String = "arktwin_center_chart_4_subscribe_batch_num"
-  val chartSubscribeMachineLatencyName: String = "arktwin_center_chart_4_subscribe_from_forward_machine_latency"
+  val chartSubscribeMachineLatencyName: String = "arktwin_center_chart_4_subscribe_from_route_machine_latency"
   val deadLetterNumName: String = "arktwin_center_dead_letter_num"
 
 class CenterKamon(runId: String):
@@ -39,16 +39,16 @@ class CenterKamon(runId: String):
     .histogram(chartPublishMachineLatencyName, kamon.metric.MeasurementUnit.time.milliseconds)
     .withTags(commonTags.withTag(edgeIdKey, edgeId))
 
-  def chartForwardAgentNumCounter(edgeId: String): Counter = Kamon
-    .counter(chartForwardAgentNumName)
+  def chartRouteAgentNumCounter(edgeId: String): Counter = Kamon
+    .counter(chartRouteAgentNumName)
     .withTags(commonTags.withTag(edgeIdKey, edgeId))
 
-  def chartForwardBatchNumCounter(edgeId: String): Counter = Kamon
-    .counter(chartForwardBatchNumName)
+  def chartRouteBatchNumCounter(edgeId: String): Counter = Kamon
+    .counter(chartRouteBatchNumName)
     .withTags(commonTags.withTag(edgeIdKey, edgeId))
 
-  def chartForwardMachineLatencyHistogram(edgeId: String): Histogram = Kamon
-    .histogram(chartForwardMachineLatencyName, kamon.metric.MeasurementUnit.time.milliseconds)
+  def chartRouteMachineLatencyHistogram(edgeId: String): Histogram = Kamon
+    .histogram(chartRouteMachineLatencyName, kamon.metric.MeasurementUnit.time.milliseconds)
     .withTags(commonTags.withTag(edgeIdKey, edgeId))
 
   def chartSubscribeAgentNumCounter(edgeId: String): Counter = Kamon

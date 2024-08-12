@@ -20,8 +20,8 @@ class CenterReporter() extends MetricReporter:
         Seq(
           chartPublishAgentNumName,
           chartPublishBatchNumName,
-          chartForwardAgentNumName,
-          chartForwardBatchNumName,
+          chartRouteAgentNumName,
+          chartRouteBatchNumName,
           chartSubscribeAgentNumName,
           chartSubscribeBatchNumName,
           deadLetterNumName
@@ -44,7 +44,7 @@ class CenterReporter() extends MetricReporter:
       .filter: metric =>
         Seq(
           chartPublishMachineLatencyName,
-          chartForwardMachineLatencyName,
+          chartRouteMachineLatencyName,
           chartSubscribeMachineLatencyName
         ).contains(metric.name)
       .sortBy(_.name)

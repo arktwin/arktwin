@@ -11,18 +11,16 @@ import arktwin.common.data.DurationEx.*
 import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.{Duration, Timestamp}
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
-import org.apache.pekko.actor.typed.receptionist.{Receptionist, ServiceKey}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
-import org.apache.pekko.dispatch.ControlMessage
 
 import scala.concurrent.duration.DurationDouble
 
 object Clock:
-  type Message = SpeedUpdate | Receptionist.Listing
+  type Message = SpeedUpdate | AddSubscriber | RemoveSubscriber
   case class SpeedUpdate(clockSpeed: Double)
-
-  val subscriberKey: ServiceKey[ClockBase] = ServiceKey(getClass.getName)
+  case class AddSubscriber(edgeId: String, subscriber: ActorRef[ClockBase])
+  case class RemoveSubscriber(edgeId: String)
 
   def spawn(config: ClockConfig): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(config),
@@ -33,7 +31,6 @@ object Clock:
 
   private def apply(config: ClockConfig): Behavior[Message] = Behaviors.setup: context =>
     Behaviors.withTimers: initialUpdateSpeedTimer =>
-      context.system.receptionist ! Receptionist.subscribe(subscriberKey, context.self)
       val baseMachineTimestamp = Timestamp.machineNow()
       val baseTimestamp = config.start.initialTime match
         case Absolute(timestamp) => timestamp
@@ -51,7 +48,7 @@ object Clock:
       context.log.info(initialClockBase.toString)
 
       var clockBase = initialClockBase
-      var subscribers = Set[ActorRef[ClockBase]]()
+      var subscribers = Map[String, ActorRef[ClockBase]]()
       var initialUpdateSpeedTimerFlag = true
 
       Behaviors.receiveMessage:
@@ -61,14 +58,16 @@ object Clock:
             initialUpdateSpeedTimerFlag = false
           val baseMachineTimestamp = Timestamp.machineNow()
           clockBase = ClockBase(baseMachineTimestamp, clockBase.fromMachine(baseMachineTimestamp), clockSpeed)
-          for subscriber <- subscribers do subscriber ! clockBase
+          for subscriber <- subscribers.values do subscriber ! clockBase
           context.log.info(clockBase.toString)
           Behaviors.same
 
-        case subscriberKey.Listing(newSubscribers) =>
-          for subscriber <- newSubscribers &~ subscribers do subscriber ! clockBase
-          subscribers = newSubscribers
+        case AddSubscriber(edgeId, subscriber) =>
+          subscriber ! clockBase
+          context.watchWith(subscriber, RemoveSubscriber(edgeId))
+          subscribers += edgeId -> subscriber
           Behaviors.same
 
-        case _: Receptionist.Listing =>
-          Behaviors.unhandled
+        case RemoveSubscriber(edgeId) =>
+          subscribers -= edgeId
+          Behaviors.same

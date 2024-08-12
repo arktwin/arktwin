@@ -3,12 +3,11 @@
 package arktwin.center.services
 
 import arktwin.center.StaticCenterConfig
-import arktwin.center.actors.CommonMessages.{Complete, Failure}
 import arktwin.center.actors.Register
+import arktwin.center.util.CommonMessages.Nop
 import arktwin.common.GrpcHeaderKey
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.typed.receptionist.Receptionist
 import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable
 import org.apache.pekko.actor.typed.{ActorRef, Scheduler}
 import org.apache.pekko.grpc.scaladsl.Metadata
@@ -21,7 +20,6 @@ import scala.concurrent.Future
 
 class RegisterService(
     register: ActorRef[Register.Message],
-    receptionist: ActorRef[Receptionist.Command],
     config: StaticCenterConfig
 )(using
     Materializer,
@@ -43,8 +41,8 @@ class RegisterService(
       .addAttributes(
         Attributes.logLevels(onFailure = Attributes.LogLevels.Warning, onFinish = Attributes.LogLevels.Warning)
       )
-      .map(a => Register.AgentsUpdate(a))
-      .to(ActorSink.actorRef(register, Complete, a => Failure(a, edgeId)))
+      .map(Register.AgentsUpdate(_))
+      .to(ActorSink.actorRef(register, Nop, _ => Nop))
       .run()
     scribe.info(s"[$logName] connected")
     Future.never
@@ -65,6 +63,6 @@ class RegisterService(
         Attributes.logLevels(onFailure = Attributes.LogLevels.Warning, onFinish = Attributes.LogLevels.Warning)
       )
       .preMaterialize()
-    receptionist ! Receptionist.Register(Register.subscriberKey, actorRef)
+    register ! Register.AddSubscriber(edgeId, actorRef)
     scribe.info(s"[$logName] connected")
     source

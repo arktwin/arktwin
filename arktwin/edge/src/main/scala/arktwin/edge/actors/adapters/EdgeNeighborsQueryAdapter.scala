@@ -9,7 +9,6 @@ import arktwin.common.data.DurationEx.*
 import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.TransformEnuEx.*
 import arktwin.edge.StaticEdgeConfig
-import arktwin.edge.actors.CommonMessages.Timeout
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.sinks.Chart.CullingAgent
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
@@ -18,6 +17,7 @@ import arktwin.edge.endpoints.EdgeNeighborsQuery
 import arktwin.edge.endpoints.EdgeNeighborsQuery.{Request, Response, ResponseAgent}
 import arktwin.edge.endpoints.NeighborChange
 import arktwin.edge.util.{EdgeKamon, ErrorStatus, ServiceUnavailable}
+import arktwin.edge.util.CommonMessages.Timeout
 import kamon.metric.Histogram
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.Receptionist

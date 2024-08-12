@@ -13,20 +13,24 @@ import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import scala.collection.mutable
 
 object Atlas:
-  type Message = SpawnRecorder | SpawnReceiver | SpawnSender | Reset.type
+  type Message = SpawnRecorder | RemoveRecorder | SpawnRouter | RemoveRouter | AddSubscriber | RemoveSubscriber |
+    ResetTimer.type
   case class SpawnRecorder(edgeId: String, replyTo: ActorRef[ActorRef[ChartRecorder.Message]])
-  case class SpawnReceiver(edgeId: String, replyTo: ActorRef[ActorRef[ChartReceiver.Message]])
-  case class SpawnSender(edgeId: String, subscriber: ActorRef[ChartSender.Subscribe])
-  object Reset
+  case class RemoveRecorder(edgeId: String)
+  case class SpawnRouter(edgeId: String, replyTo: ActorRef[ActorRef[ChartRouter.Message]])
+  case class RemoveRouter(edgeId: String)
+  case class AddSubscriber(edgeId: String, subscriber: ActorRef[ChartRouter.SubscribeBatch])
+  case class RemoveSubscriber(edgeId: String)
+  object ResetTimer
 
-  case class PartitionIndex(x: Int, y: Int, z: Int) {
+  case class PartitionIndex(x: Int, y: Int, z: Int):
     def neighbors: Seq[PartitionIndex] =
       for
         xd <- Seq(-1, 0, 1)
         yd <- Seq(-1, 0, 1)
         zd <- Seq(-1, 0, 1)
       yield PartitionIndex(x + xd, y + yd, z + zd)
-  }
+
   // TODO should depend on the config?
   case class ChartRecord(edgeId: String, config: AtlasConfig, indexes: Set[PartitionIndex])
 
@@ -43,161 +47,126 @@ object Atlas:
   private def apply(
       config: AtlasConfig,
       kamon: CenterKamon
-  ): Behavior[Message] =
-    Behaviors.setup: context =>
-      Behaviors.withTimers: timer =>
-        timer.startSingleTimer(Reset, config.interval)
+  ): Behavior[Message] = Behaviors.setup: context =>
+    Behaviors.withTimers: timer =>
+      timer.startSingleTimer(ResetTimer, config.interval)
 
-        val chartRecorderParent = context.spawn(
-          ChartRecorderParent(),
-          ChartRecorderParent.getClass.getSimpleName,
-          MailboxConfig(ChartRecorderParent.getClass.getName)
-        )
-        val chartReceiverParent = context.spawn(
-          ChartReceiverParent(kamon),
-          ChartReceiverParent.getClass.getSimpleName,
-          MailboxConfig(ChartReceiverParent.getClass.getName)
-        )
-        val chartSenderParent = context.spawn(
-          ChartSenderParent(),
-          ChartSenderParent.getClass.getSimpleName,
-          MailboxConfig(ChartSenderParent.getClass.getName)
-        )
+      var recorders = Map[String, ActorRef[ChartRecorder.Message]]()
+      var routers = Map[String, ActorRef[ChartRouter.Message]]()
+      var subscribers = Map[String, ActorRef[ChartRouter.SubscribeBatch]]()
 
-        Behaviors.receiveMessage:
-          case SpawnRecorder(edgeId, replyTo) =>
-            chartRecorderParent ! ChartRecorderParent.SpawnRecorder(edgeId, config, replyTo)
-            Behaviors.same
+      Behaviors.receiveMessage:
+        case SpawnRecorder(edgeId, replyTo) =>
+          val recorder = context.spawnAnonymous(
+            ChartRecorder(edgeId, config),
+            MailboxConfig(ChartRecorder.getClass.getName)
+          )
+          replyTo ! recorder
+          context.watchWith(recorder, RemoveRecorder(edgeId))
+          recorders += edgeId -> recorder
+          context.log.info(s"spawned a recorder for $edgeId: ${recorder.path} ")
+          Behaviors.same
 
-          case SpawnReceiver(edgeId, replyTo) =>
-            context.spawnAnonymous(
-              receiverSpawner(
-                chartSenderParent,
-                chartReceiverParent,
-                edgeId,
-                replyTo
-              )
+        case RemoveRecorder(edgeId) =>
+          recorders -= edgeId
+          Behaviors.same
+
+        case SpawnRouter(edgeId, replyTo) =>
+          val initialRouteTable = config.culling match
+            case AtlasConfig.Broadcast() =>
+              new ChartRouter.RouteTable:
+                override def apply(vector3: Vector3Enu): Seq[ActorRef[ChartRouter.SubscribeBatch]] =
+                  subscribers.filter(_._1 != edgeId).values.toSeq
+
+            case AtlasConfig.GridCulling(gridCellSize) =>
+              new ChartRouter.RouteTable:
+                override def apply(vector3: Vector3Enu): Seq[ActorRef[ChartRouter.SubscribeBatch]] =
+                  Seq()
+
+          val router = context.spawnAnonymous(
+            ChartRouter(edgeId, initialRouteTable, kamon),
+            MailboxConfig(ChartRouter.getClass.getName)
+          )
+          replyTo ! router
+          context.watchWith(router, RemoveRouter(edgeId))
+          routers += edgeId -> router
+          context.log.info(s"spawned a router for $edgeId: ${router.path}")
+          Behaviors.same
+
+        case RemoveRouter(edgeId) =>
+          routers -= edgeId
+          Behaviors.same
+
+        case AddSubscriber(edgeId, subscriber) =>
+          context.watchWith(subscriber, RemoveSubscriber(edgeId))
+          subscribers += edgeId -> subscriber
+          context.log.info(s"spawned a subscriber for $edgeId: ${subscriber.path}")
+          Behaviors.same
+
+        case RemoveSubscriber(edgeId) =>
+          subscribers -= edgeId
+          Behaviors.same
+
+        case ResetTimer =>
+          timer.startSingleTimer(ResetTimer, config.interval)
+          context.spawnAnonymous(
+            updateRouteTable(
+              recorders,
+              routers,
+              subscribers,
+              config
             )
-            Behaviors.same
-
-          case SpawnSender(edgeId, subscriber) =>
-            chartSenderParent ! ChartSenderParent.SpawnSender(edgeId, subscriber)
-            Behaviors.same
-
-          case Reset =>
-            timer.startSingleTimer(Reset, config.interval)
-            context.spawnAnonymous(
-              child(
-                chartRecorderParent,
-                chartReceiverParent,
-                chartSenderParent,
-                config
-              )
-            )
-            Behaviors.same
-
-  private type ReceiverSpawner = ChartSenderParent.ReadSendersReply
-
-  private def receiverSpawner(
-      chartSenderParent: ActorRef[ChartSenderParent.Message],
-      chartReceiverParent: ActorRef[ChartReceiverParent.Message],
-      edgeId: String,
-      replyTo: ActorRef[ActorRef[ChartReceiver.Message]]
-  ): Behavior[ReceiverSpawner] = Behaviors.setup: context =>
-    chartSenderParent ! ChartSenderParent.ReadSenders(context.self)
-    Behaviors.receiveMessage:
-      case ChartSenderParent.ReadSendersReply(senders) =>
-        val initialForwarder = new ChartReceiver.Forwarder:
-          override def apply(vector3: Vector3Enu): Seq[ActorRef[ChartSender.Message]] =
-            senders.filter(_._1 != edgeId).values.toSeq
-        chartReceiverParent ! ChartReceiverParent.SpawnReceiver(edgeId, initialForwarder, replyTo)
-        Behaviors.stopped
-
-  private type ChildMessage = ChartRecorderParent.ReadRecordersReply | ChartReceiverParent.ReadReceiversReply |
-    ChartSenderParent.ReadSendersReply | ChartRecord
+          )
+          Behaviors.same
 
   // TODO should time out?
-  // TODO rename function instead of child
-  private def child(
-      chartRecorderParent: ActorRef[ChartRecorderParent.Message],
-      chartReceiverParent: ActorRef[ChartReceiverParent.Message],
-      chartSenderParent: ActorRef[ChartSenderParent.Message],
+  private def updateRouteTable(
+      recorders: Map[String, ActorRef[ChartRecorder.Message]],
+      routers: Map[String, ActorRef[ChartRouter.Message]],
+      subscribers: Map[String, ActorRef[ChartRouter.SubscribeBatch]],
       config: AtlasConfig
-  ): Behavior[ChildMessage] = Behaviors.setup: context =>
-    chartRecorderParent ! ChartRecorderParent.ReadRecorders(context.self)
-    var recordersWait = Option.empty[Map[String, ActorRef[ChartRecorder.Message]]]
-
-    chartReceiverParent ! ChartReceiverParent.ReadReceivers(context.self)
-    var receiversWait = Option.empty[Map[String, ActorRef[ChartReceiver.Message]]]
-
-    chartSenderParent ! ChartSenderParent.ReadSenders(context.self)
-    var sendersWait = Option.empty[Map[String, ActorRef[ChartSender.Message]]]
-
-    def next(): Behavior[ChildMessage] = (recordersWait, receiversWait, sendersWait) match
-      case (Some(recorders), Some(receivers), Some(senders)) =>
-        for (_, recorder) <- recorders do recorder ! ChartRecorder.Collect(config, context.self)
-        val records = mutable.ArrayBuffer[ChartRecord]()
-        Behaviors.receiveMessage:
-          case record: ChartRecord =>
-            records.addOne(record)
-            if records.size >= recorders.size then
-              config.culling match
-                case AtlasConfig.Broadcast() =>
-                  for (edgeId, receiver) <- receivers do
-                    receiver ! new ChartReceiver.Forwarder:
-                      override def apply(vector3: Vector3Enu): Seq[ActorRef[ChartSender.Message]] =
-                        senders.filter(_._1 != edgeId).values.toSeq
-
-                case AtlasConfig.GridCulling(gridCellSize) =>
-                  val partitionToSender = records.toSeq
-                    .flatMap(a => a.indexes.flatMap(_.neighbors).map((_, a.edgeId)))
-                    .groupBy(_._1)
-                    .view
-                    .mapValues(_.flatMap(a => senders.get(a._2).map((a._2, _))))
-                    .toMap
-
-                  for (edgeId, receiver) <- receivers do
-                    receiver ! new ChartReceiver.Forwarder:
-                      override def apply(vector3: Vector3Enu): Seq[ActorRef[ChartSender.Message]] =
-                        partitionToSender
-                          .getOrElse(
-                            PartitionIndex(
-                              math.floor(vector3.x / gridCellSize.x).toInt,
-                              math.floor(vector3.y / gridCellSize.y).toInt,
-                              math.floor(vector3.z / gridCellSize.z).toInt
-                            ),
-                            Seq()
-                          )
-                          .filter(_._1 != edgeId)
-                          .map(_._2)
-
-                  context.log.info(
-                    partitionToSender
-                      .map((i, senders) => s"[${i.x},${i.y},${i.z}]->${senders.map(_._1).mkString("(", ",", ")")}")
-                      .mkString("", ", ", "")
-                  )
-
-              Behaviors.stopped
-            else Behaviors.same
-
-          case _ =>
-            Behaviors.unhandled
-
-      case _ =>
-        Behaviors.same
-
+  ): Behavior[ChartRecord] = Behaviors.setup: context =>
+    for (_, recorder) <- recorders do recorder ! ChartRecorder.Collect(config, context.self)
+    val records = mutable.ArrayBuffer[ChartRecord]()
     Behaviors.receiveMessage:
-      case ChartRecorderParent.ReadRecordersReply(recorders) =>
-        recordersWait = Some(recorders)
-        next()
+      case record: ChartRecord =>
+        records.addOne(record)
+        if records.size >= recorders.size then
+          config.culling match
+            case AtlasConfig.Broadcast() =>
+              for (edgeId, router) <- routers do
+                router ! new ChartRouter.RouteTable:
+                  override def apply(vector3: Vector3Enu): Seq[ActorRef[ChartRouter.SubscribeBatch]] =
+                    subscribers.filter(_._1 != edgeId).values.toSeq
 
-      case ChartReceiverParent.ReadReceiversReply(receivers) =>
-        receiversWait = Some(receivers)
-        next()
+            case AtlasConfig.GridCulling(gridCellSize) =>
+              val partitionToSender = records.toSeq
+                .flatMap(a => a.indexes.flatMap(_.neighbors).map((_, a.edgeId)))
+                .groupBy(_._1)
+                .view
+                .mapValues(_.flatMap(a => subscribers.get(a._2).map((a._2, _))))
+                .toMap
 
-      case ChartSenderParent.ReadSendersReply(senders) =>
-        sendersWait = Some(senders)
-        next()
+              for (edgeId, router) <- routers do
+                router ! new ChartRouter.RouteTable:
+                  override def apply(vector3: Vector3Enu): Seq[ActorRef[ChartRouter.SubscribeBatch]] =
+                    partitionToSender
+                      .getOrElse(
+                        PartitionIndex(
+                          math.floor(vector3.x / gridCellSize.x).toInt,
+                          math.floor(vector3.y / gridCellSize.y).toInt,
+                          math.floor(vector3.z / gridCellSize.z).toInt
+                        ),
+                        Seq()
+                      )
+                      .filter(_._1 != edgeId)
+                      .map(_._2)
 
-      case _ =>
-        Behaviors.unhandled
+              context.log.info(
+                partitionToSender
+                  .map((i, senders) => s"[${i.x},${i.y},${i.z}]->${senders.map(_._1).mkString("(", ",", ")")}")
+                  .mkString("", ", ", "")
+              )
+
+          Behaviors.stopped
+        else Behaviors.same

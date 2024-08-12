@@ -6,17 +6,18 @@ frame "Remote Network" {
     agent "<color:#gray>Conductor</color>" as Conductor
 
     agent "Atlas" as Atlas
-    collections "Atlas/\nChartRecorderParent/\nChartRecorder" as ChartRecorder
-    collections "Atlas/\nChartReceiverParent/\n<b>ChartReceiver</b>\n<color:#gray>which forwards</color>\n<color:#gray>culled agent transforms</color>" as ChartReceiver
-    collections "Atlas/\nChartSenderParent/\nChartSender" as ChartSender
+    collections "Atlas/\nChartRecorder" as ChartRecorder
+    collections "Atlas/\n<b>ChartRouter</b>\nwhich routes\nculled agent transforms" as ChartRouter
 
     agent "<b>Clock</b>\nwhich delivers\nbase time matching" as ClockC
     agent "<color:#gray>Reporter</color>" as ReporterC
     agent "<b>Register</b>\nwhich delivers\n all agent infomation" as RegisterC
 
     storage "Kamon" as KamonC
+    agent "CenterKamon" as CenterKamon
     agent "CenterReporter" as CenterReporter
-    
+    agent "DeadLetterListener" as DeadLetterListenerC
+
     rectangle "gRPC Services" as center.services {
       interface "Admin" as AdminService
       interface "Chart" as ChartService
@@ -46,7 +47,9 @@ frame "Local Network<plain>, which can deny inbound connections</plain>" {
     }
 
     storage "Kamon" as Kamon
+    agent "EdgeKamon" as EdgeKamon
     agent "EdgeReporter" as EdgeReporter
+    agent "DeadLetterListener" as DeadLetterListener
 
     rectangle " " as edge.actors {
       agent "Chart" as Chart
@@ -90,19 +93,19 @@ frame "Local Network<plain>, which can deny inbound connections</plain>" {
 Conductor -[#gray]-> ClockC
 Conductor -[#gray]-> RegisterC
 Conductor <-[#gray]- ReporterC
+Conductor <-[#gray]- ChartRecorder
 
-ChartReceiver <--- ChartService
-ChartReceiver -> ChartSender
-ChartSender ---> ChartService
+ChartRouter <---> ChartService
 ChartRecorder <--- ChartService
 Atlas <--o ChartRecorder
-Atlas --> ChartReceiver
+Atlas --> ChartRouter
 
 ClockC <--- AdminService
 ClockC ---> ClockService
 ReporterC <-[#gray]-- ReporterService
 RegisterC <--- AdminService
 RegisterC <---> RegisterService
+RegisterC <-[#gray] ChartRecorder
 
 AdminService <--> AdminClient
 ChartService <--> ChartClient
@@ -152,11 +155,15 @@ CenterReporter -[#gray]-> Conductor
 KamonC o--> CenterMetrics
 CenterMetrics o..> Prometheus
 KamonC ..> Pushgateway
+DeadLetterListenerC -> CenterKamon
+CenterKamon -> KamonC
 
 Kamon --> EdgeReporter
 Kamon o--> EdgeMetrics
 EdgeMetrics o..> Prometheus
 Kamon ..> Pushgateway
+DeadLetterListener -> EdgeKamon
+EdgeKamon -> Kamon
 
 Pushgateway o.> Prometheus
 

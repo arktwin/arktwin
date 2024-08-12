@@ -4,14 +4,14 @@ package arktwin.center.actors
 
 import arktwin.center.DynamicCenterConfig.AtlasConfig
 import arktwin.center.actors.Atlas.{ChartRecord, PartitionIndex}
-import arktwin.center.actors.CommonMessages.{Complete, Failure}
+import arktwin.center.util.CommonMessages.Terminate
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
 import scala.collection.mutable
 
 object ChartRecorder:
-  type Message = ChartReceiver.Publish | Collect | Complete.type | Failure
+  type Message = ChartRouter.PublishBatch | Collect | Terminate.type
   case class Collect(
       config: AtlasConfig,
       replyTo: ActorRef[ChartRecord]
@@ -22,7 +22,7 @@ object ChartRecorder:
     var indexes = mutable.Set[PartitionIndex]()
 
     Behaviors.receiveMessage:
-      case publish: ChartReceiver.Publish =>
+      case publish: ChartRouter.PublishBatch =>
         // TODO consider relative coordinates
 
         config.culling match
@@ -45,8 +45,5 @@ object ChartRecorder:
         indexes = mutable.Set()
         Behaviors.same
 
-      case Complete =>
-        Behaviors.stopped
-
-      case Failure(throwable, edgeId) =>
+      case Terminate =>
         Behaviors.stopped
