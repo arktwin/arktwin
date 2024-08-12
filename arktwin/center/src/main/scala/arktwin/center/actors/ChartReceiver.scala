@@ -2,9 +2,9 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.center.actors
 
-import arktwin.center.actors.CommonMessages.{Complete, Failure}
 import arktwin.center.services.ChartAgent
 import arktwin.center.util.CenterKamon
+import arktwin.center.util.CommonMessages.{Complete, Failure}
 import arktwin.common.data.{Timestamp, Vector3Enu}
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.TimestampEx.*

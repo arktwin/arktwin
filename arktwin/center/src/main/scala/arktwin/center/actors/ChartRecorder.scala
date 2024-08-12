@@ -4,7 +4,7 @@ package arktwin.center.actors
 
 import arktwin.center.DynamicCenterConfig.AtlasConfig
 import arktwin.center.actors.Atlas.{ChartRecord, PartitionIndex}
-import arktwin.center.actors.CommonMessages.{Complete, Failure}
+import arktwin.center.util.CommonMessages.{Complete, Failure}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 

@@ -4,8 +4,8 @@ package arktwin.edge.connectors
 
 import arktwin.center.services.ClockClient
 import arktwin.common.GrpcHeaderKey
-import arktwin.edge.actors.CommonMessages.Nop
 import arktwin.edge.actors.sinks.Clock
+import arktwin.edge.util.CommonMessages.Nop
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.actor.typed.ActorRef
 import org.apache.pekko.stream.Materializer

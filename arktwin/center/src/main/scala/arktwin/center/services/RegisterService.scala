@@ -3,8 +3,8 @@
 package arktwin.center.services
 
 import arktwin.center.StaticCenterConfig
-import arktwin.center.actors.CommonMessages.{Complete, Failure}
 import arktwin.center.actors.Register
+import arktwin.center.util.CommonMessages.{Complete, Failure}
 import arktwin.common.GrpcHeaderKey
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.NotUsed
