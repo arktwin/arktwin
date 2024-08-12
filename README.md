@@ -207,6 +207,10 @@ The default settings for mailboxes are defined by the following rules:
 
 For more details on mailboxes, see [Pekko Mailboxes documentation](https://pekko.apache.org/docs/pekko/current/typed/mailboxes.html).
 
+### ArkTwin Center Culling Algorithm
+
+![](docs/center-culling.png)
+
 ## Publications
 
 - Akira Yoshioka, Takatomo Torigoe, Naoki Akiyama, Hideki Fujii, Takashi Machida, Satoru Nakanishi, Takayoshi Yoshimura. ArkTwin: Distributed Heterogeneous Multi-Agent Simulation Platform. [Multimedia, Distributed, Cooperative, and Mobile Symposium 2024 (in Japanese)](https://www.dicomo.org/2024/). (awarded first prize at the Noguchi Awards)
