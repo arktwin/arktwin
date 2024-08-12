@@ -4,7 +4,7 @@ package arktwin.center.services
 
 import arktwin.center.StaticCenterConfig
 import arktwin.center.actors.Register
-import arktwin.center.util.CommonMessages.{Complete, Failure}
+import arktwin.center.util.CommonMessages.Nop
 import arktwin.common.GrpcHeaderKey
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.NotUsed
@@ -43,8 +43,8 @@ class RegisterService(
       .addAttributes(
         Attributes.logLevels(onFailure = Attributes.LogLevels.Warning, onFinish = Attributes.LogLevels.Warning)
       )
-      .map(a => Register.AgentsUpdate(a))
-      .to(ActorSink.actorRef(register, Complete, a => Failure(a, edgeId)))
+      .map(Register.AgentsUpdate(_))
+      .to(ActorSink.actorRef(register, Nop, _ => Nop))
       .run()
     scribe.info(s"[$logName] connected")
     Future.never

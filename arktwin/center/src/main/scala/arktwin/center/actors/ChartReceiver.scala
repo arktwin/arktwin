@@ -4,7 +4,7 @@ package arktwin.center.actors
 
 import arktwin.center.services.ChartAgent
 import arktwin.center.util.CenterKamon
-import arktwin.center.util.CommonMessages.{Complete, Failure}
+import arktwin.center.util.CommonMessages.Terminate
 import arktwin.common.data.{Timestamp, Vector3Enu}
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.TimestampEx.*
@@ -12,7 +12,7 @@ import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 
 object ChartReceiver:
-  type Message = Forwarder | Publish | Complete.type | Failure
+  type Message = Forwarder | Publish | Terminate.type
   case class Publish(agents: Seq[ChartAgent], publishReceptionMachineTimestamp: Timestamp)
 
   trait Forwarder:
@@ -49,8 +49,5 @@ object ChartReceiver:
 
         Behaviors.same
 
-      case Complete =>
-        Behaviors.stopped
-
-      case Failure(throwable, edgeId) =>
+      case Terminate =>
         Behaviors.stopped

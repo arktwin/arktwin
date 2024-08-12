@@ -3,7 +3,7 @@
 package arktwin.center.actors
 
 import arktwin.center.services.*
-import arktwin.center.util.CommonMessages.{Complete, Failure}
+import arktwin.center.util.CommonMessages.Nop
 import arktwin.common.MailboxConfig
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.{Receptionist, ServiceKey}
@@ -15,8 +15,7 @@ import scala.collection.mutable
 import scala.util.Random
 
 object Register:
-  type Message = EdgeCreate | AgentsCreate | AgentsUpdate | AgentsDelete | Receptionist.Listing | Complete.type |
-    Failure
+  type Message = EdgeCreate | AgentsCreate | AgentsUpdate | AgentsDelete | Receptionist.Listing | Nop.type
   case class EdgeCreate(request: EdgeCreateRequest, replyTo: ActorRef[EdgeCreateResponse])
   case class AgentsCreate(requests: EdgeAgentsPostRequests, replyTo: ActorRef[EdgeAgentsPostResponses])
   case class AgentsUpdate(request: RegisterAgentsPublish)
@@ -105,8 +104,5 @@ object Register:
       case _: Receptionist.Listing =>
         Behaviors.unhandled
 
-      case Complete =>
-        Behaviors.same
-
-      case Failure(throwable, edgeId) =>
+      case Nop =>
         Behaviors.same

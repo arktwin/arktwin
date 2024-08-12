@@ -5,7 +5,7 @@ package arktwin.center.services
 import arktwin.center.StaticCenterConfig
 import arktwin.center.actors.*
 import arktwin.center.util.CenterKamon
-import arktwin.center.util.CommonMessages.{Complete, Failure}
+import arktwin.center.util.CommonMessages.Terminate
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
@@ -71,8 +71,8 @@ class ChartService(
           )
 
           ChartReceiver.Publish(publish.agents, currentMachineTimestamp)
-        .wireTap(ActorSink.actorRef(chartRecorder, Complete, a => Failure(a, edgeId)))
-        .to(ActorSink.actorRef(chartReceiver, Complete, a => Failure(a, edgeId)))
+        .wireTap(ActorSink.actorRef(chartRecorder, Terminate, _ => Terminate))
+        .to(ActorSink.actorRef(chartReceiver, Terminate, _ => Terminate))
         .run()
       scribe.info(s"[$logName] connected")
     Future.never
