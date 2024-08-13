@@ -2,16 +2,16 @@
 skinparam defaultTextAlignment center
 
 frame "Remote Network" {
-  node "ArkTwin Center\n<color:#gray><plain>(Pekko cluster)</plain></color>" {
+  node "ArkTwin Center" {
     agent "<color:#gray>Conductor</color>" as Conductor
 
     agent "Atlas" as Atlas
     collections "Atlas/\nChartRecorder" as ChartRecorder
-    collections "Atlas/\n<b>ChartRouter</b>\nwhich routes\nculled agent transforms" as ChartRouter
+    collections "Atlas/\nChartRouter" as ChartRouter
 
-    agent "<b>Clock</b>\nwhich delivers\nbase time matching" as ClockC
+    agent "Clock" as ClockC
     agent "<color:#gray>Reporter</color>" as ReporterC
-    agent "<b>Register</b>\nwhich delivers\n all agent infomation" as RegisterC
+    agent "Register" as RegisterC
 
     storage "Kamon" as KamonC
     agent "CenterKamon" as CenterKamon
@@ -37,7 +37,7 @@ frame "Remote Network" {
 }
 
 frame "Local Network<plain>, which can deny inbound connections</plain>" {
-  node "ArkTwin Edge\n<plain>(agent simulator sidecar)</plain>" {
+  node "ArkTwin Edge" {
     rectangle "gRPC Clients" as edge.clients {
       interface "Admin" as AdminClient
       interface "Chart" as ChartClient
