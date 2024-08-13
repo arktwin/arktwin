@@ -4,15 +4,17 @@ package arktwin.center
 
 import arktwin.center.actors.{Clock, Register, *}
 import arktwin.center.services.*
-import arktwin.center.util.CenterKamon
-import arktwin.center.util.CenterReporter
+import arktwin.center.util.{CenterKamon, CenterReporter}
+import arktwin.common.LoggerConfigurator
 import buildinfo.BuildInfo
 import kamon.Kamon
+import kamon.prometheus.PrometheusReporter
 import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorSystem, Scheduler, SpawnProtocol}
 import org.apache.pekko.grpc.scaladsl.ServiceHandler
 import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.http.scaladsl.server.Directives.*
 import org.apache.pekko.util.Timeout
 
 import scala.concurrent.ExecutionContextExecutor
@@ -24,6 +26,7 @@ object Center:
     val config = CenterConfig.loadOrThrow()
     val rawConfig = CenterConfig.loadRawOrThrow()
 
+    LoggerConfigurator.init(config.static.logLevel, config.static.logLevelColor)
     Kamon.init(rawConfig)
 
     given actorSystem: ActorSystem[SpawnProtocol.Command] = ActorSystem(
@@ -35,17 +38,18 @@ object Center:
     given Scheduler = actorSystem.scheduler
     given Timeout = 10.seconds
 
-    actorSystem.log.info(BuildInfo.toString)
-    actorSystem.log.info(config.toString)
-    actorSystem.log.debug(rawConfig.toString)
+    scribe.info(BuildInfo.toString)
+    scribe.info(config.toString)
+    scribe.debug(rawConfig.toString)
 
     val runId = issueRunId(config.static.runIdPrefix)
-    actorSystem.log.info(s"Run ID: $runId")
+    scribe.info(s"Run ID: $runId")
 
     val kamon = CenterKamon(runId)
-    val reporter = CenterReporter(actorSystem.log, kamon)
+    val reporter = CenterReporter()
     Kamon.addReporter(reporter.getClass.getSimpleName, reporter)
 
+    actorSystem ? DeadLetterListener.spawn(kamon)
     for
       atlas <- actorSystem ? Atlas.spawn(config.dynamic.atlas, kamon)
       clock <- actorSystem ? Clock.spawn(config.static.clock)
@@ -56,24 +60,19 @@ object Center:
         .bind(
           ServiceHandler.concatOrNotFound(
             AdminHandler.partial(AdminService(clock, register)),
-            ChartPowerApiHandler.partial(
-              ChartService(
-                actorSystem.receptionist,
-                atlas,
-                config.static,
-                actorSystem.log,
-                kamon
-              )
-            ),
-            ClockPowerApiHandler.partial(ClockService(actorSystem.receptionist, config.static, actorSystem.log)),
-            RegisterPowerApiHandler.partial(
-              RegisterService(register, actorSystem.receptionist, config.static, actorSystem.log)
-            )
+            ChartPowerApiHandler.partial(ChartService(atlas, config.static, kamon)),
+            ClockPowerApiHandler.partial(ClockService(clock, config.static)),
+            RegisterPowerApiHandler.partial(RegisterService(register, config.static)),
+            (
+              path("")(getFromResource("root.html")) ~
+                path("metrics")(complete(PrometheusReporter.latestScrapeData())) ~
+                path("health")(complete("OK\n"))
+            )(_)
           )
         )
-        .foreach(server => actorSystem.log.info(server.localAddress.toString))
+        .foreach(server => scribe.info(server.localAddress.toString))
 
   private def issueRunId(runIdPrefix: String): String =
     val characters = "0123456789abcdefghijklmnopqrstuvwxyz"
-    val idSuffix = (0 until 7).map(_ => characters(Random.nextInt(characters.size))).mkString
+    val idSuffix = (0 until 7).map(_ => characters.toSeq(Random.nextInt(characters.size))).mkString
     (if runIdPrefix.isEmpty then "" else runIdPrefix + "-") + idSuffix

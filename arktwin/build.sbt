@@ -4,15 +4,15 @@ import scalapb.GeneratorOption.FlatPackage
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val gatlingVersion = "3.11.5"
-val jsoniterScalaVersion = "2.30.3"
+val jsoniterScalaVersion = "2.30.7"
 val kamonVersion = "2.7.3"
-val logbackClassicVersion = "1.5.6"
 val pekkoHttpVersion = "1.0.1"
 val pekkoVersion = "1.0.3"
 val pureConfigVersion = "0.17.7"
 val scalaTestVersion = "3.2.19"
-val tapirSpecVersion = "0.10.0"
-val tapirVersion = "1.10.12"
+val scribeVersion = "3.15.0"
+val tapirSpecVersion = "0.11.3"
+val tapirVersion = "1.11.1"
 
 val apacheLicenseV2 = Some(
   HeaderLicense.Custom(
@@ -22,23 +22,27 @@ val apacheLicenseV2 = Some(
   )
 )
 
-ThisBuild / scalaVersion := "3.3.3" // should update to same Scala version in Dockerfile
-ThisBuild / scalacOptions ++= Seq(
-  "-deprecation",
-  "-feature",
-  "-unchecked",
-  "-Xmax-inlines",
-  "64"
-  // "-Wconf:src=pekko-grpc/.*:silent", // try after Scala 3.5.0
-  // "-Wunused:all"
-)
-ThisBuild / scalafmtOnCompile := true
-ThisBuild / headerEmptyLine := false
-ThisBuild / versionScheme := Some("semver-spec")
-ThisBuild / publish / skip := true
-ThisBuild / run / fork := true
-ThisBuild / Test / fork := true
-ThisBuild / outputStrategy := Some(StdoutOutput)
+inThisBuild(List(
+  scalaVersion := "3.5.0",
+  scalacOptions ++= Seq(
+    "-deprecation",
+    "-feature",
+    "-unchecked",
+    "-Xmax-inlines",
+    "64",
+    "-Wconf:src=pekko-grpc/.*:silent",
+    "-Wunused:all"
+  ),
+  scalafixOnCompile := true,
+  semanticdbEnabled := true,
+  scalafmtOnCompile := true,
+  headerEmptyLine := false,
+  versionScheme := Some("semver-spec"),
+  publish / skip := true,
+  run / fork := true,
+  Test / fork := true,
+  outputStrategy := Some(StdoutOutput)
+))
 
 lazy val root = (project in file("."))
   .aggregate(common, center, edge, e2e)
@@ -54,8 +58,11 @@ lazy val common = (project in file("common"))
     headerLicense := apacheLicenseV2,
     headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
+      "com.github.pureconfig" %% "pureconfig-core" % pureConfigVersion,
+      "com.outr" %% "scribe" % scribeVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-core" % tapirVersion,
       "com.thesamet.scalapb" %% "scalapb-validate-core" % scalapb.validate.compiler.BuildInfo.version % "protobuf",
+      "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     Compile / PB.targets +=
@@ -90,8 +97,9 @@ lazy val center = (project in file("center"))
     headerLicense := apacheLicenseV2,
     headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
-      "ch.qos.logback" % "logback-classic" % logbackClassicVersion,
       "com.github.pureconfig" %% "pureconfig-core" % pureConfigVersion,
+      "com.outr" %% "scribe" % scribeVersion,
+      "com.outr" %% "scribe-slf4j2" % scribeVersion,
       "io.kamon" %% "kamon-core" % kamonVersion,
       "io.kamon" %% "kamon-prometheus" % kamonVersion,
       "io.kamon" %% "kamon-system-metrics" % kamonVersion,
@@ -100,7 +108,8 @@ lazy val center = (project in file("center"))
       "org.apache.pekko" %% "pekko-discovery" % pekkoVersion,
       "org.apache.pekko" %% "pekko-http" % pekkoHttpVersion,
       "org.apache.pekko" %% "pekko-stream-testkit" % pekkoVersion % Test,
-      "org.apache.pekko" %% "pekko-stream-typed" % pekkoVersion
+      "org.apache.pekko" %% "pekko-stream-typed" % pekkoVersion,
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     )
   )
 
@@ -134,9 +143,10 @@ lazy val edge = (project in file("edge"))
     headerLicense := apacheLicenseV2,
     headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
-      "ch.qos.logback" % "logback-classic" % logbackClassicVersion,
       "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % jsoniterScalaVersion % Provided,
       "com.github.pureconfig" %% "pureconfig-core" % pureConfigVersion,
+      "com.outr" %% "scribe" % scribeVersion,
+      "com.outr" %% "scribe-slf4j2" % scribeVersion,
       "com.softwaremill.sttp.apispec" %% "openapi-circe-yaml" % tapirSpecVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-jsoniter-scala" % tapirVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
@@ -148,9 +158,9 @@ lazy val edge = (project in file("edge"))
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
       "org.apache.pekko" %% "pekko-discovery" % pekkoVersion,
+      "org.apache.pekko" %% "pekko-http" % pekkoHttpVersion,
       "org.apache.pekko" %% "pekko-stream-testkit" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-stream-typed" % pekkoVersion,
-      "org.apache.pekko" %% "pekko-http" % pekkoHttpVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     )
   )

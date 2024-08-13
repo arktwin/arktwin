@@ -2,14 +2,14 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge.endpoints
 
+import arktwin.common.LoggerConfigurator.LogLevel
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
-import arktwin.edge.{DynamicEdgeConfig, EdgeConfig, StaticEdgeConfig}
 import arktwin.edge.actors.EdgeConfigurator
-import arktwin.edge.util.EdgeKamon
-import arktwin.edge.util.ErrorStatus
 import arktwin.edge.util.JsonDerivation.given
+import arktwin.edge.util.{EdgeKamon, ErrorStatus}
+import arktwin.edge.{DynamicEdgeConfig, EdgeConfig, StaticEdgeConfig}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable
@@ -36,13 +36,16 @@ object EdgeConfigGet:
       culling = EdgeConfigCullingPut.inExample
     ),
     static = StaticEdgeConfig(
-      actorTimeout = 90.milliseconds,
-      bufferSize = 10000,
       edgeIdPrefix = "edge",
-      endpointTimeout = 100.milliseconds,
       host = "0.0.0.0",
       port = 2237,
-      publishStreamBatchSize = 100
+      logLevel = LogLevel.Info,
+      logLevelColor = true,
+      actorTimeout = 90.milliseconds,
+      endpointTimeout = 100.milliseconds,
+      clockInitialStashSize = 100,
+      publishBatchSize = 100,
+      publishBufferSize = 10000
     )
   )
 
@@ -56,7 +59,11 @@ object EdgeConfigGet:
         )
       )
 
-  def route(configurator: ActorRef[EdgeConfigurator.Message], staticConfig: StaticEdgeConfig, kamon: EdgeKamon)(using
+  def route(
+      configurator: ActorRef[EdgeConfigurator.Message],
+      staticConfig: StaticEdgeConfig,
+      kamon: EdgeKamon
+  )(using
       ExecutionContext,
       Scheduler
   ): Route =

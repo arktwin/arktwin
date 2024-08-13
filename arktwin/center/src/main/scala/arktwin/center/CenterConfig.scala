@@ -2,6 +2,7 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.center
 
+import arktwin.common.LoggerConfigurator.LogLevel
 import arktwin.common.data.{Duration, Timestamp, Vector3Enu}
 import com.typesafe.config.Config
 import pureconfig.*
@@ -20,7 +21,9 @@ object CenterConfig:
     .withFallback(ConfigSource.defaultApplication) // -Dconfig.file
     .withFallback(ConfigSource.resources("pekko.conf"))
     .withFallback(ConfigSource.resources("kamon.conf"))
-    .withFallback(ConfigSource.defaultReference) // merged reference.conf from Pekko, Kamon and ArkTwin
+    .withFallback(
+      ConfigSource.defaultReference
+    ) // merged reference.conf from Pekko, Kamon and ArkTwin
 
   def loadRawOrThrow(): Config = configSource.config() match
     case Right(value) =>
@@ -32,13 +35,15 @@ object CenterConfig:
     configSource.at("arktwin.center").loadOrThrow[CenterConfig]
 
 case class StaticCenterConfig(
-    bufferSize: Int,
     clock: StaticCenterConfig.ClockConfig,
     runIdPrefix: String,
     host: String,
     port: Int,
-    subscribeStreamBatchSize: Int,
-    subscribeStreamBatchInterval: FiniteDuration
+    logLevel: LogLevel,
+    logLevelColor: Boolean,
+    subscribeBatchSize: Int,
+    subscribeBatchInterval: FiniteDuration,
+    subscribeBufferSize: Int
 )
 
 // TODO changeable via Admin API

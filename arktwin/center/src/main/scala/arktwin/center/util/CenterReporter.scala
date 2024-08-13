@@ -6,23 +6,25 @@ import com.typesafe.config.Config
 import kamon.metric.PeriodSnapshot
 import kamon.module.MetricReporter
 import kamon.tag.Tag
-import org.slf4j.Logger
 
-class CenterReporter(log: Logger, kamon: CenterKamon) extends MetricReporter:
+class CenterReporter() extends MetricReporter:
   private val reportIndexes =
     import CenterKamon.*
-    Seq(edgeIdKey, runIdKey).zipWithIndex.toMap.withDefaultValue(Int.MaxValue)
+    Seq(recipientKey, edgeIdKey, runIdKey).zipWithIndex.toMap.withDefaultValue(Int.MaxValue)
 
   override def reportPeriodSnapshot(snapshot: PeriodSnapshot): Unit =
+    import CenterKamon.*
+
     snapshot.counters
       .filter: metric =>
         Seq(
-          kamon.chartPublishAgentNumName,
-          kamon.chartPublishBatchNumName,
-          kamon.chartForwardAgentNumName,
-          kamon.chartForwardBatchNumName,
-          kamon.chartSubscribeAgentNumName,
-          kamon.chartSubscribeBatchNumName
+          chartPublishAgentNumName,
+          chartPublishBatchNumName,
+          chartRouteAgentNumName,
+          chartRouteBatchNumName,
+          chartSubscribeAgentNumName,
+          chartSubscribeBatchNumName,
+          deadLetterNumName
         ).contains(metric.name)
       .sortBy(_.name)
       .flatMap: metric =>
@@ -34,14 +36,16 @@ class CenterReporter(log: Logger, kamon: CenterKamon) extends MetricReporter:
           .collect:
             case tag: Tag.String => s"${tag.key}=\"${tag.value}\""
           .mkString("{", ", ", "}")
-        log.info(s"${metric.name}: ${instrument.value} $tags")
+        val message = s"${metric.name}: ${instrument.value} $tags"
+        if metric.name == deadLetterNumName then scribe.warn(message)
+        else scribe.info(message)
 
     snapshot.histograms
       .filter: metric =>
         Seq(
-          kamon.chartPublishMachineLatencyName,
-          kamon.chartForwardMachineLatencyName,
-          kamon.chartSubscribeMachineLatencyName
+          chartPublishMachineLatencyName,
+          chartRouteMachineLatencyName,
+          chartSubscribeMachineLatencyName
         ).contains(metric.name)
       .sortBy(_.name)
       .flatMap: metric =>
@@ -53,8 +57,9 @@ class CenterReporter(log: Logger, kamon: CenterKamon) extends MetricReporter:
           .collect:
             case tag: Tag.String => s"${tag.key}=\"${tag.value}\""
           .mkString("{", ", ", "}")
-        val summary = Seq(0, 25, 50, 75, 100).map(instrument.value.percentile(_).value).mkString(", ")
-        log.info(s"${metric.name}: [$summary] ${metric.settings.unit.magnitude.name} $tags")
+        val summary =
+          Seq(0, 25, 50, 75, 100).map(instrument.value.percentile(_).value).mkString(", ")
+        scribe.info(s"${metric.name}: [$summary] ${metric.settings.unit.magnitude.name} $tags")
 
   override def stop(): Unit = {}
 

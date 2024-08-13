@@ -3,16 +3,17 @@
 package arktwin.edge
 
 import arktwin.center.services.*
-import arktwin.edge.actors.EdgeConfigurator
+import arktwin.common.LoggerConfigurator
 import arktwin.edge.actors.adapters.*
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
+import arktwin.edge.actors.{DeadLetterListener, EdgeConfigurator}
 import arktwin.edge.connectors.{ChartConnector, ClockConnector, RegisterConnector}
 import arktwin.edge.endpoints.*
-import arktwin.edge.util.EdgeKamon
-import arktwin.edge.util.EdgeReporter
+import arktwin.edge.util.{EdgeKamon, EdgeReporter}
 import buildinfo.BuildInfo
 import io.grpc.StatusRuntimeException
 import kamon.Kamon
+import kamon.prometheus.PrometheusReporter
 import org.apache.pekko.actor.typed.*
 import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
@@ -81,6 +82,7 @@ object Edge:
     val config = EdgeConfig.loadOrThrow()
     val rawConfig = EdgeConfig.loadRawOrThrow()
 
+    LoggerConfigurator.init(config.static.logLevel, config.static.logLevelColor)
     Kamon.init(rawConfig)
 
     given actorSystem: ActorSystem[SpawnProtocol.Command] = ActorSystem(
@@ -92,9 +94,9 @@ object Edge:
     given Scheduler = actorSystem.scheduler
     given Timeout = config.static.actorTimeout
 
-    actorSystem.log.info(BuildInfo.toString)
-    actorSystem.log.info(config.toString)
-    actorSystem.log.debug(rawConfig.toString)
+    scribe.info(BuildInfo.toString)
+    scribe.info(config.toString)
+    scribe.debug(rawConfig.toString)
 
     val grpcSettings = GrpcClientSettings.fromConfig("arktwin")
     val adminClient = AdminClient(grpcSettings)
@@ -102,18 +104,22 @@ object Edge:
 
     try
       val EdgeCreateResponse(edgeId, runId) =
-        Await.result(registerClient.edgeCreate(EdgeCreateRequest(config.static.edgeIdPrefix)), 1.minute)
-      actorSystem.log.info(s"Run ID: $runId")
-      actorSystem.log.info(s"Edge ID: $edgeId")
+        Await.result(
+          registerClient.edgeCreate(EdgeCreateRequest(config.static.edgeIdPrefix)),
+          1.minute
+        )
+      scribe.info(s"Run ID: $runId")
+      scribe.info(s"Edge ID: $edgeId")
 
       val kamon = EdgeKamon(runId, edgeId)
-      val reporter = EdgeReporter(actorSystem.log, kamon)
+      val reporter = EdgeReporter()
       Kamon.addReporter(reporter.getClass.getSimpleName(), reporter)
 
       val chartConnector = ChartConnector(ChartClient(grpcSettings), config.static, edgeId, kamon)
       val clockConnector = ClockConnector(ClockClient(grpcSettings), edgeId)
       val registerConnector = RegisterConnector(registerClient, config.static, edgeId)
 
+      actorSystem ? DeadLetterListener.spawn(kamon)
       for
         clock <- actorSystem ? Clock.spawn(config.static)
         register <- actorSystem ? Register.spawn()
@@ -132,7 +138,14 @@ object Edge:
             kamon
           )
         edgeNeighborsAdapter <- actorSystem ?
-          EdgeNeighborsQueryAdapter.spawn(chart, clock, register, config.static, config.dynamic.coordinate, kamon)
+          EdgeNeighborsQueryAdapter.spawn(
+            chart,
+            clock,
+            register,
+            config.static,
+            config.dynamic.coordinate,
+            kamon
+          )
       do
         clockConnector.subscribe(clock)
         registerConnector.subscribe(register)
@@ -144,8 +157,14 @@ object Edge:
             path("")(getFromResource("root.html")) ~
               path("docs"./)(getFromResource("docs.html")) ~
               PekkoHttpServerInterpreter().toRoute(
-                SwaggerUI[Future](centerYaml, SwaggerUIOptions.default.pathPrefix(List("docs", "center"))) ++
-                  SwaggerUI[Future](edgeYaml, SwaggerUIOptions.default.pathPrefix(List("docs", "edge")))
+                SwaggerUI[Future](
+                  centerYaml,
+                  SwaggerUIOptions.default.pathPrefix(List("docs", "center"))
+                ) ++
+                  SwaggerUI[Future](
+                    edgeYaml,
+                    SwaggerUIOptions.default.pathPrefix(List("docs", "edge"))
+                  )
               ) ~
               CenterAgentsDelete.route(adminClient, kamon) ~
               CenterClockSpeedPut.route(adminClient, kamon) ~
@@ -154,9 +173,11 @@ object Edge:
               EdgeConfigCoordinatePut.route(configurator, kamon) ~
               EdgeConfigCullingPut.route(configurator, kamon) ~
               EdgeConfigGet.route(configurator, config.static, kamon) ~
-              EdgeNeighborsQuery.route(edgeNeighborsAdapter, config.static, kamon)
+              EdgeNeighborsQuery.route(edgeNeighborsAdapter, config.static, kamon) ~
+              path("metrics")(complete(PrometheusReporter.latestScrapeData())) ~
+              path("health")(complete("OK\n"))
           )
-          .foreach(server => actorSystem.log.info(server.localAddress.toString))
+          .foreach(server => scribe.info(server.localAddress.toString))
     catch
       case e: StatusRuntimeException =>
         Http()
@@ -165,8 +186,14 @@ object Edge:
             path("")(getFromResource("root.html")) ~
               path("docs"./)(getFromResource("docs.html")) ~
               PekkoHttpServerInterpreter().toRoute(
-                SwaggerUI[Future](centerYaml, SwaggerUIOptions.default.pathPrefix(List("docs", "center"))) ++
-                  SwaggerUI[Future](edgeYaml, SwaggerUIOptions.default.pathPrefix(List("docs", "edge")))
+                SwaggerUI[Future](
+                  centerYaml,
+                  SwaggerUIOptions.default.pathPrefix(List("docs", "center"))
+                ) ++
+                  SwaggerUI[Future](
+                    edgeYaml,
+                    SwaggerUIOptions.default.pathPrefix(List("docs", "edge"))
+                  )
               )
           )
         throw e

@@ -4,10 +4,10 @@ package arktwin.edge.actors.sinks
 
 import arktwin.center.services.*
 import arktwin.common.MailboxConfig
-import arktwin.edge.actors.CommonMessages.Nop
+import arktwin.edge.util.CommonMessages.Nop
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.apache.pekko.actor.typed.{ActorRef, Behavior, MailboxSelector}
+import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import org.apache.pekko.dispatch.ControlMessage
 
 import scala.collection.mutable
@@ -22,7 +22,7 @@ object Register:
   def spawn(): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(),
     getClass.getSimpleName,
-    MailboxSelector.fromConfig(MailboxConfig.UnboundedControlAwareMailbox),
+    MailboxConfig(getClass.getName),
     _
   )
 
@@ -36,7 +36,8 @@ object Register:
 
       case Catch(RegisterAgentUpdated(agentId, status)) =>
         for oldAgent <- agents.get(agentId) do
-          agents(agentId) = RegisterAgent(agentId, oldAgent.kind, oldAgent.status ++ status, oldAgent.assets)
+          agents(agentId) =
+            RegisterAgent(agentId, oldAgent.kind, oldAgent.status ++ status, oldAgent.assets)
         Behaviors.same
 
       case Catch(RegisterAgentDeleted(agentId)) =>

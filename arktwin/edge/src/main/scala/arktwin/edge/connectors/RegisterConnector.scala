@@ -5,8 +5,8 @@ package arktwin.edge.connectors
 import arktwin.center.services.{RegisterAgentUpdated, RegisterAgentsPublish, RegisterClient}
 import arktwin.common.GrpcHeaderKey
 import arktwin.edge.StaticEdgeConfig
-import arktwin.edge.actors.CommonMessages.Nop
 import arktwin.edge.actors.sinks.Register
+import arktwin.edge.util.CommonMessages.Nop
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.actor.typed.ActorRef
 import org.apache.pekko.stream.typed.scaladsl.{ActorSink, ActorSource}
@@ -16,7 +16,11 @@ object RegisterConnector:
   case class Publish(agents: Seq[RegisterAgentUpdated])
 
 // TODO retry connect in actor?
-case class RegisterConnector(client: RegisterClient, staticConfig: StaticEdgeConfig, edgeId: String)(using
+case class RegisterConnector(
+    client: RegisterClient,
+    staticConfig: StaticEdgeConfig,
+    edgeId: String
+)(using
     Materializer
 ):
   import RegisterConnector.*
@@ -37,12 +41,12 @@ case class RegisterConnector(client: RegisterClient, staticConfig: StaticEdgeCon
       .actorRef[Publish](
         PartialFunction.empty,
         PartialFunction.empty,
-        staticConfig.bufferSize,
+        staticConfig.publishBufferSize,
         OverflowStrategy.dropHead
       )
       .mapConcat: a =>
         a.agents
-          .grouped(staticConfig.publishStreamBatchSize)
+          .grouped(staticConfig.publishBatchSize)
           .map(RegisterAgentsPublish.apply)
       .preMaterialize()
     client

@@ -8,12 +8,12 @@ import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.Vector3EnuEx.*
 import arktwin.edge.DynamicEdgeConfig.CullingConfig
-import arktwin.edge.actors.CommonMessages.Nop
 import arktwin.edge.actors.EdgeConfigurator
+import arktwin.edge.util.CommonMessages.Nop
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.Receptionist
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.apache.pekko.actor.typed.{ActorRef, Behavior, MailboxSelector}
+import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import org.apache.pekko.dispatch.ControlMessage
 
 import scala.collection.mutable
@@ -32,14 +32,17 @@ object Chart:
   ): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(initCullingConfig),
     getClass.getSimpleName,
-    MailboxSelector.fromConfig(MailboxConfig.UnboundedControlAwareMailbox),
+    MailboxConfig(getClass.getName),
     _
   )
 
   def apply(
       initCullingConfig: CullingConfig
   ): Behavior[Message] = Behaviors.setup: context =>
-    context.system.receptionist ! Receptionist.Register(EdgeConfigurator.cullingObserverKey, context.self)
+    context.system.receptionist ! Receptionist.Register(
+      EdgeConfigurator.cullingObserverKey,
+      context.self
+    )
 
     var cullingConfig = initCullingConfig
     val distances = mutable.Map[String, Double]()
@@ -58,7 +61,9 @@ object Chart:
           // TODO consider relative coordinates
           // TODO extrapolate first agents based on previous transforms?
           val distance = firstAgents
-            .map(a => agent.transform.localTranslationMeter.distance(a.transform.localTranslationMeter))
+            .map(a =>
+              agent.transform.localTranslationMeter.distance(a.transform.localTranslationMeter)
+            )
             .minOption
             .getOrElse(Double.PositiveInfinity)
           distances += agent.agentId -> distance

@@ -7,9 +7,8 @@ import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.data.{CoordinateConfig, EulerAnglesConfig, Vector3Config}
-import arktwin.edge.util.EdgeKamon
-import arktwin.edge.util.ErrorStatus
 import arktwin.edge.util.JsonDerivation.given
+import arktwin.edge.util.{EdgeKamon, ErrorStatus}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import org.apache.pekko.actor.typed.ActorRef

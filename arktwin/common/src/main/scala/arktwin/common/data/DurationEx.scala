@@ -8,10 +8,10 @@ object DurationEx:
   implicit class DurationExtension(val a: Duration) extends AnyVal with Ordered[DurationExtension]:
     def compare(that: DurationExtension): Int =
       Ordering
-        .by((ex: DurationExtension) => {
+        .by((ex: DurationExtension) =>
           val d = Duration.normalize(ex.a)
           (d.seconds, d.nanos)
-        })
+        )
         .compare(this, that)
 
     def secondsDouble: Double =
@@ -44,7 +44,7 @@ object DurationEx:
       secondsDouble / that
     )
 
-  implicit class DurationCompanionExtension(val a: Duration.type) extends AnyVal:
+  implicit class DurationCompanionExtension(private val a: Duration.type) extends AnyVal:
     def from(value: ScalaDuration): Duration =
       normalize(0, value.toNanos)
 

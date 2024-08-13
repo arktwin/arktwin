@@ -1,0 +1,151 @@
+name: Scala CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: sbt
+          cache-dependency-path: arktwin/build.sbt
+
+      # check before automatic execution at compile time
+      - name: sbt scalafixAll --check
+        working-directory: arktwin
+        run: sbt "scalafixAll --check"
+
+      # check before automatic execution at compile time
+      - name: sbt scalafmtCheckAll
+        working-directory: arktwin
+        run: sbt scalafmtCheckAll
+
+      # check before automatic execution at compile time
+      - name: sbt headerCheck
+        working-directory: arktwin
+        run: sbt center/headerCheck center/Test/headerCheck common/headerCheck common/Test/headerCheck e2e/Test/headerCheck edge/headerCheck edge/Test/headerCheck
+
+      - name: sbt test
+        working-directory: arktwin
+        run: sbt test
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: sbt
+          cache-dependency-path: arktwin/build.sbt
+
+      - name: sbt compile
+        working-directory: arktwin
+        run: sbt compile
+
+      - name: sbt center/run in the background
+        working-directory: arktwin
+        run: |
+          nohup sbt center/run &
+          curl --retry 180 --retry-delay 1 --retry-all-errors http://localhost:2236/health
+
+      - name: sbt edge/run in the background
+        working-directory: arktwin
+        run: |
+          nohup sbt edge/run &
+          curl --retry 180 --retry-delay 1 --retry-all-errors http://localhost:2237/health
+
+      - name: sbt e2e/Gatling/test
+        working-directory: arktwin
+        run: sbt e2e/Gatling/test
+
+  changelogs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: sbt
+          cache-dependency-path: arktwin/build.sbt
+
+      - name: Generate OpenAPI YAML files 
+        working-directory: arktwin
+        run: |
+          sbt "edge/run openapi-center ../temp/arktwin-center-head.yaml" "edge/run openapi-edge ../temp/arktwin-edge-head.yaml"
+          git switch main
+          sbt clean "edge/run openapi-center ../temp/arktwin-center-main.yaml" "edge/run openapi-edge ../temp/arktwin-edge-main.yaml"
+          git checkout $(git tag -l "v*" --sort=-v:refname | head -n 1)
+          sbt clean "edge/run openapi-center ../temp/arktwin-center-release.yaml" "edge/run openapi-edge ../temp/arktwin-edge-release.yaml"
+
+      - name: Generate /api/center changelog from main
+        uses: oasdiff/oasdiff-action/changelog@v0.0.19
+        with:
+          base: arktwin/temp/arktwin-center-main.yaml
+          revision: arktwin/temp/arktwin-center-head.yaml
+          output-to-file: arktwin/temp/arktwin-center-changelog-from-main.txt
+
+      - name: Generate /api/edge changelog from main
+        uses: oasdiff/oasdiff-action/changelog@v0.0.19
+        with:
+          base: arktwin/temp/arktwin-edge-main.yaml
+          revision: arktwin/temp/arktwin-edge-head.yaml
+          output-to-file: arktwin/temp/arktwin-edge-changelog-from-main.txt
+
+      - name: Generate /api/center changelog from latest relase
+        uses: oasdiff/oasdiff-action/changelog@v0.0.19
+        with:
+          base: arktwin/temp/arktwin-center-release.yaml
+          revision: arktwin/temp/arktwin-center-head.yaml
+          output-to-file: arktwin/temp/arktwin-center-changelog-from-release.txt
+
+      - name: Generate /api/edge changelog from latest relase
+        uses: oasdiff/oasdiff-action/changelog@v0.0.19
+        with:
+          base: arktwin/temp/arktwin-edge-release.yaml
+          revision: arktwin/temp/arktwin-edge-head.yaml
+          output-to-file: arktwin/temp/arktwin-edge-changelog-from-release.txt
+
+      - name: Display /api/center changelog from main
+        run: cat arktwin/temp/arktwin-center-changelog-from-main.txt
+
+      - name: Display /api/edge changelog from main
+        run: cat arktwin/temp/arktwin-edge-changelog-from-main.txt
+
+      - name: Display /api/center changelog from latest release
+        run: cat arktwin/temp/arktwin-center-changelog-from-release.txt
+
+      - name: Display /api/edge changelog from latest release
+        run: cat arktwin/temp/arktwin-edge-changelog-from-release.txt
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: docker/build-push-action@v6
+        with:
+          file: docker/center.dockerfile
+          tags: arktwin-center
+          push: false
+
+      - uses: docker/build-push-action@v6
+        with:
+          file: docker/edge.dockerfile
+          tags: arktwin-edge
+          push: false

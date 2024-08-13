@@ -6,22 +6,25 @@ import com.typesafe.config.Config
 import kamon.metric.PeriodSnapshot
 import kamon.module.MetricReporter
 import kamon.tag.Tag
-import org.slf4j.Logger
 
-class EdgeReporter(log: Logger, kamon: EdgeKamon) extends MetricReporter:
+class EdgeReporter() extends MetricReporter:
   private val reportIndexes =
     import EdgeKamon.*
-    Seq(endpointKey, edgeIdKey, runIdKey).zipWithIndex.toMap.withDefaultValue(Int.MaxValue)
+    Seq(recipientKey, endpointKey, edgeIdKey, runIdKey).zipWithIndex.toMap
+      .withDefaultValue(Int.MaxValue)
 
   override def reportPeriodSnapshot(snapshot: PeriodSnapshot): Unit =
+    import EdgeKamon.*
+
     snapshot.counters
       .filter: metric =>
         Seq(
-          kamon.chartPublishAgentNumName,
-          kamon.chartPublishBatchNumName,
-          kamon.chartSubscribeAgentNumName,
-          kamon.restRequestNumName,
-          kamon.restAgentNumName
+          chartPublishAgentNumName,
+          chartPublishBatchNumName,
+          chartSubscribeAgentNumName,
+          deadLetterNumName,
+          restRequestNumName,
+          restAgentNumName
         ).contains(metric.name)
       .sortBy(_.name)
       .flatMap: metric =>
@@ -33,15 +36,17 @@ class EdgeReporter(log: Logger, kamon: EdgeKamon) extends MetricReporter:
           .collect:
             case tag: Tag.String => s"${tag.key}=\"${tag.value}\""
           .mkString("{", ", ", "}")
-        log.info(s"${metric.name}: ${instrument.value} $tags")
+        val message = s"${metric.name}: ${instrument.value} $tags"
+        if metric.name == deadLetterNumName then scribe.warn(message)
+        else scribe.info(message)
 
     snapshot.histograms
       .filter: metric =>
         Seq(
-          kamon.chartPublishMachineLatencyName,
-          kamon.chartSubscribeMachineLatencyName,
-          kamon.restProcessMachineTimeName,
-          kamon.restSimulationLatencyName
+          chartPublishMachineLatencyName,
+          chartSubscribeMachineLatencyName,
+          restProcessMachineTimeName,
+          restSimulationLatencyName
         ).contains(metric.name)
       .sortBy(_.name)
       .flatMap: metric =>
@@ -53,8 +58,9 @@ class EdgeReporter(log: Logger, kamon: EdgeKamon) extends MetricReporter:
           .collect:
             case tag: Tag.String => s"${tag.key}=\"${tag.value}\""
           .mkString("{", ", ", "}")
-        val summary = Seq(0, 25, 50, 75, 100).map(instrument.value.percentile(_).value).mkString(", ")
-        log.info(s"${metric.name}: [$summary] ${metric.settings.unit.magnitude.name} $tags")
+        val summary =
+          Seq(0, 25, 50, 75, 100).map(instrument.value.percentile(_).value).mkString(", ")
+        scribe.info(s"${metric.name}: [$summary] ${metric.settings.unit.magnitude.name} $tags")
 
   override def stop(): Unit = {}
 

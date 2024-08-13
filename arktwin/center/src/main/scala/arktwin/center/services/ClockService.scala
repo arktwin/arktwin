@@ -8,17 +8,14 @@ import arktwin.common.GrpcHeaderKey
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.NotUsed
 import org.apache.pekko.actor.typed.ActorRef
-import org.apache.pekko.actor.typed.receptionist.Receptionist
 import org.apache.pekko.grpc.scaladsl.Metadata
 import org.apache.pekko.stream.scaladsl.Source
 import org.apache.pekko.stream.typed.scaladsl.ActorSource
 import org.apache.pekko.stream.{Attributes, Materializer, OverflowStrategy}
-import org.slf4j.Logger
 
 class ClockService(
-    receptionist: ActorRef[Receptionist.Command],
-    config: StaticCenterConfig,
-    log: Logger
+    clock: ActorRef[Clock.Message],
+    config: StaticCenterConfig
 )(using
     Materializer
 ) extends ClockPowerApi:
@@ -27,12 +24,20 @@ class ClockService(
     val logName = s"${getClass.getSimpleName}.subscribe/$edgeId"
 
     val (actorRef, source) = ActorSource
-      .actorRef[ClockBase](PartialFunction.empty, PartialFunction.empty, config.bufferSize, OverflowStrategy.dropHead)
+      .actorRef[ClockBase](
+        PartialFunction.empty,
+        PartialFunction.empty,
+        config.subscribeBufferSize,
+        OverflowStrategy.dropHead
+      )
       .log(logName)
       .addAttributes(
-        Attributes.logLevels(onFailure = Attributes.LogLevels.Warning, onFinish = Attributes.LogLevels.Warning)
+        Attributes.logLevels(
+          onFailure = Attributes.LogLevels.Warning,
+          onFinish = Attributes.LogLevels.Warning
+        )
       )
       .preMaterialize()
-    receptionist ! Receptionist.Register(Clock.subscriberKey, actorRef)
-    log.info(s"[$logName] connected")
+    clock ! Clock.AddSubscriber(edgeId, actorRef)
+    scribe.info(s"[$logName] connected")
     source

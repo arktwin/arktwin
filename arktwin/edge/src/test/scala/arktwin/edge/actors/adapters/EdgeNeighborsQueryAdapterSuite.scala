@@ -15,15 +15,13 @@ import arktwin.edge.data.Vector3Config.TimeUnit.Second
 import arktwin.edge.endpoints.EdgeConfigGet
 import arktwin.edge.endpoints.EdgeNeighborsQuery.{Request, Response, ResponseAgent}
 import arktwin.edge.endpoints.NeighborChange.{Recognized, Unrecognized, Updated}
-import arktwin.edge.util.EdgeKamon
-import arktwin.edge.util.ErrorStatus
-import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
+import arktwin.edge.test.ActorTestBase
+import arktwin.edge.util.{EdgeKamon, ErrorStatus}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.scalatest.funsuite.AnyFunSuiteLike
 
 import scala.collection.mutable
 
-class EdgeNeighborsQueryAdapterSuite extends ScalaTestWithActorTestKit() with AnyFunSuiteLike:
+class EdgeNeighborsQueryAdapterSuite extends ActorTestBase:
   import EdgeNeighborsQueryAdapter.*
 
   test("EdgeNeighborsQueryAdapter"):
@@ -39,9 +37,10 @@ class EdgeNeighborsQueryAdapterSuite extends ScalaTestWithActorTestKit() with An
       Behaviors.same
     })
     val registerReadQueue = mutable.Queue[Map[String, RegisterAgent]]()
-    val register = testKit.spawn[Register.Read](Behaviors.receiveMessage { case Register.Read(replyTo) =>
-      replyTo ! Register.ReadReply(registerReadQueue.dequeue())
-      Behaviors.same
+    val register = testKit.spawn[Register.Read](Behaviors.receiveMessage {
+      case Register.Read(replyTo) =>
+        replyTo ! Register.ReadReply(registerReadQueue.dequeue())
+        Behaviors.same
     })
     val adapter =
       testKit.spawn(
@@ -56,7 +55,10 @@ class EdgeNeighborsQueryAdapterSuite extends ScalaTestWithActorTestKit() with An
       )
     val endpoint = testKit.createTestProbe[Either[ErrorStatus, Response]]()
 
-    adapter ! CoordinateConfig(Vector3Config(Meter, Second, East, North, Up), EulerAnglesConfig(Degree, XYZ))
+    adapter ! CoordinateConfig(
+      Vector3Config(Meter, Second, East, North, Up),
+      EulerAnglesConfig(Degree, XYZ)
+    )
 
     chartReadQueue += Seq(
       CullingAgent(ChartAgent("a0", transformEnu()), Some(1)),
@@ -73,7 +75,10 @@ class EdgeNeighborsQueryAdapterSuite extends ScalaTestWithActorTestKit() with An
       "a3" -> RegisterAgent("a3", "k3", Map("i" -> "3"), Map("x" -> "x3")),
       "a5" -> RegisterAgent("a5", "k5", Map("i" -> "5"), Map("x" -> "x5"))
     )
-    adapter ! QueryMessage(Request(Some(Timestamp(1, 0)), Some(3), changeDetection = true), endpoint.ref)
+    adapter ! QueryMessage(
+      Request(Some(Timestamp(1, 0)), Some(3), changeDetection = true),
+      endpoint.ref
+    )
     endpoint.receiveMessage().toOption.get shouldEqual Response(
       Timestamp(1, 0),
       Map(
@@ -118,7 +123,10 @@ class EdgeNeighborsQueryAdapterSuite extends ScalaTestWithActorTestKit() with An
       // "a2" deleted
       "a3" -> RegisterAgent("a3", "k3", Map("i" -> "3"), Map("x" -> "x3"))
     )
-    adapter ! QueryMessage(Request(Some(Timestamp(2, 0)), None, changeDetection = true), endpoint.ref)
+    adapter ! QueryMessage(
+      Request(Some(Timestamp(2, 0)), None, changeDetection = true),
+      endpoint.ref
+    )
     endpoint.receiveMessage().toOption.get shouldEqual Response(
       Timestamp(2, 0),
       Map(

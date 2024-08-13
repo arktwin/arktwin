@@ -13,17 +13,17 @@ class TransformSuite extends AnyFunSuite with Matchers:
 
   given vector3Equality: Equality[Vector3] =
     case (a: Vector3, b: Vector3) =>
-      a.toDoubles.zip(b.toDoubles).forall((doubleEquality.areEqual _).tupled)
+      a.toDoubles.zip(b.toDoubles).forall(doubleEquality.areEqual.tupled)
     case _ =>
       false
 
   given rotationEquality: Equality[Rotation] =
     case (a: EulerAngles, b: EulerAngles) =>
       val f = (e: EulerAngles) => Seq(e.x, e.y, e.z)
-      f(a).zip(f(b)).forall((doubleEquality.areEqual _).tupled)
+      f(a).zip(f(b)).forall(doubleEquality.areEqual.tupled)
     case (a: Quaternion, b: Quaternion) =>
       val f = (e: Quaternion) => Seq(e.x, e.y, e.z, e.w)
-      f(a).zip(f(b)).forall((doubleEquality.areEqual _).tupled)
+      f(a).zip(f(b)).forall(doubleEquality.areEqual.tupled)
     case _ =>
       false
 
@@ -46,7 +46,10 @@ class TransformSuite extends AnyFunSuite with Matchers:
         import Vector3Config.LengthUnit.*
         import Vector3Config.TimeUnit.*
         // TODO all patterns (1*6*8)
-        Seq(Vector3Config(Meter, Second, East, North, Up), Vector3Config(Meter, Second, North, East, Down))
+        Seq(
+          Vector3Config(Meter, Second, East, North, Up),
+          Vector3Config(Meter, Second, North, East, Down)
+        )
       order <- Seq(XYZ, XZY, YXZ, YZX, ZXY, ZYX)
     do
       import EulerAnglesConfig.AngleUnit.*
@@ -66,7 +69,10 @@ class TransformSuite extends AnyFunSuite with Matchers:
         import Vector3Config.LengthUnit.*
         import Vector3Config.TimeUnit.*
         // TODO all patterns (1*6*8)
-        Seq(Vector3Config(Meter, Second, East, North, Up), Vector3Config(Meter, Second, North, East, Down))
+        Seq(
+          Vector3Config(Meter, Second, East, North, Up),
+          Vector3Config(Meter, Second, North, East, Down)
+        )
       order <- Seq(XYZ, XZY, YXZ, YZX, ZXY, ZYX)
     do
       import EulerAnglesConfig.AngleUnit.*
@@ -84,8 +90,10 @@ class TransformSuite extends AnyFunSuite with Matchers:
     import Vector3Config.Direction.*
     import Vector3Config.LengthUnit.*
     import Vector3Config.TimeUnit.*
-    val sourceSetting = CoordinateConfig(Vector3Config(Meter, Second, East, North, Up), QuaternionConfig)
-    val targetSetting = CoordinateConfig(Vector3Config(Meter, Second, North, East, Down), QuaternionConfig)
+    val sourceSetting =
+      CoordinateConfig(Vector3Config(Meter, Second, East, North, Up), QuaternionConfig)
+    val targetSetting =
+      CoordinateConfig(Vector3Config(Meter, Second, North, East, Down), QuaternionConfig)
     val t = Transform(
       None,
       Vector3(1, 1, 1),

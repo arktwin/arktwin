@@ -3,6 +3,7 @@
 package arktwin.edge
 
 import arktwin.center.services.EdgeCreateRequest
+import arktwin.common.LoggerConfigurator.LogLevel
 import arktwin.edge.data.CoordinateConfig
 import com.typesafe.config.Config
 import pureconfig.*
@@ -23,7 +24,9 @@ object EdgeConfig:
     .withFallback(ConfigSource.defaultApplication) // -Dconfig.file
     .withFallback(ConfigSource.resources("pekko.conf"))
     .withFallback(ConfigSource.resources("kamon.conf"))
-    .withFallback(ConfigSource.defaultReference) // merged reference.conf from Pekko, Kamon and ArkTwin
+    .withFallback(
+      ConfigSource.defaultReference
+    ) // merged reference.conf from Pekko, Kamon and ArkTwin
 
   def loadRawOrThrow(): Config = configSource.config() match
     case Right(value) =>
@@ -57,11 +60,14 @@ object DynamicEdgeConfig:
   )
 
 case class StaticEdgeConfig(
-    actorTimeout: FiniteDuration,
-    bufferSize: Int,
     edgeIdPrefix: String,
-    endpointTimeout: FiniteDuration,
     host: String,
     port: Int,
-    publishStreamBatchSize: Int
+    logLevel: LogLevel,
+    logLevelColor: Boolean,
+    actorTimeout: FiniteDuration,
+    endpointTimeout: FiniteDuration,
+    clockInitialStashSize: Int,
+    publishBatchSize: Int,
+    publishBufferSize: Int
 )

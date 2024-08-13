@@ -6,10 +6,8 @@ import arktwin.center.services.*
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
-import arktwin.edge.util.EdgeKamon
-import arktwin.edge.util.JsonDerivation
 import arktwin.edge.util.JsonDerivation.given
-import arktwin.edge.util.{ErrorStatus, JsonValidator, RequestValidator}
+import arktwin.edge.util.{EdgeKamon, ErrorStatus, JsonDerivation, JsonValidator, RequestValidator}
 import cats.implicits.toTraverseOps
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
@@ -26,9 +24,12 @@ object CenterAgentsDelete:
   type Request = AgentSelector
   type Response = Unit
   given JsonValueCodec[Request] = JsonCodecMaker.makeWithoutDiscriminator
-  given Schema[AgentIdSelector] = Schema.derived[AgentIdSelector].modify(_.regex)(JsonValidator.regex)
-  given Schema[AgentKindSelector] = Schema.derived[AgentKindSelector].modify(_.regex)(JsonValidator.regex)
-  given Schema[AgentSelector] = JsonDerivation.fixCoproductSchemaWithoutDiscriminator(Schema.derived)
+  given Schema[AgentIdSelector] =
+    Schema.derived[AgentIdSelector].modify(_.regex)(JsonValidator.regex)
+  given Schema[AgentKindSelector] =
+    Schema.derived[AgentKindSelector].modify(_.regex)(JsonValidator.regex)
+  given Schema[AgentSelector] =
+    JsonDerivation.fixCoproductSchemaWithoutDiscriminator(Schema.derived)
 
   val inExample: Request = AgentIdSelector("alice-.+")
 
