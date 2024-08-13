@@ -7,16 +7,20 @@ import arktwin.center.util.CommonMessages.Nop
 import arktwin.common.MailboxConfig
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.apache.pekko.actor.typed.{ActorRef, Behavior, Props}
+import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
 import java.util.regex.PatternSyntaxException
 import scala.collection.mutable
 import scala.util.Random
 
 object Register:
-  type Message = EdgeCreate | AgentsCreate | AgentsUpdate | AgentsDelete | AddSubscriber | RemoveSubscriber | Nop.type
+  type Message = EdgeCreate | AgentsCreate | AgentsUpdate | AgentsDelete | AddSubscriber |
+    RemoveSubscriber | Nop.type
   case class EdgeCreate(request: EdgeCreateRequest, replyTo: ActorRef[EdgeCreateResponse])
-  case class AgentsCreate(requests: EdgeAgentsPostRequests, replyTo: ActorRef[EdgeAgentsPostResponses])
+  case class AgentsCreate(
+      requests: EdgeAgentsPostRequests,
+      replyTo: ActorRef[EdgeAgentsPostResponses]
+  )
   case class AgentsUpdate(request: RegisterAgentsPublish)
   case class AgentsDelete(agentSelector: AgentSelector)
   case class AddSubscriber(edgeId: String, subscriber: ActorRef[RegisterAgentsSubscribe])
@@ -30,10 +34,10 @@ object Register:
   private def issueId(prefix: String, n: Int): String =
     val suffix = mutable.StringBuilder()
     var temp = n
-    while (temp > 0)
+    while temp > 0 do
       suffix.insert(0, idSuffixCharacters(temp % idSuffixCharacters.size))
       temp /= idSuffixCharacters.size
-    (if (prefix.isEmpty()) "" else prefix + "-") + suffix.toString()
+    (if prefix.isEmpty() then "" else prefix + "-") + suffix.toString()
 
   private def apply(runId: String): Behavior[Message] = Behaviors.setup: context =>
     var edgeNum = 0
@@ -62,8 +66,12 @@ object Register:
         for subscriber <- subscribers.values do subscriber ! RegisterAgentsSubscribe(request.agents)
         for agent <- request.agents do
           for oldAgent <- agents.get(agent.agentId) do
-            agents(agent.agentId) =
-              RegisterAgent(agent.agentId, oldAgent.kind, oldAgent.status ++ agent.status, oldAgent.assets)
+            agents(agent.agentId) = RegisterAgent(
+              agent.agentId,
+              oldAgent.kind,
+              oldAgent.status ++ agent.status,
+              oldAgent.assets
+            )
         Behaviors.same
 
       case AgentsDelete(agentSelector) =>

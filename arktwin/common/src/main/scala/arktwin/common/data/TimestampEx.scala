@@ -8,13 +8,15 @@ import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZoneOffset, ZonedDateTime}
 
 object TimestampEx:
-  implicit class TimestampExtension(val a: Timestamp) extends AnyVal with Ordered[TimestampExtension]:
+  implicit class TimestampExtension(val a: Timestamp)
+      extends AnyVal
+      with Ordered[TimestampExtension]:
     def compare(that: TimestampExtension): Int =
       Ordering
-        .by((ex: TimestampExtension) => {
+        .by((ex: TimestampExtension) =>
           val n = Timestamp.normalize(ex.a)
           (n.seconds, n.nanos)
-        })
+        )
         .compare(this, that)
 
     def -(that: Timestamp): Duration = Duration.normalize(
@@ -33,7 +35,9 @@ object TimestampEx:
     )
 
     def formatIso: String =
-      LocalDateTime.ofEpochSecond(a.seconds, a.nanos, ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+      LocalDateTime
+        .ofEpochSecond(a.seconds, a.nanos, ZoneOffset.UTC)
+        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
   implicit class TimestampCompanionExtension(val a: Timestamp.type):
     val minValue: Timestamp = Timestamp(Long.MinValue, 0)
@@ -44,7 +48,9 @@ object TimestampEx:
 
     def parse(text: String): Timestamp = from(ZonedDateTime.parse(text))
 
-    def parse(text: String, formatter: DateTimeFormatter): Timestamp = from(ZonedDateTime.parse(text, formatter))
+    def parse(text: String, formatter: DateTimeFormatter): Timestamp = from(
+      ZonedDateTime.parse(text, formatter)
+    )
 
     def normalize(seconds: Long, nanos: Long): Timestamp =
       var s = seconds

@@ -13,16 +13,15 @@ import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.sinks.Chart.CullingAgent
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
 import arktwin.edge.data.{CoordinateConfig, Transform}
-import arktwin.edge.endpoints.EdgeNeighborsQuery
 import arktwin.edge.endpoints.EdgeNeighborsQuery.{Request, Response, ResponseAgent}
-import arktwin.edge.endpoints.NeighborChange
-import arktwin.edge.util.{EdgeKamon, ErrorStatus, ServiceUnavailable}
+import arktwin.edge.endpoints.{EdgeNeighborsQuery, NeighborChange}
 import arktwin.edge.util.CommonMessages.Timeout
+import arktwin.edge.util.{EdgeKamon, ErrorStatus, ServiceUnavailable}
 import kamon.metric.Histogram
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.Receptionist
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.apache.pekko.actor.typed.{ActorRef, Behavior, Props}
+import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
 import scala.concurrent.duration.FiniteDuration
 import scala.util.chaining.*
@@ -58,7 +57,10 @@ object EdgeNeighborsQueryAdapter:
       initCoordinateConfig: CoordinateConfig,
       kamon: EdgeKamon
   ): Behavior[Message] = Behaviors.setup: context =>
-    context.system.receptionist ! Receptionist.Register(EdgeConfigurator.coordinateObserverKey, context.self)
+    context.system.receptionist ! Receptionist.Register(
+      EdgeConfigurator.coordinateObserverKey,
+      context.self
+    )
 
     var coordinateConfig = initCoordinateConfig
     var optionalPreviousAgents: Option[Set[String]] = Some(Set())
@@ -152,7 +154,12 @@ object EdgeNeighborsQueryAdapter:
                   Math.max(0, (requestTimestamp - agent.agent.transform.timestamp).millisLong)
                 )
                 agent.agent.agentId -> ResponseAgent(
-                  Some(Transform.fromEnu(agent.agent.transform.extrapolate(requestTimestamp), coordinateConfig)),
+                  Some(
+                    Transform.fromEnu(
+                      agent.agent.transform.extrapolate(requestTimestamp),
+                      coordinateConfig
+                    )
+                  ),
                   agent.nearestDistance,
                   Some(registerAgent.kind),
                   Some(registerAgent.status),

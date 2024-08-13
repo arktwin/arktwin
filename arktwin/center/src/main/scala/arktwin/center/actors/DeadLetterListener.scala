@@ -2,13 +2,13 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.center.actors
 
-import org.apache.pekko.actor.DeadLetter
-import org.apache.pekko.actor.typed.{ActorRef, Behavior}
-import org.apache.pekko.actor.typed.eventstream.EventStream.Subscribe
-import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import arktwin.center.util.CenterKamon
 import arktwin.common.MailboxConfig
+import org.apache.pekko.actor.DeadLetter
+import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
+import org.apache.pekko.actor.typed.eventstream.EventStream.Subscribe
+import org.apache.pekko.actor.typed.scaladsl.Behaviors
+import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
 object DeadLetterListener:
   type Message = DeadLetter
@@ -27,5 +27,7 @@ object DeadLetterListener:
 
     Behaviors.receiveMessage:
       case DeadLetter(message, sender, recipient) =>
-        deadLetterNumCounter.withTag(CenterKamon.recipientKey, recipient.path.toString()).increment()
+        deadLetterNumCounter
+          .withTag(CenterKamon.recipientKey, recipient.path.toString())
+          .increment()
         Behaviors.same

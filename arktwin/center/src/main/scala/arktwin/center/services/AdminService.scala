@@ -8,7 +8,8 @@ import org.apache.pekko.actor.typed.ActorRef
 
 import scala.concurrent.Future
 
-class AdminService(clock: ActorRef[Clock.Message], register: ActorRef[Register.Message]) extends Admin:
+class AdminService(clock: ActorRef[Clock.Message], register: ActorRef[Register.Message])
+    extends Admin:
   override def centerClockSpeedPut(in: CenterClockSpeedPutRequest): Future[Empty] =
     clock ! Clock.SpeedUpdate(in.clockSpeed)
     Future.successful(Empty())

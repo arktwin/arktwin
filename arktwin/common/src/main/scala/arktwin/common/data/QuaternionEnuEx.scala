@@ -3,7 +3,7 @@
 package arktwin.common.data
 
 object QuaternionEnuEx:
-  implicit class QuaternionEnuExtension(val a: QuaternionEnu) extends AnyVal:
+  implicit class QuaternionEnuExtension(private val a: QuaternionEnu) extends AnyVal:
     def *(b: QuaternionEnu): QuaternionEnu =
       QuaternionEnu(
         +a.w * b.x - a.z * b.y + a.y * b.z + a.x * b.w,

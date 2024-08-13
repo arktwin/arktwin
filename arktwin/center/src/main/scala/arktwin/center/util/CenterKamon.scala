@@ -3,8 +3,7 @@
 package arktwin.center.util
 
 import kamon.Kamon
-import kamon.metric.Counter
-import kamon.metric.Histogram
+import kamon.metric.{Counter, Histogram}
 import kamon.tag.TagSet
 
 object CenterKamon:
@@ -14,13 +13,16 @@ object CenterKamon:
 
   val chartPublishAgentNumName: String = "arktwin_center_chart_2_publish_agent_num"
   val chartPublishBatchNumName: String = "arktwin_center_chart_2_publish_batch_num"
-  val chartPublishMachineLatencyName: String = "arktwin_center_chart_2_publish_from_edge_machine_latency"
+  val chartPublishMachineLatencyName: String =
+    "arktwin_center_chart_2_publish_from_edge_machine_latency"
   val chartRouteAgentNumName: String = "arktwin_center_chart_3_route_agent_num"
   val chartRouteBatchNumName: String = "arktwin_center_chart_3_route_batch_num"
-  val chartRouteMachineLatencyName: String = "arktwin_center_chart_3_route_machine_from_publish_machine_latency"
+  val chartRouteMachineLatencyName: String =
+    "arktwin_center_chart_3_route_machine_from_publish_machine_latency"
   val chartSubscribeAgentNumName: String = "arktwin_center_chart_4_subscribe_agent_num"
   val chartSubscribeBatchNumName: String = "arktwin_center_chart_4_subscribe_batch_num"
-  val chartSubscribeMachineLatencyName: String = "arktwin_center_chart_4_subscribe_from_route_machine_latency"
+  val chartSubscribeMachineLatencyName: String =
+    "arktwin_center_chart_4_subscribe_from_route_machine_latency"
   val deadLetterNumName: String = "arktwin_center_dead_letter_num"
 
 class CenterKamon(runId: String):

@@ -57,7 +57,8 @@ class CenterReporter() extends MetricReporter:
           .collect:
             case tag: Tag.String => s"${tag.key}=\"${tag.value}\""
           .mkString("{", ", ", "}")
-        val summary = Seq(0, 25, 50, 75, 100).map(instrument.value.percentile(_).value).mkString(", ")
+        val summary =
+          Seq(0, 25, 50, 75, 100).map(instrument.value.percentile(_).value).mkString(", ")
         scribe.info(s"${metric.name}: [$summary] ${metric.settings.unit.magnitude.name} $tags")
 
   override def stop(): Unit = {}

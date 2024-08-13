@@ -3,8 +3,7 @@
 package arktwin.edge.util
 
 import kamon.Kamon
-import kamon.metric.Counter
-import kamon.metric.Histogram
+import kamon.metric.{Counter, Histogram}
 import kamon.tag.TagSet
 
 object EdgeKamon:
@@ -15,9 +14,11 @@ object EdgeKamon:
 
   val chartPublishAgentNumName: String = "arktwin_edge_chart_1_publish_agent_num"
   val chartPublishBatchNumName: String = "arktwin_edge_chart_1_publish_batch_num"
-  val chartPublishMachineLatencyName: String = "arktwin_edge_chart_1_publish_from_put_machine_latency"
+  val chartPublishMachineLatencyName: String =
+    "arktwin_edge_chart_1_publish_from_put_machine_latency"
   val chartSubscribeAgentNumName: String = "arktwin_edge_chart_5_subscribe_agent_num"
-  val chartSubscribeMachineLatencyName: String = "arktwin_edge_chart_5_subscribe_from_center_machine_latency"
+  val chartSubscribeMachineLatencyName: String =
+    "arktwin_edge_chart_5_subscribe_from_center_machine_latency"
   val deadLetterNumName: String = "arktwin_edge_dead_letter_num"
   val restRequestNumName: String = "arktwin_edge_rest_request_num"
   val restAgentNumName: String = "arktwin_edge_rest_agent_num"

@@ -6,12 +6,9 @@ import pureconfig.generic.derivation.EnumConfigReader
 import scribe.format.FormatBlock
 import scribe.format.FormatBlock.Level.PaddedRight
 import scribe.handler.SynchronousLogHandle
-import scribe.Level
-import scribe.Logger
-import scribe.LogRecord
 import scribe.mdc.MDC
-import scribe.output.{Color, ColoredOutput}
-import scribe.output.TextOutput
+import scribe.output.{Color, ColoredOutput, TextOutput}
+import scribe.{Level, Logger}
 
 object LoggerConfigurator:
   enum LogLevel derives EnumConfigReader:
@@ -33,7 +30,8 @@ object LoggerConfigurator:
         handle = SynchronousLogHandle,
         formatter =
           import scribe.format.*
-          if logLevelColor then formatter"$dateFull $coloredLevelPaddedRight $messages   - $logSource"
+          if logLevelColor then
+            formatter"$dateFull $coloredLevelPaddedRight $messages   - $logSource"
           else formatter"$dateFull $levelPaddedRight $messages   - $logSource"
       )
       .replace()

@@ -29,17 +29,26 @@ class RegisterService(
   override def edgeCreate(in: EdgeCreateRequest, metadata: Metadata): Future[EdgeCreateResponse] =
     register ? (Register.EdgeCreate(in, _))
 
-  override def edgeAgentsPost(in: EdgeAgentsPostRequests, metadata: Metadata): Future[EdgeAgentsPostResponses] =
+  override def edgeAgentsPost(
+      in: EdgeAgentsPostRequests,
+      metadata: Metadata
+  ): Future[EdgeAgentsPostResponses] =
     register ? (Register.AgentsCreate(in, _))
 
-  override def publish(in: Source[RegisterAgentsPublish, NotUsed], metadata: Metadata): Future[Empty] =
+  override def publish(
+      in: Source[RegisterAgentsPublish, NotUsed],
+      metadata: Metadata
+  ): Future[Empty] =
     val edgeId = metadata.getText(GrpcHeaderKey.edgeId).getOrElse("")
     val logName = s"${getClass.getSimpleName}.publish/$edgeId"
 
     in
       .log(logName)
       .addAttributes(
-        Attributes.logLevels(onFailure = Attributes.LogLevels.Warning, onFinish = Attributes.LogLevels.Warning)
+        Attributes.logLevels(
+          onFailure = Attributes.LogLevels.Warning,
+          onFinish = Attributes.LogLevels.Warning
+        )
       )
       .map(Register.AgentsUpdate(_))
       .to(ActorSink.actorRef(register, Nop, _ => Nop))
@@ -60,7 +69,10 @@ class RegisterService(
       )
       .log(logName)
       .addAttributes(
-        Attributes.logLevels(onFailure = Attributes.LogLevels.Warning, onFinish = Attributes.LogLevels.Warning)
+        Attributes.logLevels(
+          onFailure = Attributes.LogLevels.Warning,
+          onFinish = Attributes.LogLevels.Warning
+        )
       )
       .preMaterialize()
     register ! Register.AddSubscriber(edgeId, actorRef)

@@ -3,15 +3,13 @@
 package arktwin.edge
 
 import arktwin.center.services.*
-import arktwin.edge.actors.DeadLetterListener
-import arktwin.edge.actors.EdgeConfigurator
+import arktwin.common.LoggerConfigurator
 import arktwin.edge.actors.adapters.*
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
+import arktwin.edge.actors.{DeadLetterListener, EdgeConfigurator}
 import arktwin.edge.connectors.{ChartConnector, ClockConnector, RegisterConnector}
 import arktwin.edge.endpoints.*
-import arktwin.edge.util.EdgeKamon
-import arktwin.edge.util.EdgeReporter
-import arktwin.common.LoggerConfigurator
+import arktwin.edge.util.{EdgeKamon, EdgeReporter}
 import buildinfo.BuildInfo
 import io.grpc.StatusRuntimeException
 import kamon.Kamon
@@ -106,7 +104,10 @@ object Edge:
 
     try
       val EdgeCreateResponse(edgeId, runId) =
-        Await.result(registerClient.edgeCreate(EdgeCreateRequest(config.static.edgeIdPrefix)), 1.minute)
+        Await.result(
+          registerClient.edgeCreate(EdgeCreateRequest(config.static.edgeIdPrefix)),
+          1.minute
+        )
       scribe.info(s"Run ID: $runId")
       scribe.info(s"Edge ID: $edgeId")
 
@@ -137,7 +138,14 @@ object Edge:
             kamon
           )
         edgeNeighborsAdapter <- actorSystem ?
-          EdgeNeighborsQueryAdapter.spawn(chart, clock, register, config.static, config.dynamic.coordinate, kamon)
+          EdgeNeighborsQueryAdapter.spawn(
+            chart,
+            clock,
+            register,
+            config.static,
+            config.dynamic.coordinate,
+            kamon
+          )
       do
         clockConnector.subscribe(clock)
         registerConnector.subscribe(register)
@@ -149,8 +157,14 @@ object Edge:
             path("")(getFromResource("root.html")) ~
               path("docs"./)(getFromResource("docs.html")) ~
               PekkoHttpServerInterpreter().toRoute(
-                SwaggerUI[Future](centerYaml, SwaggerUIOptions.default.pathPrefix(List("docs", "center"))) ++
-                  SwaggerUI[Future](edgeYaml, SwaggerUIOptions.default.pathPrefix(List("docs", "edge")))
+                SwaggerUI[Future](
+                  centerYaml,
+                  SwaggerUIOptions.default.pathPrefix(List("docs", "center"))
+                ) ++
+                  SwaggerUI[Future](
+                    edgeYaml,
+                    SwaggerUIOptions.default.pathPrefix(List("docs", "edge"))
+                  )
               ) ~
               CenterAgentsDelete.route(adminClient, kamon) ~
               CenterClockSpeedPut.route(adminClient, kamon) ~
@@ -172,8 +186,14 @@ object Edge:
             path("")(getFromResource("root.html")) ~
               path("docs"./)(getFromResource("docs.html")) ~
               PekkoHttpServerInterpreter().toRoute(
-                SwaggerUI[Future](centerYaml, SwaggerUIOptions.default.pathPrefix(List("docs", "center"))) ++
-                  SwaggerUI[Future](edgeYaml, SwaggerUIOptions.default.pathPrefix(List("docs", "edge")))
+                SwaggerUI[Future](
+                  centerYaml,
+                  SwaggerUIOptions.default.pathPrefix(List("docs", "center"))
+                ) ++
+                  SwaggerUI[Future](
+                    edgeYaml,
+                    SwaggerUIOptions.default.pathPrefix(List("docs", "edge"))
+                  )
               )
           )
         throw e

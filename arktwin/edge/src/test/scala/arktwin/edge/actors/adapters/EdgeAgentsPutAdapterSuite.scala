@@ -13,8 +13,7 @@ import arktwin.edge.data.Vector3Config.TimeUnit.Second
 import arktwin.edge.endpoints.EdgeAgentsPut.{Request, Response}
 import arktwin.edge.endpoints.{EdgeAgentsPutRequestAgent, EdgeConfigGet}
 import arktwin.edge.test.ActorTestBase
-import arktwin.edge.util.EdgeKamon
-import arktwin.edge.util.ErrorStatus
+import arktwin.edge.util.{EdgeKamon, ErrorStatus}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 
 import scala.collection.mutable
@@ -52,7 +51,10 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
       Request(
         Some(Timestamp(1, 0)),
         Map(
-          "a" -> EdgeAgentsPutRequestAgent(Some(transform(Vector3(1, 2, 3), Some(Vector3(1, 1, 1)))), None),
+          "a" -> EdgeAgentsPutRequestAgent(
+            Some(transform(Vector3(1, 2, 3), Some(Vector3(1, 1, 1)))),
+            None
+          ),
           "b" -> EdgeAgentsPutRequestAgent(Some(transform(Vector3(1, 2, 3), None)), None)
         )
       ),
@@ -81,12 +83,24 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
       endpoint.ref
     )
     chart.receiveMessage().agents shouldEqual Seq(
-      ChartAgent("a", transformEnu(Timestamp(1, 500_000_000), Vector3Enu(4, 4, 4), Vector3Enu(6, 4, 2))),
-      ChartAgent("b", transformEnu(Timestamp(1, 500_000_000), Vector3Enu(1, 2, 3), Vector3Enu(0, 0, 0)))
+      ChartAgent(
+        "a",
+        transformEnu(Timestamp(1, 500_000_000), Vector3Enu(4, 4, 4), Vector3Enu(6, 4, 2))
+      ),
+      ChartAgent(
+        "b",
+        transformEnu(Timestamp(1, 500_000_000), Vector3Enu(1, 2, 3), Vector3Enu(0, 0, 0))
+      )
     )
     chartPublish.receiveMessage().agents shouldEqual Seq(
-      ChartAgent("a", transformEnu(Timestamp(1, 500_000_000), Vector3Enu(4, 4, 4), Vector3Enu(6, 4, 2))),
-      ChartAgent("b", transformEnu(Timestamp(1, 500_000_000), Vector3Enu(1, 2, 3), Vector3Enu(0, 0, 0)))
+      ChartAgent(
+        "a",
+        transformEnu(Timestamp(1, 500_000_000), Vector3Enu(4, 4, 4), Vector3Enu(6, 4, 2))
+      ),
+      ChartAgent(
+        "b",
+        transformEnu(Timestamp(1, 500_000_000), Vector3Enu(1, 2, 3), Vector3Enu(0, 0, 0))
+      )
     )
 
   private def transform(localTranslation: Vector3, localTranslationSpeed: Option[Vector3]) =
@@ -98,7 +112,11 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
       localTranslationSpeed
     )
 
-  private def transformEnu(timestamp: Timestamp, localTranslation: Vector3Enu, localTranslationSpeed: Vector3Enu) =
+  private def transformEnu(
+      timestamp: Timestamp,
+      localTranslation: Vector3Enu,
+      localTranslationSpeed: Vector3Enu
+  ) =
     TransformEnu(
       timestamp,
       None,

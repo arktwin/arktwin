@@ -8,9 +8,8 @@ import arktwin.common.data.TimestampEx.*
 import arktwin.edge.StaticEdgeConfig
 import arktwin.edge.actors.adapters.EdgeAgentsPutAdapter
 import arktwin.edge.data.*
-import arktwin.edge.util.EdgeKamon
-import arktwin.edge.util.ErrorStatus
 import arktwin.edge.util.JsonDerivation.given
+import arktwin.edge.util.{EdgeKamon, ErrorStatus}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable
@@ -92,7 +91,11 @@ object EdgeAgentsPut:
         )
       )
 
-  def route(adapter: ActorRef[EdgeAgentsPutAdapter.Message], staticConfig: StaticEdgeConfig, kamon: EdgeKamon)(using
+  def route(
+      adapter: ActorRef[EdgeAgentsPutAdapter.Message],
+      staticConfig: StaticEdgeConfig,
+      kamon: EdgeKamon
+  )(using
       ExecutionContext,
       Scheduler
   ): Route =
@@ -105,7 +108,9 @@ object EdgeAgentsPut:
       endpoint.serverLogic: request =>
         val requestTime = Timestamp.machineNow()
         adapter
-          .?[Either[ErrorStatus, Response]](EdgeAgentsPutAdapter.PutMessage(request, Timestamp.machineNow(), _))
+          .?[Either[ErrorStatus, Response]](
+            EdgeAgentsPutAdapter.PutMessage(request, Timestamp.machineNow(), _)
+          )
           .recover(ErrorStatus.handleFailure)
           .andThen: _ =>
             requestNumCounter.increment()

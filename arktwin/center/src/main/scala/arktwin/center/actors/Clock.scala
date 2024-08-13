@@ -57,7 +57,8 @@ object Clock:
             initialUpdateSpeedTimer.cancelAll()
             initialUpdateSpeedTimerFlag = false
           val baseMachineTimestamp = Timestamp.machineNow()
-          clockBase = ClockBase(baseMachineTimestamp, clockBase.fromMachine(baseMachineTimestamp), clockSpeed)
+          clockBase =
+            ClockBase(baseMachineTimestamp, clockBase.fromMachine(baseMachineTimestamp), clockSpeed)
           for subscriber <- subscribers.values do subscriber ! clockBase
           context.log.info(clockBase.toString)
           Behaviors.same

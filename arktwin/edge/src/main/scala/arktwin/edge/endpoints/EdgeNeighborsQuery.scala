@@ -8,9 +8,8 @@ import arktwin.common.data.TimestampEx.*
 import arktwin.edge.StaticEdgeConfig
 import arktwin.edge.actors.adapters.EdgeNeighborsQueryAdapter
 import arktwin.edge.data.*
-import arktwin.edge.util.EdgeKamon
-import arktwin.edge.util.ErrorStatus
 import arktwin.edge.util.JsonDerivation.given
+import arktwin.edge.util.{EdgeKamon, ErrorStatus}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable
@@ -41,7 +40,8 @@ object EdgeNeighborsQuery:
       .withMapMaxInsertNumber(Int.MaxValue)
   )
 
-  val inExample: Request = Request(Some(Timestamp(234, 100_000_000)), Some(100), changeDetection = true)
+  val inExample: Request =
+    Request(Some(Timestamp(234, 100_000_000)), Some(100), changeDetection = true)
 
   val outExample: Response = Response(
     Timestamp(234, 100_000_000),
@@ -79,8 +79,11 @@ object EdgeNeighborsQuery:
         )
       )
 
-  def route(adapter: ActorRef[EdgeNeighborsQueryAdapter.Message], staticConfig: StaticEdgeConfig, kamon: EdgeKamon)(
-      using
+  def route(
+      adapter: ActorRef[EdgeNeighborsQueryAdapter.Message],
+      staticConfig: StaticEdgeConfig,
+      kamon: EdgeKamon
+  )(using
       ExecutionContext,
       Scheduler
   ): Route =

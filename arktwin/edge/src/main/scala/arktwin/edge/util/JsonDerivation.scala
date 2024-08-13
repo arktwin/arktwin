@@ -31,7 +31,13 @@ object JsonDerivation extends SchemaDerivation:
           case childSchema @ Schema(SProduct(_), Some(sName), _, _, _, _, _, _, _, _, _) =>
             // wrapped schema with only one field that has the same name as original schema
             val shortName = shortNameFrom(sName)
-            Some(Schema(SProduct[T](List(SProductField(FieldName(shortName, shortName), childSchema, _ => None)))))
+            Some(
+              Schema(
+                SProduct[T](
+                  List(SProductField(FieldName(shortName, shortName), childSchema, _ => None))
+                )
+              )
+            )
 
           case childSchema =>
             Some(childSchema)

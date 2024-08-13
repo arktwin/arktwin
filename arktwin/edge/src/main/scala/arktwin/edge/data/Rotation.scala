@@ -115,7 +115,8 @@ case class EulerAngles(
 sealed trait RotationConfig
 
 object RotationConfig:
-  given Schema[RotationConfig] = JsonDerivation.fixCoproductSchemaWithoutDiscriminator(Schema.derived)
+  given Schema[RotationConfig] =
+    JsonDerivation.fixCoproductSchemaWithoutDiscriminator(Schema.derived)
 
 case object QuaternionConfig extends RotationConfig
 

@@ -39,7 +39,10 @@ object Chart:
   def apply(
       initCullingConfig: CullingConfig
   ): Behavior[Message] = Behaviors.setup: context =>
-    context.system.receptionist ! Receptionist.Register(EdgeConfigurator.cullingObserverKey, context.self)
+    context.system.receptionist ! Receptionist.Register(
+      EdgeConfigurator.cullingObserverKey,
+      context.self
+    )
 
     var cullingConfig = initCullingConfig
     val distances = mutable.Map[String, Double]()
@@ -58,7 +61,9 @@ object Chart:
           // TODO consider relative coordinates
           // TODO extrapolate first agents based on previous transforms?
           val distance = firstAgents
-            .map(a => agent.transform.localTranslationMeter.distance(a.transform.localTranslationMeter))
+            .map(a =>
+              agent.transform.localTranslationMeter.distance(a.transform.localTranslationMeter)
+            )
             .minOption
             .getOrElse(Double.PositiveInfinity)
           distances += agent.agentId -> distance
