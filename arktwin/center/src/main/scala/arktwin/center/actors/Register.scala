@@ -30,10 +30,10 @@ object Register:
   private def issueId(prefix: String, n: Int): String =
     val suffix = mutable.StringBuilder()
     var temp = n
-    while (temp > 0)
+    while temp > 0 do
       suffix.insert(0, idSuffixCharacters(temp % idSuffixCharacters.size))
       temp /= idSuffixCharacters.size
-    (if (prefix.isEmpty()) "" else prefix + "-") + suffix.toString()
+    (if prefix.isEmpty() then "" else prefix + "-") + suffix.toString()
 
   private def apply(runId: String): Behavior[Message] = Behaviors.setup: context =>
     var edgeNum = 0

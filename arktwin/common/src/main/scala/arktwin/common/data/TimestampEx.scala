@@ -11,10 +11,10 @@ object TimestampEx:
   implicit class TimestampExtension(val a: Timestamp) extends AnyVal with Ordered[TimestampExtension]:
     def compare(that: TimestampExtension): Int =
       Ordering
-        .by((ex: TimestampExtension) => {
+        .by((ex: TimestampExtension) =>
           val n = Timestamp.normalize(ex.a)
           (n.seconds, n.nanos)
-        })
+        )
         .compare(this, that)
 
     def -(that: Timestamp): Duration = Duration.normalize(
