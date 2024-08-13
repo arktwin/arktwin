@@ -33,8 +33,9 @@ inThisBuild(List(
     "-Wconf:src=pekko-grpc/.*:silent",
     "-Wunused:all"
   ),
-  scalafmtOnCompile := true,
+  scalafixOnCompile := true,
   semanticdbEnabled := true,
+  scalafmtOnCompile := true,
   headerEmptyLine := false,
   versionScheme := Some("semver-spec"),
   publish / skip := true,

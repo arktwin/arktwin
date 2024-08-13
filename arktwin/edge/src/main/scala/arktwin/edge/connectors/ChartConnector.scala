@@ -2,13 +2,13 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge.connectors
 
-import arktwin.center.services.{ChartAgent, ChartPublishBatch, ChartClient}
+import arktwin.center.services.{ChartAgent, ChartClient, ChartPublishBatch}
 import arktwin.common.GrpcHeaderKey
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
-import arktwin.edge.actors.sinks.Chart
 import arktwin.edge.StaticEdgeConfig
+import arktwin.edge.actors.sinks.Chart
 import arktwin.edge.util.CommonMessages.Nop
 import arktwin.edge.util.EdgeKamon
 import com.google.protobuf.empty.Empty

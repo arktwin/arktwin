@@ -5,11 +5,11 @@ package arktwin.center.actors
 import arktwin.center.services.ChartAgent
 import arktwin.center.util.CenterKamon
 import arktwin.center.util.CommonMessages.Terminate
-import arktwin.common.data.{Timestamp, Vector3Enu}
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.TimestampEx.*
-import org.apache.pekko.actor.typed.{ActorRef, Behavior}
+import arktwin.common.data.{Timestamp, Vector3Enu}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
+import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
 object ChartRouter:
   type Message = RouteTable | PublishBatch | Terminate.type

@@ -22,9 +22,14 @@ jobs:
           cache-dependency-path: arktwin/build.sbt
 
       # check before automatic execution at compile time
+      - name: sbt scalafix
+        working-directory: arktwin
+        run: sbt "scalafixAll --check"
+
+      # check before automatic execution at compile time
       - name: sbt scalafmtCheck
         working-directory: arktwin
-        run: sbt center/scalafmtCheck center/Test/scalafmtCheck common/scalafmtCheck common/Test/scalafmtCheck e2e/Test/scalafmtCheck edge/scalafmtCheck edge/Test/scalafmtCheck
+        run: sbt scalafmtCheckAll
 
       # check before automatic execution at compile time
       - name: sbt headerCheck

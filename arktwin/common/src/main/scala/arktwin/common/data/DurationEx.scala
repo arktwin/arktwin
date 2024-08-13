@@ -44,7 +44,7 @@ object DurationEx:
       secondsDouble / that
     )
 
-  implicit class DurationCompanionExtension(val a: Duration.type) extends AnyVal:
+  implicit class DurationCompanionExtension(private val a: Duration.type) extends AnyVal:
     def from(value: ScalaDuration): Duration =
       normalize(0, value.toNanos)
 

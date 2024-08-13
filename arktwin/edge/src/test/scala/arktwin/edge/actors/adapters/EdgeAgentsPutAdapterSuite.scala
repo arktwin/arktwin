@@ -13,8 +13,7 @@ import arktwin.edge.data.Vector3Config.TimeUnit.Second
 import arktwin.edge.endpoints.EdgeAgentsPut.{Request, Response}
 import arktwin.edge.endpoints.{EdgeAgentsPutRequestAgent, EdgeConfigGet}
 import arktwin.edge.test.ActorTestBase
-import arktwin.edge.util.EdgeKamon
-import arktwin.edge.util.ErrorStatus
+import arktwin.edge.util.{EdgeKamon, ErrorStatus}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 
 import scala.collection.mutable

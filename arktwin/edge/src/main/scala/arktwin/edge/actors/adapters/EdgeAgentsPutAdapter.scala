@@ -15,8 +15,8 @@ import arktwin.edge.connectors.{ChartConnector, RegisterConnector}
 import arktwin.edge.data.CoordinateConfig
 import arktwin.edge.endpoints.EdgeAgentsPut
 import arktwin.edge.endpoints.EdgeAgentsPut.{Request, Response}
-import arktwin.edge.util.{EdgeKamon, ErrorStatus, ServiceUnavailable}
 import arktwin.edge.util.CommonMessages.Timeout
+import arktwin.edge.util.{EdgeKamon, ErrorStatus, ServiceUnavailable}
 import kamon.metric.Histogram
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.Receptionist

@@ -3,15 +3,13 @@
 package arktwin.edge
 
 import arktwin.center.services.*
-import arktwin.edge.actors.DeadLetterListener
-import arktwin.edge.actors.EdgeConfigurator
+import arktwin.common.LoggerConfigurator
 import arktwin.edge.actors.adapters.*
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
+import arktwin.edge.actors.{DeadLetterListener, EdgeConfigurator}
 import arktwin.edge.connectors.{ChartConnector, ClockConnector, RegisterConnector}
 import arktwin.edge.endpoints.*
-import arktwin.edge.util.EdgeKamon
-import arktwin.edge.util.EdgeReporter
-import arktwin.common.LoggerConfigurator
+import arktwin.edge.util.{EdgeKamon, EdgeReporter}
 import buildinfo.BuildInfo
 import io.grpc.StatusRuntimeException
 import kamon.Kamon

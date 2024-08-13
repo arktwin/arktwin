@@ -3,7 +3,7 @@
 package arktwin.common.data
 
 object Vector3EnuEx:
-  implicit class Vector3EnuExtension(val a: Vector3Enu) extends AnyVal:
+  implicit class Vector3EnuExtension(private val a: Vector3Enu) extends AnyVal:
     def +(that: Vector3Enu): Vector3Enu = Vector3Enu(a.x + that.x, a.y + that.y, a.z + that.z)
 
     def -(that: Vector3Enu): Vector3Enu = Vector3Enu(a.x - that.x, a.y - that.y, a.z - that.z)

@@ -3,8 +3,7 @@
 package arktwin.edge.util
 
 import kamon.Kamon
-import kamon.metric.Counter
-import kamon.metric.Histogram
+import kamon.metric.{Counter, Histogram}
 import kamon.tag.TagSet
 
 object EdgeKamon:

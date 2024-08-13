@@ -7,7 +7,7 @@ import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
 
 object ClockBaseEx:
-  implicit class ClockBaseExtension(val c: ClockBase) extends AnyVal:
+  implicit class ClockBaseExtension(private val c: ClockBase) extends AnyVal:
     def fromMachine(machineTimestamp: Timestamp): Timestamp =
       c.baseTimestamp + (machineTimestamp - c.baseMachineTimestamp) * c.clockSpeed
 

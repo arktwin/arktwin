@@ -13,11 +13,10 @@ import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.sinks.Chart.CullingAgent
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
 import arktwin.edge.data.{CoordinateConfig, Transform}
-import arktwin.edge.endpoints.EdgeNeighborsQuery
 import arktwin.edge.endpoints.EdgeNeighborsQuery.{Request, Response, ResponseAgent}
-import arktwin.edge.endpoints.NeighborChange
-import arktwin.edge.util.{EdgeKamon, ErrorStatus, ServiceUnavailable}
+import arktwin.edge.endpoints.{EdgeNeighborsQuery, NeighborChange}
 import arktwin.edge.util.CommonMessages.Timeout
+import arktwin.edge.util.{EdgeKamon, ErrorStatus, ServiceUnavailable}
 import kamon.metric.Histogram
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.Receptionist

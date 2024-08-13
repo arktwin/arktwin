@@ -2,13 +2,13 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge.actors
 
-import org.apache.pekko.actor.DeadLetter
-import org.apache.pekko.actor.typed.{ActorRef, Behavior}
-import org.apache.pekko.actor.typed.eventstream.EventStream.Subscribe
-import org.apache.pekko.actor.typed.scaladsl.Behaviors
-import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import arktwin.common.MailboxConfig
 import arktwin.edge.util.EdgeKamon
+import org.apache.pekko.actor.DeadLetter
+import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
+import org.apache.pekko.actor.typed.eventstream.EventStream.Subscribe
+import org.apache.pekko.actor.typed.scaladsl.Behaviors
+import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
 object DeadLetterListener:
   type Message = DeadLetter

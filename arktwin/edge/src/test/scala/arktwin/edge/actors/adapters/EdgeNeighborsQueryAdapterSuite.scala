@@ -16,8 +16,7 @@ import arktwin.edge.endpoints.EdgeConfigGet
 import arktwin.edge.endpoints.EdgeNeighborsQuery.{Request, Response, ResponseAgent}
 import arktwin.edge.endpoints.NeighborChange.{Recognized, Unrecognized, Updated}
 import arktwin.edge.test.ActorTestBase
-import arktwin.edge.util.EdgeKamon
-import arktwin.edge.util.ErrorStatus
+import arktwin.edge.util.{EdgeKamon, ErrorStatus}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 
 import scala.collection.mutable

@@ -4,8 +4,7 @@ package arktwin.center
 
 import arktwin.center.actors.{Clock, Register, *}
 import arktwin.center.services.*
-import arktwin.center.util.CenterKamon
-import arktwin.center.util.CenterReporter
+import arktwin.center.util.{CenterKamon, CenterReporter}
 import arktwin.common.LoggerConfigurator
 import buildinfo.BuildInfo
 import kamon.Kamon
