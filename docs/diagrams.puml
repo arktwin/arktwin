@@ -93,7 +93,7 @@ frame "Local Network<plain>, which can deny inbound connections</plain>" {
 Conductor -[#gray]-> ClockC
 Conductor -[#gray]-> RegisterC
 Conductor <-[#gray]- ReporterC
-Conductor <-[#gray]- ChartRecorder
+Conductor <-[#gray]-o ChartRecorder
 
 ChartRouter <---> ChartService
 ChartRecorder <--- ChartService
@@ -105,7 +105,6 @@ ClockC ---> ClockService
 ReporterC <-[#gray]-- ReporterService
 RegisterC <--- AdminService
 RegisterC <---> RegisterService
-RegisterC <-[#gray] ChartRecorder
 
 AdminService <--> AdminClient
 ChartService <--> ChartClient
