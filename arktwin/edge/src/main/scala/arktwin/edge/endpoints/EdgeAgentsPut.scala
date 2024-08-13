@@ -91,7 +91,11 @@ object EdgeAgentsPut:
         )
       )
 
-  def route(adapter: ActorRef[EdgeAgentsPutAdapter.Message], staticConfig: StaticEdgeConfig, kamon: EdgeKamon)(using
+  def route(
+      adapter: ActorRef[EdgeAgentsPutAdapter.Message],
+      staticConfig: StaticEdgeConfig,
+      kamon: EdgeKamon
+  )(using
       ExecutionContext,
       Scheduler
   ): Route =
@@ -104,7 +108,9 @@ object EdgeAgentsPut:
       endpoint.serverLogic: request =>
         val requestTime = Timestamp.machineNow()
         adapter
-          .?[Either[ErrorStatus, Response]](EdgeAgentsPutAdapter.PutMessage(request, Timestamp.machineNow(), _))
+          .?[Either[ErrorStatus, Response]](
+            EdgeAgentsPutAdapter.PutMessage(request, Timestamp.machineNow(), _)
+          )
           .recover(ErrorStatus.handleFailure)
           .andThen: _ =>
             requestNumCounter.increment()

@@ -40,7 +40,8 @@ object EdgeNeighborsQuery:
       .withMapMaxInsertNumber(Int.MaxValue)
   )
 
-  val inExample: Request = Request(Some(Timestamp(234, 100_000_000)), Some(100), changeDetection = true)
+  val inExample: Request =
+    Request(Some(Timestamp(234, 100_000_000)), Some(100), changeDetection = true)
 
   val outExample: Response = Response(
     Timestamp(234, 100_000_000),
@@ -78,8 +79,11 @@ object EdgeNeighborsQuery:
         )
       )
 
-  def route(adapter: ActorRef[EdgeNeighborsQueryAdapter.Message], staticConfig: StaticEdgeConfig, kamon: EdgeKamon)(
-      using
+  def route(
+      adapter: ActorRef[EdgeNeighborsQueryAdapter.Message],
+      staticConfig: StaticEdgeConfig,
+      kamon: EdgeKamon
+  )(using
       ExecutionContext,
       Scheduler
   ): Route =

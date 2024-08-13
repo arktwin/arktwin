@@ -13,8 +13,8 @@ import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import scala.collection.mutable
 
 object Atlas:
-  type Message = SpawnRecorder | RemoveRecorder | SpawnRouter | RemoveRouter | AddSubscriber | RemoveSubscriber |
-    ResetTimer.type
+  type Message = SpawnRecorder | RemoveRecorder | SpawnRouter | RemoveRouter | AddSubscriber |
+    RemoveSubscriber | ResetTimer.type
   case class SpawnRecorder(edgeId: String, replyTo: ActorRef[ActorRef[ChartRecorder.Message]])
   case class RemoveRecorder(edgeId: String)
   case class SpawnRouter(edgeId: String, replyTo: ActorRef[ActorRef[ChartRouter.Message]])
@@ -136,7 +136,9 @@ object Atlas:
             case AtlasConfig.Broadcast() =>
               for (edgeId, router) <- routers do
                 router ! new ChartRouter.RouteTable:
-                  override def apply(vector3: Vector3Enu): Seq[ActorRef[ChartRouter.SubscribeBatch]] =
+                  override def apply(
+                      vector3: Vector3Enu
+                  ): Seq[ActorRef[ChartRouter.SubscribeBatch]] =
                     subscribers.filter(_._1 != edgeId).values.toSeq
 
             case AtlasConfig.GridCulling(gridCellSize) =>
@@ -149,7 +151,9 @@ object Atlas:
 
               for (edgeId, router) <- routers do
                 router ! new ChartRouter.RouteTable:
-                  override def apply(vector3: Vector3Enu): Seq[ActorRef[ChartRouter.SubscribeBatch]] =
+                  override def apply(
+                      vector3: Vector3Enu
+                  ): Seq[ActorRef[ChartRouter.SubscribeBatch]] =
                     partitionToSender
                       .getOrElse(
                         PartitionIndex(
@@ -164,7 +168,9 @@ object Atlas:
 
               context.log.info(
                 partitionToSender
-                  .map((i, senders) => s"[${i.x},${i.y},${i.z}]->${senders.map(_._1).mkString("(", ",", ")")}")
+                  .map((i, senders) =>
+                    s"[${i.x},${i.y},${i.z}]->${senders.map(_._1).mkString("(", ",", ")")}"
+                  )
                   .mkString("", ", ", "")
               )
 

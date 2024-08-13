@@ -10,7 +10,8 @@ import kamon.tag.Tag
 class EdgeReporter() extends MetricReporter:
   private val reportIndexes =
     import EdgeKamon.*
-    Seq(recipientKey, endpointKey, edgeIdKey, runIdKey).zipWithIndex.toMap.withDefaultValue(Int.MaxValue)
+    Seq(recipientKey, endpointKey, edgeIdKey, runIdKey).zipWithIndex.toMap
+      .withDefaultValue(Int.MaxValue)
 
   override def reportPeriodSnapshot(snapshot: PeriodSnapshot): Unit =
     import EdgeKamon.*
@@ -57,7 +58,8 @@ class EdgeReporter() extends MetricReporter:
           .collect:
             case tag: Tag.String => s"${tag.key}=\"${tag.value}\""
           .mkString("{", ", ", "}")
-        val summary = Seq(0, 25, 50, 75, 100).map(instrument.value.percentile(_).value).mkString(", ")
+        val summary =
+          Seq(0, 25, 50, 75, 100).map(instrument.value.percentile(_).value).mkString(", ")
         scribe.info(s"${metric.name}: [$summary] ${metric.settings.unit.magnitude.name} $tags")
 
   override def stop(): Unit = {}

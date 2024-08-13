@@ -57,7 +57,10 @@ object EdgeNeighborsQueryAdapter:
       initCoordinateConfig: CoordinateConfig,
       kamon: EdgeKamon
   ): Behavior[Message] = Behaviors.setup: context =>
-    context.system.receptionist ! Receptionist.Register(EdgeConfigurator.coordinateObserverKey, context.self)
+    context.system.receptionist ! Receptionist.Register(
+      EdgeConfigurator.coordinateObserverKey,
+      context.self
+    )
 
     var coordinateConfig = initCoordinateConfig
     var optionalPreviousAgents: Option[Set[String]] = Some(Set())
@@ -151,7 +154,12 @@ object EdgeNeighborsQueryAdapter:
                   Math.max(0, (requestTimestamp - agent.agent.transform.timestamp).millisLong)
                 )
                 agent.agent.agentId -> ResponseAgent(
-                  Some(Transform.fromEnu(agent.agent.transform.extrapolate(requestTimestamp), coordinateConfig)),
+                  Some(
+                    Transform.fromEnu(
+                      agent.agent.transform.extrapolate(requestTimestamp),
+                      coordinateConfig
+                    )
+                  ),
                   agent.nearestDistance,
                   Some(registerAgent.kind),
                   Some(registerAgent.status),

@@ -3,7 +3,7 @@
 package arktwin.edge.util
 
 import arktwin.edge.util.JsonDerivation.given
-import com.github.plokhotnyuk.jsoniter_scala.core.{JsonReaderException, readFromString, writeToString}
+import com.github.plokhotnyuk.jsoniter_scala.core.*
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 

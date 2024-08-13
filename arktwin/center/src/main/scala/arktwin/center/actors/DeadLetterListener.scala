@@ -27,5 +27,7 @@ object DeadLetterListener:
 
     Behaviors.receiveMessage:
       case DeadLetter(message, sender, recipient) =>
-        deadLetterNumCounter.withTag(CenterKamon.recipientKey, recipient.path.toString()).increment()
+        deadLetterNumCounter
+          .withTag(CenterKamon.recipientKey, recipient.path.toString())
+          .increment()
         Behaviors.same

@@ -57,11 +57,15 @@ object EdgeAgentsPutAdapter:
       initCoordinateConfig: CoordinateConfig,
       kamon: EdgeKamon
   ): Behavior[Message] = Behaviors.setup: context =>
-    context.system.receptionist ! Receptionist.Register(EdgeConfigurator.coordinateObserverKey, context.self)
+    context.system.receptionist ! Receptionist.Register(
+      EdgeConfigurator.coordinateObserverKey,
+      context.self
+    )
 
     var coordinateConfig = initCoordinateConfig
     var optionalPreviousAgents: Option[Map[String, TransformEnu]] = Some(Map())
-    val simulationLatencyHistogram = kamon.restSimulationLatencyHistogram(EdgeAgentsPut.endpoint.showShort)
+    val simulationLatencyHistogram =
+      kamon.restSimulationLatencyHistogram(EdgeAgentsPut.endpoint.showShort)
 
     Behaviors.receiveMessage:
       // TODO filter registered agents
@@ -127,7 +131,9 @@ object EdgeAgentsPutAdapter:
 
         registerPublish ! RegisterConnector.Publish(
           putMessage.request.agents
-            .flatMap((agentId, info) => info.status.map(status => RegisterAgentUpdated(agentId, status)))
+            .flatMap((agentId, info) =>
+              info.status.map(status => RegisterAgentUpdated(agentId, status))
+            )
             .toSeq
         )
 
@@ -139,7 +145,10 @@ object EdgeAgentsPutAdapter:
             )
         parent ! Report(agents.view.mapValues(_.transform).toMap)
         chart ! Chart.FirstAgentsUpdate(agents.values.toSeq)
-        chartPublish ! ChartConnector.Publish(agents.values.toSeq, putMessage.restReceptionMachineTimestamp)
+        chartPublish ! ChartConnector.Publish(
+          agents.values.toSeq,
+          putMessage.restReceptionMachineTimestamp
+        )
         context.cancelReceiveTimeout()
         Behaviors.stopped
 

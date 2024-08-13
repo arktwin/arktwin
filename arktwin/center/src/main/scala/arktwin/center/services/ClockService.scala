@@ -32,7 +32,10 @@ class ClockService(
       )
       .log(logName)
       .addAttributes(
-        Attributes.logLevels(onFailure = Attributes.LogLevels.Warning, onFinish = Attributes.LogLevels.Warning)
+        Attributes.logLevels(
+          onFailure = Attributes.LogLevels.Warning,
+          onFinish = Attributes.LogLevels.Warning
+        )
       )
       .preMaterialize()
     clock ! Clock.AddSubscriber(edgeId, actorRef)

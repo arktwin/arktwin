@@ -8,17 +8,25 @@ import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.Vector3EnuEx.*
 import sttp.tapir.Schema.annotations.description
 
-@description("Transformation of position vectors is applied in the order: Scale > Rotate > Translate")
+@description(
+  "Transformation of position vectors is applied in the order: Scale > Rotate > Translate"
+)
 case class Transform(
     @description("If it is omitted, this transform follows global coordinates.")
     parentAgentId: Option[String],
     globalScale: Vector3,
     localRotation: Rotation,
     localTranslation: Vector3,
-    @description("If it is omitted, the edge calculates speed as a difference from a previous localTranslation.")
+    @description(
+      "If it is omitted, the edge calculates speed as a difference from a previous localTranslation."
+    )
     localTranslationSpeed: Option[Vector3]
 ):
-  def toEnu(timestamp: Timestamp, previousEnu: Option[TransformEnu], config: CoordinateConfig): TransformEnu =
+  def toEnu(
+      timestamp: Timestamp,
+      previousEnu: Option[TransformEnu],
+      config: CoordinateConfig
+  ): TransformEnu =
     val localTranslationEnu = localTranslation.toEnu(config.vector3)
     val localTranslationSpeedEnu = localTranslationSpeed
       .map(_.toEnu(config.vector3))

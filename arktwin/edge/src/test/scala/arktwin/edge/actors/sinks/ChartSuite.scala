@@ -59,14 +59,19 @@ class ChartSuite extends ActorTestBase:
       z <- 0 to 9
     do chart ! Catch(chartAgent(s"b-$x-$y-$z", Timestamp(0, 0), Vector3Enu(-x, -y, -z)))
     chart ! Read(chartReader.ref)
-    chartReader.receiveMessage().sortedAgents.map(_.agent.agentId).take(1) shouldEqual Seq("b-2-3-4")
+    chartReader.receiveMessage().sortedAgents.map(_.agent.agentId).take(1) shouldEqual Seq(
+      "b-2-3-4"
+    )
 
     // test that position updates affect culling distance calculation
     for
       x <- 0 to 9
       y <- 0 to 9
       z <- 0 to 9
-    do chart ! Catch(chartAgent(s"b-$x-$y-$z", Timestamp(1, 0), Vector3Enu(x * 0.1, y * 0.1, z * 0.1)))
+    do
+      chart ! Catch(
+        chartAgent(s"b-$x-$y-$z", Timestamp(1, 0), Vector3Enu(x * 0.1, y * 0.1, z * 0.1))
+      )
     chart ! Read(chartReader.ref)
     chartReader.receiveMessage().sortedAgents.map(_.agent.agentId).take(3) shouldEqual Seq(
       "b-9-9-9",
@@ -75,7 +80,9 @@ class ChartSuite extends ActorTestBase:
     )
 
     // test that culling distance calculation is turned off because first agents are many
-    chart ! FirstAgentsUpdate((0 to 9).map(i => chartAgent(s"c$i", Timestamp(2, 0), Vector3Enu(i, i, i))))
+    chart ! FirstAgentsUpdate(
+      (0 to 9).map(i => chartAgent(s"c$i", Timestamp(2, 0), Vector3Enu(i, i, i)))
+    )
     for
       x <- 0 to 9
       y <- 0 to 9
@@ -90,7 +97,11 @@ class ChartSuite extends ActorTestBase:
       "b-1-2-3"
     )
 
-  private def chartAgent(agentId: String, timestamp: Timestamp, translation: Vector3Enu): ChartAgent =
+  private def chartAgent(
+      agentId: String,
+      timestamp: Timestamp,
+      translation: Vector3Enu
+  ): ChartAgent =
     ChartAgent(
       agentId,
       TransformEnu(

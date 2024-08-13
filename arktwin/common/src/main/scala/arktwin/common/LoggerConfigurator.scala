@@ -30,7 +30,8 @@ object LoggerConfigurator:
         handle = SynchronousLogHandle,
         formatter =
           import scribe.format.*
-          if logLevelColor then formatter"$dateFull $coloredLevelPaddedRight $messages   - $logSource"
+          if logLevelColor then
+            formatter"$dateFull $coloredLevelPaddedRight $messages   - $logSource"
           else formatter"$dateFull $levelPaddedRight $messages   - $logSource"
       )
       .replace()

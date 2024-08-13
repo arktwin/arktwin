@@ -21,7 +21,9 @@ object CenterConfig:
     .withFallback(ConfigSource.defaultApplication) // -Dconfig.file
     .withFallback(ConfigSource.resources("pekko.conf"))
     .withFallback(ConfigSource.resources("kamon.conf"))
-    .withFallback(ConfigSource.defaultReference) // merged reference.conf from Pekko, Kamon and ArkTwin
+    .withFallback(
+      ConfigSource.defaultReference
+    ) // merged reference.conf from Pekko, Kamon and ArkTwin
 
   def loadRawOrThrow(): Config = configSource.config() match
     case Right(value) =>

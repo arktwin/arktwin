@@ -104,7 +104,10 @@ object Edge:
 
     try
       val EdgeCreateResponse(edgeId, runId) =
-        Await.result(registerClient.edgeCreate(EdgeCreateRequest(config.static.edgeIdPrefix)), 1.minute)
+        Await.result(
+          registerClient.edgeCreate(EdgeCreateRequest(config.static.edgeIdPrefix)),
+          1.minute
+        )
       scribe.info(s"Run ID: $runId")
       scribe.info(s"Edge ID: $edgeId")
 
@@ -135,7 +138,14 @@ object Edge:
             kamon
           )
         edgeNeighborsAdapter <- actorSystem ?
-          EdgeNeighborsQueryAdapter.spawn(chart, clock, register, config.static, config.dynamic.coordinate, kamon)
+          EdgeNeighborsQueryAdapter.spawn(
+            chart,
+            clock,
+            register,
+            config.static,
+            config.dynamic.coordinate,
+            kamon
+          )
       do
         clockConnector.subscribe(clock)
         registerConnector.subscribe(register)
@@ -147,8 +157,14 @@ object Edge:
             path("")(getFromResource("root.html")) ~
               path("docs"./)(getFromResource("docs.html")) ~
               PekkoHttpServerInterpreter().toRoute(
-                SwaggerUI[Future](centerYaml, SwaggerUIOptions.default.pathPrefix(List("docs", "center"))) ++
-                  SwaggerUI[Future](edgeYaml, SwaggerUIOptions.default.pathPrefix(List("docs", "edge")))
+                SwaggerUI[Future](
+                  centerYaml,
+                  SwaggerUIOptions.default.pathPrefix(List("docs", "center"))
+                ) ++
+                  SwaggerUI[Future](
+                    edgeYaml,
+                    SwaggerUIOptions.default.pathPrefix(List("docs", "edge"))
+                  )
               ) ~
               CenterAgentsDelete.route(adminClient, kamon) ~
               CenterClockSpeedPut.route(adminClient, kamon) ~
@@ -170,8 +186,14 @@ object Edge:
             path("")(getFromResource("root.html")) ~
               path("docs"./)(getFromResource("docs.html")) ~
               PekkoHttpServerInterpreter().toRoute(
-                SwaggerUI[Future](centerYaml, SwaggerUIOptions.default.pathPrefix(List("docs", "center"))) ++
-                  SwaggerUI[Future](edgeYaml, SwaggerUIOptions.default.pathPrefix(List("docs", "edge")))
+                SwaggerUI[Future](
+                  centerYaml,
+                  SwaggerUIOptions.default.pathPrefix(List("docs", "center"))
+                ) ++
+                  SwaggerUI[Future](
+                    edgeYaml,
+                    SwaggerUIOptions.default.pathPrefix(List("docs", "edge"))
+                  )
               )
           )
         throw e

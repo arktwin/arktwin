@@ -24,9 +24,12 @@ object CenterAgentsDelete:
   type Request = AgentSelector
   type Response = Unit
   given JsonValueCodec[Request] = JsonCodecMaker.makeWithoutDiscriminator
-  given Schema[AgentIdSelector] = Schema.derived[AgentIdSelector].modify(_.regex)(JsonValidator.regex)
-  given Schema[AgentKindSelector] = Schema.derived[AgentKindSelector].modify(_.regex)(JsonValidator.regex)
-  given Schema[AgentSelector] = JsonDerivation.fixCoproductSchemaWithoutDiscriminator(Schema.derived)
+  given Schema[AgentIdSelector] =
+    Schema.derived[AgentIdSelector].modify(_.regex)(JsonValidator.regex)
+  given Schema[AgentKindSelector] =
+    Schema.derived[AgentKindSelector].modify(_.regex)(JsonValidator.regex)
+  given Schema[AgentSelector] =
+    JsonDerivation.fixCoproductSchemaWithoutDiscriminator(Schema.derived)
 
   val inExample: Request = AgentIdSelector("alice-.+")
 

@@ -56,7 +56,10 @@ class ChartService(
       in
         .log(logName)
         .addAttributes(
-          Attributes.logLevels(onFailure = Attributes.LogLevels.Warning, onFinish = Attributes.LogLevels.Warning)
+          Attributes.logLevels(
+            onFailure = Attributes.LogLevels.Warning,
+            onFinish = Attributes.LogLevels.Warning
+          )
         )
         .map: publishBatch =>
           val currentMachineTimestamp = Timestamp.machineNow()
@@ -64,7 +67,10 @@ class ChartService(
           publishAgentNumCounter.increment(publishBatch.agents.size)
           publishBatchNumCounter.increment()
           publishMachineLatencyHistogram.record(
-            Math.max(0, (currentMachineTimestamp - publishBatch.transmissionMachineTimestamp).millisLong),
+            Math.max(
+              0,
+              (currentMachineTimestamp - publishBatch.transmissionMachineTimestamp).millisLong
+            ),
             publishBatch.agents.size
           )
 
@@ -93,16 +99,24 @@ class ChartService(
       )
       .log(logName)
       .addAttributes(
-        Attributes.logLevels(onFailure = Attributes.LogLevels.Warning, onFinish = Attributes.LogLevels.Warning)
+        Attributes.logLevels(
+          onFailure = Attributes.LogLevels.Warning,
+          onFinish = Attributes.LogLevels.Warning
+        )
       )
-      .groupedWeightedWithin(config.subscribeBatchSize, config.subscribeBatchInterval)(_.agents.size)
+      .groupedWeightedWithin(config.subscribeBatchSize, config.subscribeBatchInterval)(
+        _.agents.size
+      )
       .map: subscribeBatch =>
         val currentMachineTimestamp = Timestamp.machineNow()
 
         for subscribe <- subscribeBatch do
           subscribeAgentNumCounter.increment(subscribe.agents.size)
           subscribeMachineLatencyHistogram.record(
-            Math.max(0, (currentMachineTimestamp - subscribe.routeReceptionMachineTimestamp).millisLong),
+            Math.max(
+              0,
+              (currentMachineTimestamp - subscribe.routeReceptionMachineTimestamp).millisLong
+            ),
             subscribe.agents.size
           )
         subscribeBatchNumCounter.increment()

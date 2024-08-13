@@ -36,7 +36,11 @@ object ChartRouter:
 
         // TODO consider relative coordinates
         for (subscriber, agents) <- publishBatch.agents
-            .flatMap(agent => routeTable(agent.transform.localTranslationMeter).map(subscriber => (agent, subscriber)))
+            .flatMap(agent =>
+              routeTable(agent.transform.localTranslationMeter).map(subscriber =>
+                (agent, subscriber)
+              )
+            )
             .groupMap(_._2)(_._1)
         do
           subscriber ! SubscribeBatch(agents, currentMachineTimestamp)
@@ -44,7 +48,10 @@ object ChartRouter:
           routeBatchNumCounter.increment()
 
         routeMachineLatencyHistogram.record(
-          Math.max(0, (currentMachineTimestamp - publishBatch.publishReceptionMachineTimestamp).millisLong),
+          Math.max(
+            0,
+            (currentMachineTimestamp - publishBatch.publishReceptionMachineTimestamp).millisLong
+          ),
           publishBatch.agents.size
         )
 

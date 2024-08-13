@@ -20,7 +20,12 @@ object ChartConnector:
   case class Publish(agents: Seq[ChartAgent], putReceptionMachineTimestamp: Timestamp)
 
 // TODO retry connection in actor?
-case class ChartConnector(client: ChartClient, staticConfig: StaticEdgeConfig, edgeId: String, kamon: EdgeKamon)(using
+case class ChartConnector(
+    client: ChartClient,
+    staticConfig: StaticEdgeConfig,
+    edgeId: String,
+    kamon: EdgeKamon
+)(using
     Materializer
 ):
   import ChartConnector.*

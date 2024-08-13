@@ -16,7 +16,11 @@ object RegisterConnector:
   case class Publish(agents: Seq[RegisterAgentUpdated])
 
 // TODO retry connect in actor?
-case class RegisterConnector(client: RegisterClient, staticConfig: StaticEdgeConfig, edgeId: String)(using
+case class RegisterConnector(
+    client: RegisterClient,
+    staticConfig: StaticEdgeConfig,
+    edgeId: String
+)(using
     Materializer
 ):
   import RegisterConnector.*

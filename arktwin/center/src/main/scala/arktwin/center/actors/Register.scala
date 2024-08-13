@@ -14,9 +14,13 @@ import scala.collection.mutable
 import scala.util.Random
 
 object Register:
-  type Message = EdgeCreate | AgentsCreate | AgentsUpdate | AgentsDelete | AddSubscriber | RemoveSubscriber | Nop.type
+  type Message = EdgeCreate | AgentsCreate | AgentsUpdate | AgentsDelete | AddSubscriber |
+    RemoveSubscriber | Nop.type
   case class EdgeCreate(request: EdgeCreateRequest, replyTo: ActorRef[EdgeCreateResponse])
-  case class AgentsCreate(requests: EdgeAgentsPostRequests, replyTo: ActorRef[EdgeAgentsPostResponses])
+  case class AgentsCreate(
+      requests: EdgeAgentsPostRequests,
+      replyTo: ActorRef[EdgeAgentsPostResponses]
+  )
   case class AgentsUpdate(request: RegisterAgentsPublish)
   case class AgentsDelete(agentSelector: AgentSelector)
   case class AddSubscriber(edgeId: String, subscriber: ActorRef[RegisterAgentsSubscribe])
@@ -62,8 +66,12 @@ object Register:
         for subscriber <- subscribers.values do subscriber ! RegisterAgentsSubscribe(request.agents)
         for agent <- request.agents do
           for oldAgent <- agents.get(agent.agentId) do
-            agents(agent.agentId) =
-              RegisterAgent(agent.agentId, oldAgent.kind, oldAgent.status ++ agent.status, oldAgent.assets)
+            agents(agent.agentId) = RegisterAgent(
+              agent.agentId,
+              oldAgent.kind,
+              oldAgent.status ++ agent.status,
+              oldAgent.assets
+            )
         Behaviors.same
 
       case AgentsDelete(agentSelector) =>

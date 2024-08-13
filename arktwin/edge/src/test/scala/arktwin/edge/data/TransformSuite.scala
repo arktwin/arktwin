@@ -46,7 +46,10 @@ class TransformSuite extends AnyFunSuite with Matchers:
         import Vector3Config.LengthUnit.*
         import Vector3Config.TimeUnit.*
         // TODO all patterns (1*6*8)
-        Seq(Vector3Config(Meter, Second, East, North, Up), Vector3Config(Meter, Second, North, East, Down))
+        Seq(
+          Vector3Config(Meter, Second, East, North, Up),
+          Vector3Config(Meter, Second, North, East, Down)
+        )
       order <- Seq(XYZ, XZY, YXZ, YZX, ZXY, ZYX)
     do
       import EulerAnglesConfig.AngleUnit.*
@@ -66,7 +69,10 @@ class TransformSuite extends AnyFunSuite with Matchers:
         import Vector3Config.LengthUnit.*
         import Vector3Config.TimeUnit.*
         // TODO all patterns (1*6*8)
-        Seq(Vector3Config(Meter, Second, East, North, Up), Vector3Config(Meter, Second, North, East, Down))
+        Seq(
+          Vector3Config(Meter, Second, East, North, Up),
+          Vector3Config(Meter, Second, North, East, Down)
+        )
       order <- Seq(XYZ, XZY, YXZ, YZX, ZXY, ZYX)
     do
       import EulerAnglesConfig.AngleUnit.*
@@ -84,8 +90,10 @@ class TransformSuite extends AnyFunSuite with Matchers:
     import Vector3Config.Direction.*
     import Vector3Config.LengthUnit.*
     import Vector3Config.TimeUnit.*
-    val sourceSetting = CoordinateConfig(Vector3Config(Meter, Second, East, North, Up), QuaternionConfig)
-    val targetSetting = CoordinateConfig(Vector3Config(Meter, Second, North, East, Down), QuaternionConfig)
+    val sourceSetting =
+      CoordinateConfig(Vector3Config(Meter, Second, East, North, Up), QuaternionConfig)
+    val targetSetting =
+      CoordinateConfig(Vector3Config(Meter, Second, North, East, Down), QuaternionConfig)
     val t = Transform(
       None,
       Vector3(1, 1, 1),

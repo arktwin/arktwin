@@ -17,14 +17,18 @@ class EdgeConfiguratorSuite extends ActorTestBase:
     val coordinateObserver = testKit.createTestProbe[CoordinateConfig]()
     val cullingObserver = testKit.createTestProbe[CullingConfig]()
 
-    testKit.system.receptionist ! Receptionist.register(coordinateObserverKey, coordinateObserver.ref)
+    testKit.system.receptionist ! Receptionist.register(
+      coordinateObserverKey,
+      coordinateObserver.ref
+    )
     coordinateObserver.receiveMessage() shouldEqual config.dynamic.coordinate
 
     testKit.system.receptionist ! Receptionist.register(cullingObserverKey, cullingObserver.ref)
     cullingObserver.receiveMessage() shouldEqual config.dynamic.culling
 
     configurator ! config.dynamic.coordinate.copy(rotation = QuaternionConfig)
-    coordinateObserver.receiveMessage() shouldEqual config.dynamic.coordinate.copy(rotation = QuaternionConfig)
+    coordinateObserver.receiveMessage() shouldEqual config.dynamic.coordinate
+      .copy(rotation = QuaternionConfig)
 
     configurator ! config.dynamic.culling.copy(maxFirstAgents = 123)
     cullingObserver.receiveMessage() shouldEqual config.dynamic.culling.copy(maxFirstAgents = 123)

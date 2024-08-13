@@ -36,7 +36,8 @@ object Register:
 
       case Catch(RegisterAgentUpdated(agentId, status)) =>
         for oldAgent <- agents.get(agentId) do
-          agents(agentId) = RegisterAgent(agentId, oldAgent.kind, oldAgent.status ++ status, oldAgent.assets)
+          agents(agentId) =
+            RegisterAgent(agentId, oldAgent.kind, oldAgent.status ++ status, oldAgent.assets)
         Behaviors.same
 
       case Catch(RegisterAgentDeleted(agentId)) =>
