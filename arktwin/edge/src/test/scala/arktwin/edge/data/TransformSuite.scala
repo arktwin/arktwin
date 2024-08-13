@@ -13,17 +13,17 @@ class TransformSuite extends AnyFunSuite with Matchers:
 
   given vector3Equality: Equality[Vector3] =
     case (a: Vector3, b: Vector3) =>
-      a.toDoubles.zip(b.toDoubles).forall((doubleEquality.areEqual _).tupled)
+      a.toDoubles.zip(b.toDoubles).forall(doubleEquality.areEqual.tupled)
     case _ =>
       false
 
   given rotationEquality: Equality[Rotation] =
     case (a: EulerAngles, b: EulerAngles) =>
       val f = (e: EulerAngles) => Seq(e.x, e.y, e.z)
-      f(a).zip(f(b)).forall((doubleEquality.areEqual _).tupled)
+      f(a).zip(f(b)).forall(doubleEquality.areEqual.tupled)
     case (a: Quaternion, b: Quaternion) =>
       val f = (e: Quaternion) => Seq(e.x, e.y, e.z, e.w)
-      f(a).zip(f(b)).forall((doubleEquality.areEqual _).tupled)
+      f(a).zip(f(b)).forall(doubleEquality.areEqual.tupled)
     case _ =>
       false
 

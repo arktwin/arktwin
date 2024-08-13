@@ -22,12 +22,12 @@ jobs:
           cache-dependency-path: arktwin/build.sbt
 
       # check before automatic execution at compile time
-      - name: sbt scalafix
+      - name: sbt scalafixAll --check
         working-directory: arktwin
         run: sbt "scalafixAll --check"
 
       # check before automatic execution at compile time
-      - name: sbt scalafmtCheck
+      - name: sbt scalafmtCheckAll
         working-directory: arktwin
         run: sbt scalafmtCheckAll
 
