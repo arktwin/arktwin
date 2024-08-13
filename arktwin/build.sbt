@@ -22,24 +22,26 @@ val apacheLicenseV2 = Some(
   )
 )
 
-ThisBuild / scalaVersion := "3.5.0"
-ThisBuild / scalacOptions ++= Seq(
-  "-deprecation",
-  "-feature",
-  "-unchecked",
-  "-Xmax-inlines",
-  "64",
-  "-Wconf:src=pekko-grpc/.*:silent",
-  "-Wunused:all"
-)
-ThisBuild / scalafmtOnCompile := true
-ThisBuild / semanticdbEnabled := true
-ThisBuild / headerEmptyLine := false
-ThisBuild / versionScheme := Some("semver-spec")
-ThisBuild / publish / skip := true
-ThisBuild / run / fork := true
-ThisBuild / Test / fork := true
-ThisBuild / outputStrategy := Some(StdoutOutput)
+inThisBuild(List(
+  scalaVersion := "3.5.0",
+  scalacOptions ++= Seq(
+    "-deprecation",
+    "-feature",
+    "-unchecked",
+    "-Xmax-inlines",
+    "64",
+    "-Wconf:src=pekko-grpc/.*:silent",
+    "-Wunused:all"
+  ),
+  scalafmtOnCompile := true,
+  semanticdbEnabled := true,
+  headerEmptyLine := false,
+  versionScheme := Some("semver-spec"),
+  publish / skip := true,
+  run / fork := true,
+  Test / fork := true,
+  outputStrategy := Some(StdoutOutput)
+))
 
 lazy val root = (project in file("."))
   .aggregate(common, center, edge, e2e)
