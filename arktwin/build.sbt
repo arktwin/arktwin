@@ -22,17 +22,18 @@ val apacheLicenseV2 = Some(
   )
 )
 
-ThisBuild / scalaVersion := "3.3.3"
+ThisBuild / scalaVersion := "3.5.0"
 ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
   "-feature",
   "-unchecked",
   "-Xmax-inlines",
-  "64"
-  // "-Wconf:src=pekko-grpc/.*:silent", // try after Scala 3.5.0
-  // "-Wunused:all"
+  "64",
+  "-Wconf:src=pekko-grpc/.*:silent",
+  "-Wunused:all"
 )
 ThisBuild / scalafmtOnCompile := true
+ThisBuild / semanticdbEnabled := true
 ThisBuild / headerEmptyLine := false
 ThisBuild / versionScheme := Some("semver-spec")
 ThisBuild / publish / skip := true
