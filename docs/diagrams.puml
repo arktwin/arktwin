@@ -6,8 +6,8 @@ frame "Remote Network" {
     agent "<color:#gray>Conductor</color>" as Conductor
 
     agent "Atlas" as Atlas
-    collections "Atlas/\nChartRecorder" as ChartRecorder
-    collections "Atlas/\nChartRouter" as ChartRouter
+    collections "ChartRecorder" as ChartRecorder
+    collections "ChartRouter" as ChartRouter
 
     agent "Clock" as ClockC
     agent "<color:#gray>Reporter</color>" as ReporterC
