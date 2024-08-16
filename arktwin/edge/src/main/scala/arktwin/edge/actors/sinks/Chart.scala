@@ -7,7 +7,7 @@ import arktwin.common.MailboxConfig
 import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.Vector3EnuEx.*
-import arktwin.edge.DynamicEdgeConfig.CullingConfig
+import arktwin.edge.CullingConfig
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.util.CommonMessages.Nop
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn

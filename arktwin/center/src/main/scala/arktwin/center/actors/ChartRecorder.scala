@@ -2,7 +2,7 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.center.actors
 
-import arktwin.center.DynamicCenterConfig.AtlasConfig
+import arktwin.center.AtlasConfig
 import arktwin.center.actors.Atlas.PartitionIndex
 import arktwin.center.util.CommonMessages.Terminate
 import org.apache.pekko.actor.typed.scaladsl.Behaviors

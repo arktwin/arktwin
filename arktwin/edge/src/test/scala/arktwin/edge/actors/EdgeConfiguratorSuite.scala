@@ -2,7 +2,7 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge.actors
 
-import arktwin.edge.DynamicEdgeConfig.CullingConfig
+import arktwin.edge.CullingConfig
 import arktwin.edge.data.{CoordinateConfig, QuaternionConfig}
 import arktwin.edge.endpoints.EdgeConfigGet
 import arktwin.edge.test.ActorTestBase

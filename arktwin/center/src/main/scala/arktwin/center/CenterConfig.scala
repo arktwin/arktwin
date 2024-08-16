@@ -35,7 +35,7 @@ object CenterConfig:
     configSource.at("arktwin.center").loadOrThrow[CenterConfig]
 
 case class StaticCenterConfig(
-    clock: StaticCenterConfig.ClockConfig,
+    clock: ClockConfig,
     runIdPrefix: String,
     host: String,
     port: Int,
@@ -48,36 +48,34 @@ case class StaticCenterConfig(
 
 // TODO changeable via Admin API
 case class DynamicCenterConfig(
-    atlas: DynamicCenterConfig.AtlasConfig
+    atlas: AtlasConfig
 )
 
-object DynamicCenterConfig:
-  case class AtlasConfig(
-      culling: AtlasConfig.Culling,
-      interval: FiniteDuration
+case class AtlasConfig(
+    culling: AtlasConfig.Culling,
+    interval: FiniteDuration
+)
+
+object AtlasConfig:
+  sealed trait Culling
+  case class Broadcast() extends Culling
+  case class GridCulling(gridCellSize: Vector3Enu) extends Culling
+
+case class ClockConfig(
+    start: ClockConfig.Start
+)
+
+object ClockConfig:
+  case class Start(
+      initialTime: Start.InitialTime,
+      clockSpeed: Double,
+      condition: Start.Condition
   )
 
-  object AtlasConfig:
-    sealed trait Culling
-    case class Broadcast() extends Culling
-    case class GridCulling(gridCellSize: Vector3Enu) extends Culling
-
-object StaticCenterConfig:
-  case class ClockConfig(
-      start: ClockConfig.Start
-  )
-
-  object ClockConfig:
-    case class Start(
-        initialTime: Start.InitialTime,
-        clockSpeed: Double,
-        condition: Start.Condition
-    )
-
-    object Start:
-      sealed trait InitialTime
-      case class Absolute(absolute: Timestamp) extends InitialTime
-      case class Relative(relative: Duration) extends InitialTime
-      sealed trait Condition
-      case class Schedule(schedule: Duration) extends Condition
-      // TODO case class Agents(agents: Map[String, Int], agentsCheckInterval: Duration) extends Condition
+  object Start:
+    sealed trait InitialTime
+    case class Absolute(absolute: Timestamp) extends InitialTime
+    case class Relative(relative: Duration) extends InitialTime
+    sealed trait Condition
+    case class Schedule(schedule: Duration) extends Condition
+    // TODO case class Agents(agents: Map[String, Int], agentsCheckInterval: Duration) extends Condition

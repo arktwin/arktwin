@@ -4,7 +4,7 @@ package arktwin.edge.actors.sinks
 
 import arktwin.center.services.ChartAgent
 import arktwin.common.data.{QuaternionEnu, Timestamp, TransformEnu, Vector3Enu}
-import arktwin.edge.DynamicEdgeConfig.CullingConfig
+import arktwin.edge.CullingConfig
 import arktwin.edge.endpoints.EdgeConfigGet
 import arktwin.edge.test.ActorTestBase
 

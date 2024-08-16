@@ -48,16 +48,15 @@ object EdgeConfig:
 
 case class DynamicEdgeConfig(
     coordinate: CoordinateConfig,
-    culling: DynamicEdgeConfig.CullingConfig
+    culling: CullingConfig
 )
 
-object DynamicEdgeConfig:
-  case class CullingConfig(
-      @description("If true, edge culling is enabled.")
-      edgeCulling: Boolean,
-      @description("If first agents is greater than maxFirstAgents, edge culling is disabled.")
-      maxFirstAgents: Int
-  )
+case class CullingConfig(
+    @description("If true, edge culling is enabled.")
+    edgeCulling: Boolean,
+    @description("If first agents is greater than maxFirstAgents, edge culling is disabled.")
+    maxFirstAgents: Int
+)
 
 case class StaticEdgeConfig(
     edgeIdPrefix: String,

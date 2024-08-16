@@ -2,7 +2,7 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.center.actors
 
-import arktwin.center.DynamicCenterConfig.AtlasConfig
+import arktwin.center.AtlasConfig
 import arktwin.center.actors.ChartRecorder.ChartRecord
 import arktwin.center.util.CenterKamon
 import arktwin.common.MailboxConfig
