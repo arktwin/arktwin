@@ -3,7 +3,7 @@
 package arktwin.center.actors
 
 import arktwin.center.DynamicCenterConfig.AtlasConfig
-import arktwin.center.actors.Atlas.{ChartRecord, PartitionIndex}
+import arktwin.center.actors.Atlas.PartitionIndex
 import arktwin.center.util.CommonMessages.Terminate
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
@@ -17,19 +17,22 @@ object ChartRecorder:
       replyTo: ActorRef[ChartRecord]
   )
 
+  // TODO should depend on the config?
+  case class ChartRecord(edgeId: String, config: AtlasConfig, indexes: Set[PartitionIndex])
+
   def apply(edgeId: String, initialConfig: AtlasConfig): Behavior[Message] =
     var config = initialConfig
     var indexes = mutable.Set[PartitionIndex]()
 
     Behaviors.receiveMessage:
-      case publish: ChartRouter.PublishBatch =>
+      case publishBatch: ChartRouter.PublishBatch =>
         // TODO consider relative coordinates
 
         config.culling match
           case AtlasConfig.Broadcast() =>
 
           case AtlasConfig.GridCulling(gridCellSize) =>
-            for agent <- publish.agents do
+            for agent <- publishBatch.agents do
               indexes.add(
                 PartitionIndex(
                   math.floor(agent.transform.localTranslationMeter.x / gridCellSize.x).toInt,
@@ -40,7 +43,7 @@ object ChartRecorder:
         Behaviors.same
 
       case Collect(newConfig, replyTo) =>
-        replyTo ! Atlas.ChartRecord(edgeId, config, indexes.toSet)
+        replyTo ! ChartRecord(edgeId, config, indexes.toSet)
         config = newConfig
         indexes = mutable.Set()
         Behaviors.same

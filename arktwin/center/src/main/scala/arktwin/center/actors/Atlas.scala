@@ -3,6 +3,7 @@
 package arktwin.center.actors
 
 import arktwin.center.DynamicCenterConfig.AtlasConfig
+import arktwin.center.actors.ChartRecorder.ChartRecord
 import arktwin.center.util.CenterKamon
 import arktwin.common.MailboxConfig
 import arktwin.common.data.Vector3Enu
@@ -30,9 +31,6 @@ object Atlas:
         yd <- Seq(-1, 0, 1)
         zd <- Seq(-1, 0, 1)
       yield PartitionIndex(x + xd, y + yd, z + zd)
-
-  // TODO should depend on the config?
-  case class ChartRecord(edgeId: String, config: AtlasConfig, indexes: Set[PartitionIndex])
 
   def spawn(
       config: AtlasConfig,
@@ -100,7 +98,6 @@ object Atlas:
         case AddSubscriber(edgeId, subscriber) =>
           context.watchWith(subscriber, RemoveSubscriber(edgeId))
           subscribers += edgeId -> subscriber
-          context.log.info(s"spawned a subscriber for $edgeId: ${subscriber.path}")
           Behaviors.same
 
         case RemoveSubscriber(edgeId) =>

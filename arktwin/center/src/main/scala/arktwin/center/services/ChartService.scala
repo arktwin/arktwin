@@ -41,17 +41,15 @@ class ChartService(
     val publishBatchNumCounter = kamon.chartPublishBatchNumCounter(edgeId)
     val publishMachineLatencyHistogram = kamon.chartPublishMachineLatencyHistogram(edgeId)
 
-    val chartRecorderFuture = atlas ? (Atlas.SpawnRecorder(
-      edgeId,
-      _: ActorRef[ActorRef[ChartRecorder.Message]]
-    ))
-    val chartRouterFuture = atlas ? (Atlas.SpawnRouter(
-      edgeId,
-      _: ActorRef[ActorRef[ChartRouter.Message]]
-    ))
     for
-      chartRecorder <- chartRecorderFuture
-      chartRouter <- chartRouterFuture
+      chartRecorder <- atlas ? (Atlas.SpawnRecorder(
+        edgeId,
+        _: ActorRef[ActorRef[ChartRecorder.Message]]
+      ))
+      chartRouter <- atlas ? (Atlas.SpawnRouter(
+        edgeId,
+        _: ActorRef[ActorRef[ChartRouter.Message]]
+      ))
     do
       in
         .log(logName)
@@ -124,5 +122,6 @@ class ChartService(
         ChartSubscribeBatch(subscribeBatch.flatMap(_.agents), currentMachineTimestamp)
       .preMaterialize()
     atlas ! Atlas.AddSubscriber(edgeId, subscriber)
+    scribe.info(s"spawned a subscriber for $edgeId: ${subscriber.path}")
     scribe.info(s"[$logName] connected")
     source
