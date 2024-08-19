@@ -38,7 +38,7 @@ object Atlas:
   ): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(config, kamon),
     getClass.getSimpleName,
-    MailboxConfig(getClass.getName),
+    MailboxConfig(this),
     _
   )
 
@@ -57,7 +57,7 @@ object Atlas:
         case SpawnRecorder(edgeId, replyTo) =>
           val recorder = context.spawnAnonymous(
             ChartRecorder(edgeId, config),
-            MailboxConfig(ChartRecorder.getClass.getName)
+            MailboxConfig(ChartRecorder)
           )
           replyTo ! recorder
           context.watchWith(recorder, RemoveRecorder(edgeId))
@@ -83,7 +83,7 @@ object Atlas:
 
           val router = context.spawnAnonymous(
             ChartRouter(edgeId, initialRouteTable, kamon),
-            MailboxConfig(ChartRouter.getClass.getName)
+            MailboxConfig(ChartRouter)
           )
           replyTo ! router
           context.watchWith(router, RemoveRouter(edgeId))

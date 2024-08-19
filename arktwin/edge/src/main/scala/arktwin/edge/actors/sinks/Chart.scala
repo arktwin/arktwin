@@ -32,7 +32,7 @@ object Chart:
   ): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(initCullingConfig),
     getClass.getSimpleName,
-    MailboxConfig(getClass.getName),
+    MailboxConfig(this),
     _
   )
 

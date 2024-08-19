@@ -45,7 +45,7 @@ object EdgeNeighborsQueryAdapter:
     Spawn(
       apply(chart, clock, register, staticConfig, initCoordinateConfig, kamon),
       getClass.getSimpleName,
-      MailboxConfig(getClass.getName),
+      MailboxConfig(this),
       _
     )
 

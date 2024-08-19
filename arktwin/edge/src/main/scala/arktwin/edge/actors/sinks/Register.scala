@@ -22,7 +22,7 @@ object Register:
   def spawn(): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(),
     getClass.getSimpleName,
-    MailboxConfig(getClass.getName),
+    MailboxConfig(this),
     _
   )
 

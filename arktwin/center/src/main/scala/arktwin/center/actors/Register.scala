@@ -27,7 +27,7 @@ object Register:
   case class RemoveSubscriber(edgeId: String)
 
   def spawn(runId: String): ActorRef[ActorRef[Message]] => Spawn[Message] =
-    Spawn(apply(runId), getClass.getSimpleName, MailboxConfig(getClass.getName), _)
+    Spawn(apply(runId), getClass.getSimpleName, MailboxConfig(this), _)
 
   // single substitution cipher so that clients cannot depend on definitive IDs
   private val idSuffixCharacters = Random.shuffle("0123456789abcdefghijklmnopqrstuvwxyz")

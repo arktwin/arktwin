@@ -44,7 +44,7 @@ object EdgeAgentsPutAdapter:
     Spawn(
       apply(chart, chartPublish, registerPublish, clock, staticConfig, initCoordinateConfig, kamon),
       getClass.getSimpleName,
-      MailboxConfig(getClass.getName),
+      MailboxConfig(this),
       _
     )
 
