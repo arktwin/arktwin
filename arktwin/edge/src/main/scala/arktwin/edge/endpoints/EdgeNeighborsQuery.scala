@@ -95,7 +95,7 @@ object EdgeNeighborsQuery:
       endpoint.serverLogic: request =>
         val requestTime = Timestamp.machineNow()
         adapter
-          .?[Either[ErrorStatus, Response]](EdgeNeighborsQueryAdapter.QueryMessage(request, _))
+          .?[Either[ErrorStatus, Response]](EdgeNeighborsQueryAdapter.Query(request, _))
           .recover(ErrorStatus.handleFailure)
           .andThen: _ =>
             requestNumCounter.increment()

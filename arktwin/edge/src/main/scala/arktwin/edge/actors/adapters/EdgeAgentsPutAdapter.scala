@@ -24,8 +24,8 @@ import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
 object EdgeAgentsPutAdapter:
-  type Message = PutMessage | CoordinateConfig | Report
-  case class PutMessage(
+  type Message = Put | CoordinateConfig | Report
+  case class Put(
       request: Request,
       restReceptionMachineTimestamp: Timestamp,
       replyTo: ActorRef[Either[ErrorStatus, Response]]
@@ -33,10 +33,10 @@ object EdgeAgentsPutAdapter:
   case class Report(previousAgents: Map[String, TransformEnu])
 
   def spawn(
-      chart: ActorRef[Chart.FirstAgentsUpdate],
+      chart: ActorRef[Chart.UpdateFirstAgents],
       chartPublish: ActorRef[ChartConnector.Publish],
       registerPublish: ActorRef[RegisterConnector.Publish],
-      clock: ActorRef[Clock.Read],
+      clock: ActorRef[Clock.Get],
       staticConfig: StaticEdgeConfig,
       initCoordinateConfig: CoordinateConfig,
       kamon: EdgeKamon
@@ -49,10 +49,10 @@ object EdgeAgentsPutAdapter:
     )
 
   def apply(
-      chart: ActorRef[Chart.FirstAgentsUpdate],
+      chart: ActorRef[Chart.UpdateFirstAgents],
       chartPublish: ActorRef[ChartConnector.Publish],
       registerPublish: ActorRef[RegisterConnector.Publish],
-      clock: ActorRef[Clock.Read],
+      clock: ActorRef[Clock.Get],
       staticConfig: StaticEdgeConfig,
       initCoordinateConfig: CoordinateConfig,
       kamon: EdgeKamon
@@ -69,7 +69,7 @@ object EdgeAgentsPutAdapter:
 
     Behaviors.receiveMessage:
       // TODO filter registered agents
-      case putMessage: PutMessage =>
+      case putMessage: Put =>
         optionalPreviousAgents match
           case Some(previousAgents) =>
             context.spawnAnonymous(
@@ -106,20 +106,20 @@ object EdgeAgentsPutAdapter:
   private type ChildMessage = ClockBase | Timeout.type
 
   private def child(
-      putMessage: PutMessage,
+      putMessage: Put,
       previousAgents: Map[String, TransformEnu],
       parent: ActorRef[Report],
-      chart: ActorRef[Chart.FirstAgentsUpdate],
+      chart: ActorRef[Chart.UpdateFirstAgents],
       chartPublish: ActorRef[ChartConnector.Publish],
       registerPublish: ActorRef[RegisterConnector.Publish],
-      clock: ActorRef[Clock.Read],
+      clock: ActorRef[Clock.Get],
       simulationLatencyHistogram: Histogram,
       staticConfig: StaticEdgeConfig,
       coordinateConfig: CoordinateConfig
   ): Behavior[ChildMessage] = Behaviors.setup: context =>
     context.setReceiveTimeout(staticConfig.actorTimeout, Timeout)
 
-    clock ! Clock.Read(context.self)
+    clock ! Clock.Get(context.self)
     var clockWait = Option.empty[ClockBase]
 
     def next(): Behavior[ChildMessage] = clockWait match
@@ -144,7 +144,7 @@ object EdgeAgentsPutAdapter:
               transform.toEnu(requestTimestamp, previousAgents.get(agentId), coordinateConfig)
             )
         parent ! Report(agents.view.mapValues(_.transform).toMap)
-        chart ! Chart.FirstAgentsUpdate(agents.values.toSeq)
+        chart ! Chart.UpdateFirstAgents(agents.values.toSeq)
         chartPublish ! ChartConnector.Publish(
           agents.values.toSeq,
           putMessage.restReceptionMachineTimestamp

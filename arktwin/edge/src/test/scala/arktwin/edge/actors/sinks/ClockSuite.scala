@@ -15,9 +15,9 @@ class ClockSuite extends ActorTestBase:
     val clockReader = testKit.createTestProbe[ClockBase]()
 
     clock ! Catch(ClockBase(Timestamp(1, 2), Timestamp(3, 4), 5.6))
-    clock ! Read(clockReader.ref)
+    clock ! Get(clockReader.ref)
     clockReader.receiveMessage() shouldEqual ClockBase(Timestamp(1, 2), Timestamp(3, 4), 5.6)
 
     clock ! Catch(ClockBase(Timestamp(11, 22), Timestamp(33, 44), 55.66))
-    clock ! Read(clockReader.ref)
+    clock ! Get(clockReader.ref)
     clockReader.receiveMessage() shouldEqual ClockBase(Timestamp(11, 22), Timestamp(33, 44), 55.66)

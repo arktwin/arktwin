@@ -14,15 +14,15 @@ import scala.collection.mutable
 import scala.util.Random
 
 object Register:
-  type Message = EdgeCreate | AgentsCreate | AgentsUpdate | AgentsDelete | AddSubscriber |
+  type Message = CreateEdge | CreateAgents | UpdateAgents | DeleteAgents | AddSubscriber |
     RemoveSubscriber | Nop.type
-  case class EdgeCreate(request: EdgeCreateRequest, replyTo: ActorRef[EdgeCreateResponse])
-  case class AgentsCreate(
-      requests: EdgeAgentsPostRequests,
-      replyTo: ActorRef[EdgeAgentsPostResponses]
+  case class CreateEdge(request: CreateEdgeRequest, replyTo: ActorRef[CreateEdgeResponse])
+  case class CreateAgents(
+      requests: CreateAgentsRequest,
+      replyTo: ActorRef[CreateAgentsResponse]
   )
-  case class AgentsUpdate(request: RegisterAgentsPublish)
-  case class AgentsDelete(agentSelector: AgentSelector)
+  case class UpdateAgents(request: RegisterAgentsPublish)
+  case class DeleteAgents(agentSelector: AgentSelector)
   case class AddSubscriber(edgeId: String, subscriber: ActorRef[RegisterAgentsSubscribe])
   case class RemoveSubscriber(edgeId: String)
 
@@ -46,23 +46,23 @@ object Register:
     var subscribers = Map[String, ActorRef[RegisterAgentsSubscribe]]()
 
     Behaviors.receiveMessage:
-      case EdgeCreate(request, replyTo) =>
+      case CreateEdge(request, replyTo) =>
         edgeNum += 1
         val id = issueId(request.edgeIdPrefix, edgeNum)
-        replyTo ! EdgeCreateResponse(id, runId)
+        replyTo ! CreateEdgeResponse(id, runId)
         Behaviors.same
 
-      case AgentsCreate(requests, replyTo) =>
+      case CreateAgents(requests, replyTo) =>
         val newAgents = for request <- requests.requests yield
           agentNum += 1
           val id = issueId(request.agentIdPrefix, agentNum)
           RegisterAgent(id, request.kind, request.status, request.assets)
-        replyTo ! EdgeAgentsPostResponses(newAgents.map(a => EdgeAgentsPostResponse(a.agentId)))
+        replyTo ! CreateAgentsResponse(newAgents.map(a => CreateAgentResponse(a.agentId)))
         for subscriber <- subscribers.values do subscriber ! RegisterAgentsSubscribe(newAgents)
         agents ++= newAgents.map(a => a.agentId -> a)
         Behaviors.same
 
-      case AgentsUpdate(request) =>
+      case UpdateAgents(request) =>
         for subscriber <- subscribers.values do subscriber ! RegisterAgentsSubscribe(request.agents)
         for agent <- request.agents do
           for oldAgent <- agents.get(agent.agentId) do
@@ -74,7 +74,7 @@ object Register:
             )
         Behaviors.same
 
-      case AgentsDelete(agentSelector) =>
+      case DeleteAgents(agentSelector) =>
         val deletingIds = agentSelector match
           case AgentIdSelector(regex) =>
             try

@@ -19,10 +19,10 @@ import org.apache.pekko.dispatch.ControlMessage
 import scala.collection.mutable
 
 object Chart:
-  type Message = Catch | Read | FirstAgentsUpdate | CullingConfig | Nop.type
+  type Message = Catch | Get | UpdateFirstAgents | CullingConfig | Nop.type
   case class Catch(agent: ChartAgent)
-  case class Read(replyTo: ActorRef[ReadReply]) extends ControlMessage
-  case class FirstAgentsUpdate(agents: Seq[ChartAgent])
+  case class Get(replyTo: ActorRef[ReadReply]) extends ControlMessage
+  case class UpdateFirstAgents(agents: Seq[ChartAgent])
 
   case class ReadReply(sortedAgents: Seq[CullingAgent]) extends AnyVal
   case class CullingAgent(agent: ChartAgent, nearestDistance: Option[Double])
@@ -70,14 +70,14 @@ object Chart:
           orderedAgents += (distance, agent.agentId) -> agent
         Behaviors.same
 
-      case Read(actorRef) =>
+      case Get(actorRef) =>
         actorRef ! ReadReply(orderedAgents.toSeq.map:
           case ((dist, _), agent) =>
             CullingAgent(agent, Some(dist).filter(_.isFinite))
         )
         Behaviors.same
 
-      case FirstAgentsUpdate(newFirstAgents) =>
+      case UpdateFirstAgents(newFirstAgents) =>
         if cullingConfig.edgeCulling then
           if newFirstAgents.size <= cullingConfig.maxFirstAgents then firstAgents = newFirstAgents
           else

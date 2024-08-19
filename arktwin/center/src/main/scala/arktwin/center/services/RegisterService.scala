@@ -26,14 +26,14 @@ class RegisterService(
     Scheduler,
     Timeout
 ) extends RegisterPowerApi:
-  override def edgeCreate(in: EdgeCreateRequest, metadata: Metadata): Future[EdgeCreateResponse] =
-    register ? (Register.EdgeCreate(in, _))
+  override def createEdge(in: CreateEdgeRequest, metadata: Metadata): Future[CreateEdgeResponse] =
+    register ? (Register.CreateEdge(in, _))
 
-  override def edgeAgentsPost(
-      in: EdgeAgentsPostRequests,
+  override def createAgents(
+      in: CreateAgentsRequest,
       metadata: Metadata
-  ): Future[EdgeAgentsPostResponses] =
-    register ? (Register.AgentsCreate(in, _))
+  ): Future[CreateAgentsResponse] =
+    register ? (Register.CreateAgents(in, _))
 
   override def publish(
       in: Source[RegisterAgentsPublish, NotUsed],
@@ -50,7 +50,7 @@ class RegisterService(
           onFinish = Attributes.LogLevels.Warning
         )
       )
-      .map(Register.AgentsUpdate(_))
+      .map(Register.UpdateAgents(_))
       .to(ActorSink.actorRef(register, Nop, _ => Nop))
       .run()
     scribe.info(s"[$logName] connected")

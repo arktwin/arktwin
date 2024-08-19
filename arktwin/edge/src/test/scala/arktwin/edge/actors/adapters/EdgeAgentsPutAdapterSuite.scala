@@ -22,11 +22,11 @@ import scala.collection.mutable
 class EdgeAgentsPutAdapterSuite extends ActorTestBase:
   test(EdgeAgentsPutAdapter.getClass.getSimpleName):
     val config = EdgeConfigGet.outExample
-    val chart = testKit.createTestProbe[Chart.FirstAgentsUpdate]()
+    val chart = testKit.createTestProbe[Chart.UpdateFirstAgents]()
     val chartPublish = testKit.createTestProbe[ChartConnector.Publish]()
     val registerPublish = testKit.createTestProbe[RegisterConnector.Publish]()
     val clockReadQueue = mutable.Queue[ClockBase]()
-    val clock = testKit.spawn[Clock.Read](Behaviors.receiveMessage { case Clock.Read(replyTo) =>
+    val clock = testKit.spawn[Clock.Get](Behaviors.receiveMessage { case Clock.Get(replyTo) =>
       replyTo ! clockReadQueue.dequeue()
       Behaviors.same
     })
@@ -46,7 +46,7 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
 
     adapter ! CoordinateConfig(Vector3Config(Meter, Second, East, North, Up), QuaternionConfig)
     clockReadQueue += ClockBase(Timestamp(0, 0), Timestamp(0, 0), 1)
-    adapter ! PutMessage(
+    adapter ! Put(
       Request(
         Some(Timestamp(1, 0)),
         Map(
@@ -70,7 +70,7 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
     )
 
     clockReadQueue += ClockBase(Timestamp(0, 0), Timestamp(0, 0), 1)
-    adapter ! PutMessage(
+    adapter ! Put(
       Request(
         Some(Timestamp(1, 500_000_000)),
         Map(

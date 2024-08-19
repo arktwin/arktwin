@@ -10,10 +10,10 @@ import scala.concurrent.Future
 
 class AdminService(clock: ActorRef[Clock.Message], register: ActorRef[Register.Message])
     extends Admin:
-  override def centerClockSpeedPut(in: CenterClockSpeedPutRequest): Future[Empty] =
-    clock ! Clock.SpeedUpdate(in.clockSpeed)
+  override def updateClockSpeed(in: UpdateClockSpeedRequest): Future[Empty] =
+    clock ! Clock.UpdateSpeed(in.clockSpeed)
     Future.successful(Empty())
 
-  override def centerAgentsDelete(in: AgentSelectorMessage): Future[Empty] =
-    register ! Register.AgentsDelete(in.toAgentSelector)
+  override def deleteAgents(in: AgentSelectorMessage): Future[Empty] =
+    register ! Register.DeleteAgents(in.toAgentSelector)
     Future.successful(Empty())

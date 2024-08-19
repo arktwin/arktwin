@@ -7,11 +7,11 @@ import "scalapb/scalapb.proto";
 import "validate/validate.proto";
 
 service Admin {
-  rpc CenterClockSpeedPut(CenterClockSpeedPutRequest) returns (google.protobuf.Empty);
-  rpc CenterAgentsDelete(AgentSelector) returns (google.protobuf.Empty);
+  rpc UpdateClockSpeed(UpdateClockSpeedRequest) returns (google.protobuf.Empty);
+  rpc DeleteAgents(AgentSelector) returns (google.protobuf.Empty);
 }
 
-message CenterClockSpeedPutRequest {
+message UpdateClockSpeedRequest {
   double clock_speed = 1 [
     (scalapb.field).annotations = '@description("&gt;= 0")',
     (validate.rules).double = {gte: 0}

@@ -2,7 +2,7 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge
 
-import arktwin.center.services.EdgeCreateRequest
+import arktwin.center.services.CreateEdgeRequest
 import arktwin.common.LoggerConfigurator.LogLevel
 import arktwin.edge.data.CoordinateConfig
 import com.typesafe.config.Config
@@ -36,7 +36,7 @@ object EdgeConfig:
 
   def loadOrThrow(): EdgeConfig =
     val config = configSource.at("arktwin.edge").loadOrThrow[EdgeConfig]
-    Validator[EdgeCreateRequest].validate(EdgeCreateRequest(config.static.edgeIdPrefix)) match
+    Validator[CreateEdgeRequest].validate(CreateEdgeRequest(config.static.edgeIdPrefix)) match
       case Failure(violations) =>
         throw RuntimeException(
           "edge id prefix (arktwin.edge.static.edgeIdPrefix or ARKTWIN_EDGE_STATIC_EDGE_ID_PREFIX) " + violations

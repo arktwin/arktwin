@@ -17,8 +17,8 @@ import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import scala.concurrent.duration.DurationDouble
 
 object Clock:
-  type Message = SpeedUpdate | AddSubscriber | RemoveSubscriber
-  case class SpeedUpdate(clockSpeed: Double)
+  type Message = UpdateSpeed | AddSubscriber | RemoveSubscriber
+  case class UpdateSpeed(clockSpeed: Double)
   case class AddSubscriber(edgeId: String, subscriber: ActorRef[ClockBase])
   case class RemoveSubscriber(edgeId: String)
 
@@ -41,7 +41,7 @@ object Clock:
 
         case Schedule(schedule) =>
           initialUpdateSpeedTimer.startSingleTimer(
-            SpeedUpdate(config.start.clockSpeed),
+            UpdateSpeed(config.start.clockSpeed),
             schedule.secondsDouble.seconds
           )
           ClockBase(baseMachineTimestamp, baseTimestamp, 0)
@@ -52,7 +52,7 @@ object Clock:
       var initialUpdateSpeedTimerFlag = true
 
       Behaviors.receiveMessage:
-        case SpeedUpdate(clockSpeed) =>
+        case UpdateSpeed(clockSpeed) =>
           if initialUpdateSpeedTimerFlag then
             initialUpdateSpeedTimer.cancelAll()
             initialUpdateSpeedTimerFlag = false

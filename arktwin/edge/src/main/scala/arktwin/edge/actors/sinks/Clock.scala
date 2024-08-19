@@ -12,9 +12,9 @@ import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import org.apache.pekko.dispatch.ControlMessage
 
 object Clock:
-  type Message = Catch | Read | Nop.type
+  type Message = Catch | Get | Nop.type
   case class Catch(clockBase: ClockBase)
-  case class Read(replyTo: ActorRef[ClockBase]) extends ControlMessage
+  case class Get(replyTo: ActorRef[ClockBase]) extends ControlMessage
 
   def spawn(staticConfig: StaticEdgeConfig): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(staticConfig),
@@ -42,7 +42,7 @@ object Clock:
         context.log.info(newClockBase.toString)
         Behaviors.same
 
-      case Read(replyTo) =>
+      case Get(replyTo) =>
         replyTo ! clockBase
         Behaviors.same
 

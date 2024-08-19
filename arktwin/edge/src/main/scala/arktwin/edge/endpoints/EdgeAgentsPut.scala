@@ -109,7 +109,7 @@ object EdgeAgentsPut:
         val requestTime = Timestamp.machineNow()
         adapter
           .?[Either[ErrorStatus, Response]](
-            EdgeAgentsPutAdapter.PutMessage(request, Timestamp.machineNow(), _)
+            EdgeAgentsPutAdapter.Put(request, Timestamp.machineNow(), _)
           )
           .recover(ErrorStatus.handleFailure)
           .andThen: _ =>

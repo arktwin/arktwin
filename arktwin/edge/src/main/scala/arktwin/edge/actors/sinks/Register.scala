@@ -13,9 +13,9 @@ import org.apache.pekko.dispatch.ControlMessage
 import scala.collection.mutable
 
 object Register:
-  type Message = Catch | Read | Nop.type
+  type Message = Catch | Get | Nop.type
   case class Catch(response: RegisterAgentSubscribe)
-  case class Read(replyTo: ActorRef[ReadReply]) extends ControlMessage
+  case class Get(replyTo: ActorRef[ReadReply]) extends ControlMessage
 
   case class ReadReply(value: Map[String, RegisterAgent]) extends AnyVal
 
@@ -47,7 +47,7 @@ object Register:
       case Catch(RegisterAgentSubscribe.Empty) =>
         Behaviors.same
 
-      case Read(replyTo) =>
+      case Get(replyTo) =>
         replyTo ! ReadReply(agents.toMap)
         Behaviors.same
 
