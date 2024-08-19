@@ -26,10 +26,11 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
     val chartPublish = testKit.createTestProbe[ChartConnector.Publish]()
     val registerPublish = testKit.createTestProbe[RegisterConnector.Publish]()
     val clockReadQueue = mutable.Queue[ClockBase]()
-    val clock = testKit.spawn[Clock.Get](Behaviors.receiveMessage { case Clock.Get(replyTo) =>
-      replyTo ! clockReadQueue.dequeue()
-      Behaviors.same
-    })
+    val clock = testKit.spawn[Clock.Get](Behaviors.receiveMessage:
+      case Clock.Get(replyTo) =>
+        replyTo ! clockReadQueue.dequeue()
+        Behaviors.same
+    )
     val adapter =
       testKit.spawn(
         EdgeAgentsPutAdapter(
