@@ -2,7 +2,6 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge.util
 
-import arktwin.edge.util.JsonDerivation.given
 import com.github.plokhotnyuk.jsoniter_scala.core.*
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
@@ -11,6 +10,8 @@ import scala.concurrent.duration.{FiniteDuration, SECONDS}
 
 class JsonDerivationSuite extends AnyFunSuite with Matchers:
   test("codecFiniteDuration"):
+    import arktwin.edge.util.JsonDerivation.codecFiniteDuration
+
     readFromString[FiniteDuration]("\"273 seconds\"") shouldEqual FiniteDuration(273, SECONDS)
     writeToString(FiniteDuration(273, SECONDS)) shouldEqual "\"273 seconds\""
 

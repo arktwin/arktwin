@@ -8,8 +8,8 @@ import arktwin.common.data.TimestampEx.*
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 
-class ClockBaseMethodsSuite extends AnyFunSuite with Matchers:
-  test("ClockBaseMethods"):
+class ClockBaseSuite extends AnyFunSuite with Matchers:
+  test(ClockBase.getClass.getSimpleName):
     val timestamp = ClockBase(
       Timestamp.parse("2000-01-01T01:01:01.111+09:00"),
       Timestamp.parse("2000-01-01T01:02:01.111+09:00"),

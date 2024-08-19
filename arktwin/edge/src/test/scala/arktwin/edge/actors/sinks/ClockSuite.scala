@@ -4,13 +4,12 @@ package arktwin.edge.actors.sinks
 
 import arktwin.center.services.ClockBase
 import arktwin.common.data.Timestamp
+import arktwin.edge.actors.sinks.Clock.*
 import arktwin.edge.endpoints.EdgeConfigGet
 import arktwin.edge.test.ActorTestBase
 
 class ClockSuite extends ActorTestBase:
-  import Clock.*
-
-  test("Clock"):
+  test(Clock.getClass.getSimpleName):
     val config = EdgeConfigGet.outExample
     val clock = testKit.spawn(Clock(config.static))
     val clockReader = testKit.createTestProbe[ClockBase]()

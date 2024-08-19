@@ -4,6 +4,7 @@ package arktwin.edge.actors.adapters
 
 import arktwin.center.services.{ChartAgent, ClockBase, RegisterAgent}
 import arktwin.common.data.{QuaternionEnu, Timestamp, TransformEnu, Vector3Enu}
+import arktwin.edge.actors.adapters.EdgeNeighborsQueryAdapter.*
 import arktwin.edge.actors.sinks.Chart.CullingAgent
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
 import arktwin.edge.data.*
@@ -22,9 +23,7 @@ import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import scala.collection.mutable
 
 class EdgeNeighborsQueryAdapterSuite extends ActorTestBase:
-  import EdgeNeighborsQueryAdapter.*
-
-  test("EdgeNeighborsQueryAdapter"):
+  test(EdgeNeighborsQueryAdapter.getClass.getSimpleName):
     val config = EdgeConfigGet.outExample
     val chartReadQueue = mutable.Queue[Seq[CullingAgent]]()
     val chart = testKit.spawn[Chart.Read](Behaviors.receiveMessage { case Chart.Read(replyTo) =>

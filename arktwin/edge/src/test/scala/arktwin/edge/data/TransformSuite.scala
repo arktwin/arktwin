@@ -39,7 +39,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
 
   // TODO test rotation matrix
   // TODO test cases referring scipy.spatial.transform?
-  test("Rotation"):
+  test("rotation"):
     for
       vector3Setting <-
         import Vector3Config.Direction.*

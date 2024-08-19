@@ -3,12 +3,11 @@
 package arktwin.edge.actors.sinks
 
 import arktwin.center.services.{RegisterAgent, RegisterAgentDeleted, RegisterAgentUpdated}
+import arktwin.edge.actors.sinks.Register.*
 import arktwin.edge.test.ActorTestBase
 
 class RegisterSuite extends ActorTestBase:
-  import Register.*
-
-  test("Register"):
+  test(Register.getClass.getSimpleName):
     val register = testKit.spawn(Register())
     val reader = testKit.createTestProbe[ReadReply]()
 

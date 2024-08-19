@@ -5,13 +5,12 @@ package arktwin.edge.actors.sinks
 import arktwin.center.services.ChartAgent
 import arktwin.common.data.{QuaternionEnu, Timestamp, TransformEnu, Vector3Enu}
 import arktwin.edge.CullingConfig
+import arktwin.edge.actors.sinks.Chart.*
 import arktwin.edge.endpoints.EdgeConfigGet
 import arktwin.edge.test.ActorTestBase
 
 class ChartSuite extends ActorTestBase:
-  import Chart.*
-
-  test("Chart"):
+  test(Chart.getClass.getSimpleName):
     val config = EdgeConfigGet.outExample
     val chart = testKit.spawn(Chart(config.dynamic.culling))
     val chartReader = testKit.createTestProbe[ReadReply]()
