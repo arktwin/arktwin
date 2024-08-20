@@ -7,16 +7,16 @@ frame "Remote Network" {
 
     agent "Atlas" as Atlas
     collections "ChartRecorder" as ChartRecorder
-    collections "ChartRouter" as ChartRouter
+    collections "Chart" as center.Chart
 
-    agent "Clock" as ClockC
-    agent "<color:#gray>Reporter</color>" as ReporterC
-    agent "Register" as RegisterC
+    agent "Clock" as center.Clock
+    agent "<color:#gray>Reporter</color>" as Reporter
+    agent "Register" as center.Register
 
-    storage "Kamon" as KamonC
+    storage "Kamon" as center.Kamon
     agent "CenterKamon" as CenterKamon
     agent "CenterReporter" as CenterReporter
-    agent "DeadLetterListener" as DeadLetterListenerC
+    agent "DeadLetterListener" as center.DeadLetterListener
 
     rectangle "gRPC Services" as center.services {
       interface "Admin" as AdminService
@@ -90,21 +90,21 @@ frame "Local Network<plain>, which can deny inbound connections</plain>" {
   node "<b>Agent Simulator / VR</b>\nwhich can push and pull data synchronously" as Simulator
 }
 
-Conductor -[#gray]-> ClockC
-Conductor -[#gray]-> RegisterC
-Conductor <-[#gray]- ReporterC
+Conductor -[#gray]-> center.Clock
+Conductor -[#gray]-> center.Register
+Conductor <-[#gray]- Reporter
 Conductor <-[#gray]-o ChartRecorder
 
-ChartRouter <---> ChartService
+center.Chart <---> ChartService
 ChartRecorder <--- ChartService
 Atlas <--o ChartRecorder
-Atlas --> ChartRouter
+Atlas --> center.Chart
 
-ClockC <--- AdminService
-ClockC ---> ClockService
-ReporterC <-[#gray]-- ReporterService
-RegisterC <--- AdminService
-RegisterC <---> RegisterService
+center.Clock <--- AdminService
+center.Clock ---> ClockService
+Reporter <-[#gray]-- ReporterService
+center.Register <--- AdminService
+center.Register <---> RegisterService
 
 AdminService <--> AdminClient
 ChartService <--> ChartClient
@@ -149,13 +149,13 @@ edge.endpoints o--> webui
 edge.endpoints <-- Simulator
 edge.endpoints o--> Simulator
 
-KamonC --> CenterReporter
+center.Kamon --> CenterReporter
 CenterReporter -[#gray]-> Conductor
-KamonC o--> CenterMetrics
+center.Kamon o--> CenterMetrics
 CenterMetrics o..> Prometheus
-KamonC ..> Pushgateway
-DeadLetterListenerC -> CenterKamon
-CenterKamon -> KamonC
+center.Kamon ..> Pushgateway
+center.DeadLetterListener -> CenterKamon
+CenterKamon -> center.Kamon
 
 Kamon --> EdgeReporter
 Kamon o--> EdgeMetrics

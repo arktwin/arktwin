@@ -11,21 +11,20 @@ import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import scala.collection.mutable
 
 object ChartRecorder:
-  type Message = ChartRouter.PublishBatch | Collect | Terminate.type
-  case class Collect(
+  type Message = Chart.PublishBatch | Get | Terminate.type
+  case class Get(
       config: AtlasConfig,
       replyTo: ActorRef[ChartRecord]
   )
 
-  // TODO should depend on the config?
-  case class ChartRecord(edgeId: String, config: AtlasConfig, indexes: Set[PartitionIndex])
+  case class ChartRecord(edgeId: String, indexes: Set[PartitionIndex])
 
   def apply(edgeId: String, initialConfig: AtlasConfig): Behavior[Message] =
     var config = initialConfig
     var indexes = mutable.Set[PartitionIndex]()
 
     Behaviors.receiveMessage:
-      case publishBatch: ChartRouter.PublishBatch =>
+      case publishBatch: Chart.PublishBatch =>
         // TODO consider relative coordinates
 
         config.culling match
@@ -42,8 +41,8 @@ object ChartRecorder:
               )
         Behaviors.same
 
-      case Collect(newConfig, replyTo) =>
-        replyTo ! ChartRecord(edgeId, config, indexes.toSet)
+      case Get(newConfig, replyTo) =>
+        replyTo ! ChartRecord(edgeId, indexes.toSet)
         config = newConfig
         indexes = mutable.Set()
         Behaviors.same

@@ -42,13 +42,13 @@ class ChartService(
     val publishMachineLatencyHistogram = kamon.chartPublishMachineLatencyHistogram(edgeId)
 
     for
-      chartRecorder <- atlas ? (Atlas.SpawnRecorder(
+      chartRecorder <- atlas ? (Atlas.SpawnChartRecorder(
         edgeId,
         _: ActorRef[ActorRef[ChartRecorder.Message]]
       ))
-      chartRouter <- atlas ? (Atlas.SpawnRouter(
+      chart <- atlas ? (Atlas.SpawnChart(
         edgeId,
-        _: ActorRef[ActorRef[ChartRouter.Message]]
+        _: ActorRef[ActorRef[Chart.Message]]
       ))
     do
       in
@@ -72,9 +72,9 @@ class ChartService(
             publishBatch.agents.size
           )
 
-          ChartRouter.PublishBatch(publishBatch.agents, currentMachineTimestamp)
+          Chart.PublishBatch(publishBatch.agents, currentMachineTimestamp)
         .wireTap(ActorSink.actorRef(chartRecorder, Terminate, _ => Terminate))
-        .to(ActorSink.actorRef(chartRouter, Terminate, _ => Terminate))
+        .to(ActorSink.actorRef(chart, Terminate, _ => Terminate))
         .run()
       scribe.info(s"[$logName] connected")
     Future.never
@@ -88,8 +88,8 @@ class ChartService(
     val subscribeBatchNumCounter = kamon.chartSubscribeBatchNumCounter(edgeId)
     val subscribeMachineLatencyHistogram = kamon.chartSubscribeMachineLatencyHistogram(edgeId)
 
-    val (subscriber, source) = ActorSource
-      .actorRef[ChartRouter.SubscribeBatch](
+    val (chartSubscriber, source) = ActorSource
+      .actorRef[Chart.SubscribeBatch](
         PartialFunction.empty,
         PartialFunction.empty,
         config.subscribeBufferSize,
@@ -121,7 +121,7 @@ class ChartService(
 
         ChartSubscribeBatch(subscribeBatch.flatMap(_.agents), currentMachineTimestamp)
       .preMaterialize()
-    atlas ! Atlas.AddSubscriber(edgeId, subscriber)
-    scribe.info(s"spawned a subscriber for $edgeId: ${subscriber.path}")
+    atlas ! Atlas.AddChartSubscriber(edgeId, chartSubscriber)
+    scribe.info(s"spawned a chart subscriber for $edgeId: ${chartSubscriber.path}")
     scribe.info(s"[$logName] connected")
     source
