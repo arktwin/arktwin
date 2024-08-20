@@ -3,9 +3,8 @@
 package arktwin.edge.actors
 
 import arktwin.common.MailboxConfig
-import arktwin.edge.DynamicEdgeConfig.CullingConfig
-import arktwin.edge.EdgeConfig
 import arktwin.edge.data.CoordinateConfig
+import arktwin.edge.{CullingConfig, EdgeConfig}
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.{Receptionist, ServiceKey}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
@@ -25,7 +24,7 @@ object EdgeConfigurator:
   def spawn(initEdgeConfig: EdgeConfig): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(initEdgeConfig),
     getClass.getSimpleName,
-    MailboxConfig(getClass.getName),
+    MailboxConfig(this),
     _
   )
 

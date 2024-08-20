@@ -27,17 +27,17 @@ import scala.concurrent.duration.FiniteDuration
 import scala.util.chaining.*
 
 object EdgeNeighborsQueryAdapter:
-  type Message = QueryMessage | CoordinateConfig | Report
-  case class QueryMessage(
+  type Message = Query | CoordinateConfig | Report
+  case class Query(
       request: Request,
       replyTo: ActorRef[Either[ErrorStatus, Response]]
   )
   case class Report(previousAgents: Set[String])
 
   def spawn(
-      chart: ActorRef[Chart.Read],
-      clock: ActorRef[Clock.Read],
-      register: ActorRef[Register.Read],
+      chart: ActorRef[Chart.Get],
+      clock: ActorRef[Clock.Get],
+      register: ActorRef[Register.Get],
       staticConfig: StaticEdgeConfig,
       initCoordinateConfig: CoordinateConfig,
       kamon: EdgeKamon
@@ -45,14 +45,14 @@ object EdgeNeighborsQueryAdapter:
     Spawn(
       apply(chart, clock, register, staticConfig, initCoordinateConfig, kamon),
       getClass.getSimpleName,
-      MailboxConfig(getClass.getName),
+      MailboxConfig(this),
       _
     )
 
   def apply(
-      chart: ActorRef[Chart.Read],
-      clock: ActorRef[Clock.Read],
-      register: ActorRef[Register.Read],
+      chart: ActorRef[Chart.Get],
+      clock: ActorRef[Clock.Get],
+      register: ActorRef[Register.Get],
       staticConfig: StaticEdgeConfig,
       initCoordinateConfig: CoordinateConfig,
       kamon: EdgeKamon
@@ -68,7 +68,7 @@ object EdgeNeighborsQueryAdapter:
       kamon.restSimulationLatencyHistogram(EdgeNeighborsQuery.endpoint.showShort)
 
     Behaviors.receiveMessage:
-      case QueryMessage(request, replyTo) =>
+      case Query(request, replyTo) =>
         (request.changeDetection, optionalPreviousAgents) match
           case (false, _) =>
             context.spawnAnonymous(
@@ -124,22 +124,22 @@ object EdgeNeighborsQueryAdapter:
       optionalPreviousAgents: Option[Set[String]],
       replyTo: ActorRef[Either[ErrorStatus, Response]],
       parent: ActorRef[Report],
-      chart: ActorRef[Chart.Read],
-      clock: ActorRef[Clock.Read],
-      register: ActorRef[Register.Read],
+      chart: ActorRef[Chart.Get],
+      clock: ActorRef[Clock.Get],
+      register: ActorRef[Register.Get],
       simulationLatencyHistogram: Histogram,
       timeout: FiniteDuration,
       coordinateConfig: CoordinateConfig
   ): Behavior[ChildMessage] = Behaviors.setup: context =>
     context.setReceiveTimeout(timeout, Timeout)
 
-    chart ! Chart.Read(context.self)
+    chart ! Chart.Get(context.self)
     var chartWait = Option.empty[Seq[CullingAgent]]
 
-    clock ! Clock.Read(context.self)
+    clock ! Clock.Get(context.self)
     var clockWait = Option.empty[ClockBase]
 
-    register ! Register.Read(context.self)
+    register ! Register.Get(context.self)
     var registerWait = Option.empty[Map[String, RegisterAgent]]
 
     def next(): Behavior[ChildMessage] = (chartWait, clockWait, registerWait) match

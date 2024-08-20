@@ -4,6 +4,7 @@ package arktwin.edge.actors.adapters
 
 import arktwin.center.services.{ChartAgent, ClockBase}
 import arktwin.common.data.{QuaternionEnu, Timestamp, TransformEnu, Vector3Enu}
+import arktwin.edge.actors.adapters.EdgeAgentsPutAdapter.*
 import arktwin.edge.actors.sinks.{Chart, Clock}
 import arktwin.edge.connectors.{ChartConnector, RegisterConnector}
 import arktwin.edge.data.*
@@ -19,18 +20,17 @@ import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import scala.collection.mutable
 
 class EdgeAgentsPutAdapterSuite extends ActorTestBase:
-  import EdgeAgentsPutAdapter.*
-
-  test("EdgeAgentsPutAdapter"):
+  test(EdgeAgentsPutAdapter.getClass.getSimpleName):
     val config = EdgeConfigGet.outExample
-    val chart = testKit.createTestProbe[Chart.FirstAgentsUpdate]()
+    val chart = testKit.createTestProbe[Chart.UpdateFirstAgents]()
     val chartPublish = testKit.createTestProbe[ChartConnector.Publish]()
     val registerPublish = testKit.createTestProbe[RegisterConnector.Publish]()
     val clockReadQueue = mutable.Queue[ClockBase]()
-    val clock = testKit.spawn[Clock.Read](Behaviors.receiveMessage { case Clock.Read(replyTo) =>
-      replyTo ! clockReadQueue.dequeue()
-      Behaviors.same
-    })
+    val clock = testKit.spawn[Clock.Get](Behaviors.receiveMessage:
+      case Clock.Get(replyTo) =>
+        replyTo ! clockReadQueue.dequeue()
+        Behaviors.same
+    )
     val adapter =
       testKit.spawn(
         EdgeAgentsPutAdapter(
@@ -47,7 +47,7 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
 
     adapter ! CoordinateConfig(Vector3Config(Meter, Second, East, North, Up), QuaternionConfig)
     clockReadQueue += ClockBase(Timestamp(0, 0), Timestamp(0, 0), 1)
-    adapter ! PutMessage(
+    adapter ! Put(
       Request(
         Some(Timestamp(1, 0)),
         Map(
@@ -71,7 +71,7 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
     )
 
     clockReadQueue += ClockBase(Timestamp(0, 0), Timestamp(0, 0), 1)
-    adapter ! PutMessage(
+    adapter ! Put(
       Request(
         Some(Timestamp(1, 500_000_000)),
         Map(

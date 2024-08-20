@@ -5,15 +5,7 @@ package arktwin.common.data
 import scala.concurrent.duration.Duration as ScalaDuration
 
 object DurationEx:
-  implicit class DurationExtension(val a: Duration) extends AnyVal with Ordered[DurationExtension]:
-    def compare(that: DurationExtension): Int =
-      Ordering
-        .by((ex: DurationExtension) =>
-          val d = Duration.normalize(ex.a)
-          (d.seconds, d.nanos)
-        )
-        .compare(this, that)
-
+  implicit class DurationExtension(private val a: Duration) extends AnyVal:
     def secondsDouble: Double =
       a.seconds + (a.nanos.toDouble / nanosPerSecond)
 
@@ -72,3 +64,8 @@ object DurationEx:
   val nanosPerMicrosecond: Long = 1000
   val millisPerSecond: Long = 1000
   val microsPerSeconds: Long = 1000000
+
+  given Ordering[Duration] = Ordering.by((a: Duration) =>
+    val d = Duration.normalize(a)
+    (d.seconds, d.nanos)
+  )

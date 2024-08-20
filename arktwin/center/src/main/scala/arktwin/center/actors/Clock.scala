@@ -2,12 +2,12 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.center.actors
 
-import arktwin.center.StaticCenterConfig.ClockConfig
-import arktwin.center.StaticCenterConfig.ClockConfig.Start.{Absolute, Relative, Schedule}
+import arktwin.center.ClockConfig
+import arktwin.center.ClockConfig.Start.{Absolute, Relative, Schedule}
 import arktwin.center.services.ClockBase
 import arktwin.center.services.ClockBaseEx.*
 import arktwin.common.MailboxConfig
-import arktwin.common.data.DurationEx.*
+import arktwin.common.data.DurationEx.given
 import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.{Duration, Timestamp}
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
@@ -15,17 +15,18 @@ import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
 import scala.concurrent.duration.DurationDouble
+import scala.math.Ordered.orderingToOrdered
 
 object Clock:
-  type Message = SpeedUpdate | AddSubscriber | RemoveSubscriber
-  case class SpeedUpdate(clockSpeed: Double)
+  type Message = UpdateSpeed | AddSubscriber | RemoveSubscriber
+  case class UpdateSpeed(clockSpeed: Double)
   case class AddSubscriber(edgeId: String, subscriber: ActorRef[ClockBase])
   case class RemoveSubscriber(edgeId: String)
 
   def spawn(config: ClockConfig): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(config),
     getClass.getSimpleName,
-    MailboxConfig(getClass.getName),
+    MailboxConfig(this),
     _
   )
 
@@ -41,7 +42,7 @@ object Clock:
 
         case Schedule(schedule) =>
           initialUpdateSpeedTimer.startSingleTimer(
-            SpeedUpdate(config.start.clockSpeed),
+            UpdateSpeed(config.start.clockSpeed),
             schedule.secondsDouble.seconds
           )
           ClockBase(baseMachineTimestamp, baseTimestamp, 0)
@@ -52,7 +53,7 @@ object Clock:
       var initialUpdateSpeedTimerFlag = true
 
       Behaviors.receiveMessage:
-        case SpeedUpdate(clockSpeed) =>
+        case UpdateSpeed(clockSpeed) =>
           if initialUpdateSpeedTimerFlag then
             initialUpdateSpeedTimer.cancelAll()
             initialUpdateSpeedTimerFlag = false

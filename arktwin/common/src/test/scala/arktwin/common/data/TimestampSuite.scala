@@ -7,7 +7,7 @@ import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 
 class TimestampSuite extends AnyFunSuite with Matchers:
-  test("Timestamp"):
+  test(Timestamp.getClass.getSimpleName):
     Timestamp.parse("1970-01-02T03:04:05.678+09:00") shouldEqual Timestamp(
       (24 + 3 - 9) * 60 * 60 + 4 * 60 + 5,
       678_000_000

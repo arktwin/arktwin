@@ -11,13 +11,15 @@ import arktwin.common.data.{Timestamp, Vector3Enu}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
-object ChartRouter:
-  type Message = RouteTable | PublishBatch | Terminate.type
+object Chart:
+  type Message = PublishBatch | UpdateRouteTable | Terminate.type
   case class PublishBatch(agents: Seq[ChartAgent], publishReceptionMachineTimestamp: Timestamp)
+  case class UpdateRouteTable(routeTable: RouteTable)
+
   case class SubscribeBatch(agents: Seq[ChartAgent], routeReceptionMachineTimestamp: Timestamp)
 
   trait RouteTable:
-    def apply(vector3: Vector3Enu): Seq[ActorRef[SubscribeBatch]]
+    def apply(vector3: Vector3Enu): Map[String, ActorRef[SubscribeBatch]]
 
   def apply(edgeId: String, initialRouteTable: RouteTable, kamon: CenterKamon): Behavior[Message] =
     var routeTable = initialRouteTable
@@ -26,24 +28,21 @@ object ChartRouter:
     val routeMachineLatencyHistogram = kamon.chartRouteMachineLatencyHistogram(edgeId)
 
     Behaviors.receiveMessage:
-      case newRouteTable: RouteTable =>
-        routeTable = newRouteTable
-        Behaviors.same
-
       // micro-batch to reduce overhead of stream processing
       case publishBatch: PublishBatch =>
         val currentMachineTimestamp = Timestamp.machineNow()
 
         // TODO consider relative coordinates
-        for (subscriber, agents) <- publishBatch.agents
+        for (chartSubscriber, agents) <- publishBatch.agents
             .flatMap(agent =>
-              routeTable(agent.transform.localTranslationMeter).map(subscriber =>
-                (agent, subscriber)
-              )
+              routeTable(agent.transform.localTranslationMeter)
+                .removed(edgeId)
+                .values
+                .map((_, agent))
             )
-            .groupMap(_._2)(_._1)
+            .groupMap(_._1)(_._2)
         do
-          subscriber ! SubscribeBatch(agents, currentMachineTimestamp)
+          chartSubscriber ! SubscribeBatch(agents, currentMachineTimestamp)
           routeAgentNumCounter.increment(agents.size)
           routeBatchNumCounter.increment()
 
@@ -55,6 +54,10 @@ object ChartRouter:
           publishBatch.agents.size
         )
 
+        Behaviors.same
+
+      case updateRouteTable: UpdateRouteTable =>
+        routeTable = updateRouteTable.routeTable
         Behaviors.same
 
       case Terminate =>

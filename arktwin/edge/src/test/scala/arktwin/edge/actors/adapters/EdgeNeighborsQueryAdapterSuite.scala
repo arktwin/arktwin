@@ -4,6 +4,7 @@ package arktwin.edge.actors.adapters
 
 import arktwin.center.services.{ChartAgent, ClockBase, RegisterAgent}
 import arktwin.common.data.{QuaternionEnu, Timestamp, TransformEnu, Vector3Enu}
+import arktwin.edge.actors.adapters.EdgeNeighborsQueryAdapter.*
 import arktwin.edge.actors.sinks.Chart.CullingAgent
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
 import arktwin.edge.data.*
@@ -22,26 +23,26 @@ import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import scala.collection.mutable
 
 class EdgeNeighborsQueryAdapterSuite extends ActorTestBase:
-  import EdgeNeighborsQueryAdapter.*
-
-  test("EdgeNeighborsQueryAdapter"):
+  test(EdgeNeighborsQueryAdapter.getClass.getSimpleName):
     val config = EdgeConfigGet.outExample
     val chartReadQueue = mutable.Queue[Seq[CullingAgent]]()
-    val chart = testKit.spawn[Chart.Read](Behaviors.receiveMessage { case Chart.Read(replyTo) =>
-      replyTo ! Chart.ReadReply(chartReadQueue.dequeue())
-      Behaviors.same
-    })
+    val chart = testKit.spawn[Chart.Get](Behaviors.receiveMessage:
+      case Chart.Get(replyTo) =>
+        replyTo ! Chart.ReadReply(chartReadQueue.dequeue())
+        Behaviors.same
+    )
     val clockReadQueue = mutable.Queue[ClockBase]()
-    val clock = testKit.spawn[Clock.Read](Behaviors.receiveMessage { case Clock.Read(replyTo) =>
-      replyTo ! clockReadQueue.dequeue()
-      Behaviors.same
-    })
+    val clock = testKit.spawn[Clock.Get](Behaviors.receiveMessage:
+      case Clock.Get(replyTo) =>
+        replyTo ! clockReadQueue.dequeue()
+        Behaviors.same
+    )
     val registerReadQueue = mutable.Queue[Map[String, RegisterAgent]]()
-    val register = testKit.spawn[Register.Read](Behaviors.receiveMessage {
-      case Register.Read(replyTo) =>
+    val register = testKit.spawn[Register.Get](Behaviors.receiveMessage:
+      case Register.Get(replyTo) =>
         replyTo ! Register.ReadReply(registerReadQueue.dequeue())
         Behaviors.same
-    })
+    )
     val adapter =
       testKit.spawn(
         EdgeNeighborsQueryAdapter(
@@ -75,7 +76,7 @@ class EdgeNeighborsQueryAdapterSuite extends ActorTestBase:
       "a3" -> RegisterAgent("a3", "k3", Map("i" -> "3"), Map("x" -> "x3")),
       "a5" -> RegisterAgent("a5", "k5", Map("i" -> "5"), Map("x" -> "x5"))
     )
-    adapter ! QueryMessage(
+    adapter ! Query(
       Request(Some(Timestamp(1, 0)), Some(3), changeDetection = true),
       endpoint.ref
     )
@@ -123,7 +124,7 @@ class EdgeNeighborsQueryAdapterSuite extends ActorTestBase:
       // "a2" deleted
       "a3" -> RegisterAgent("a3", "k3", Map("i" -> "3"), Map("x" -> "x3"))
     )
-    adapter ! QueryMessage(
+    adapter ! Query(
       Request(Some(Timestamp(2, 0)), None, changeDetection = true),
       endpoint.ref
     )

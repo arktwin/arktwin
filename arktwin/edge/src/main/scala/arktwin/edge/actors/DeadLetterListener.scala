@@ -16,7 +16,7 @@ object DeadLetterListener:
   def spawn(kamon: EdgeKamon): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(kamon),
     getClass.getSimpleName,
-    MailboxConfig(getClass.getName),
+    MailboxConfig(this),
     _
   )
 

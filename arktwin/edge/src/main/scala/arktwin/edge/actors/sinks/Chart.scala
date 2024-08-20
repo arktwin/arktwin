@@ -4,10 +4,10 @@ package arktwin.edge.actors.sinks
 
 import arktwin.center.services.ChartAgent
 import arktwin.common.MailboxConfig
-import arktwin.common.data.Timestamp
-import arktwin.common.data.TimestampEx.*
+import arktwin.common.data.TimestampEx
+import arktwin.common.data.TimestampEx.given
 import arktwin.common.data.Vector3EnuEx.*
-import arktwin.edge.DynamicEdgeConfig.CullingConfig
+import arktwin.edge.CullingConfig
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.util.CommonMessages.Nop
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
@@ -17,12 +17,13 @@ import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import org.apache.pekko.dispatch.ControlMessage
 
 import scala.collection.mutable
+import scala.math.Ordered.orderingToOrdered
 
 object Chart:
-  type Message = Catch | Read | FirstAgentsUpdate | CullingConfig | Nop.type
+  type Message = Catch | Get | UpdateFirstAgents | CullingConfig | Nop.type
   case class Catch(agent: ChartAgent)
-  case class Read(replyTo: ActorRef[ReadReply]) extends ControlMessage
-  case class FirstAgentsUpdate(agents: Seq[ChartAgent])
+  case class Get(replyTo: ActorRef[ReadReply]) extends ControlMessage
+  case class UpdateFirstAgents(agents: Seq[ChartAgent])
 
   case class ReadReply(sortedAgents: Seq[CullingAgent]) extends AnyVal
   case class CullingAgent(agent: ChartAgent, nearestDistance: Option[Double])
@@ -32,7 +33,7 @@ object Chart:
   ): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(initCullingConfig),
     getClass.getSimpleName,
-    MailboxConfig(getClass.getName),
+    MailboxConfig(this),
     _
   )
 
@@ -54,7 +55,7 @@ object Chart:
         val oldDistance = distances.get(agent.agentId)
         val oldTimestamp = oldDistance
           .map(orderedAgents(_, agent.agentId).transform.timestamp)
-          .getOrElse(Timestamp.minValue)
+          .getOrElse(TimestampEx.minValue)
         if agent.transform.timestamp >= oldTimestamp then
           for od <- oldDistance do orderedAgents -= ((od, agent.agentId))
 
@@ -70,14 +71,14 @@ object Chart:
           orderedAgents += (distance, agent.agentId) -> agent
         Behaviors.same
 
-      case Read(actorRef) =>
+      case Get(actorRef) =>
         actorRef ! ReadReply(orderedAgents.toSeq.map:
           case ((dist, _), agent) =>
             CullingAgent(agent, Some(dist).filter(_.isFinite))
         )
         Behaviors.same
 
-      case FirstAgentsUpdate(newFirstAgents) =>
+      case UpdateFirstAgents(newFirstAgents) =>
         if cullingConfig.edgeCulling then
           if newFirstAgents.size <= cullingConfig.maxFirstAgents then firstAgents = newFirstAgents
           else

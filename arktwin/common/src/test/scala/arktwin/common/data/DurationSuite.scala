@@ -7,7 +7,7 @@ import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 
 class DurationSuite extends AnyFunSuite with Matchers:
-  test("Duration"):
+  test(Duration.getClass.getSimpleName):
     Duration(1, 200_000_000) * 3.4 shouldEqual Duration(4, 80_000_000)
     Duration(1, 200_000_000) * -3.4 shouldEqual Duration(-4, -80_000_000)
     Duration(-1, -200_000_000) * 3.4 shouldEqual Duration(-4, -80_000_000)

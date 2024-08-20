@@ -2,7 +2,7 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge.endpoints
 
-import arktwin.center.services.{AdminClient, CenterClockSpeedPutRequest}
+import arktwin.center.services.{AdminClient, UpdateClockSpeedRequest}
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
@@ -21,9 +21,9 @@ import sttp.tapir.server.pekkohttp.PekkoHttpServerInterpreter
 import scala.concurrent.ExecutionContext
 
 object CenterClockSpeedPut:
-  type Request = CenterClockSpeedPutRequest
+  type Request = UpdateClockSpeedRequest
   type Response = Unit
-  val Request: CenterClockSpeedPutRequest.type = CenterClockSpeedPutRequest
+  val Request: UpdateClockSpeedRequest.type = UpdateClockSpeedRequest
   given JsonValueCodec[Request] = JsonCodecMaker.makeWithoutDiscriminator
 
   val inExample: Request = Request(1.2)
@@ -50,7 +50,7 @@ object CenterClockSpeedPut:
       endpoint.serverLogic: request =>
         val requestTime = Timestamp.machineNow()
         RequestValidator(request)
-          .map(client.centerClockSpeedPut(_).map(_ => {}))
+          .map(client.updateClockSpeed(_).map(_ => {}))
           .sequence
           .recover(ErrorStatus.handleFailure)
           .andThen: _ =>

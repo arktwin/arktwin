@@ -3,7 +3,7 @@
 package arktwin.edge.endpoints
 
 import arktwin.center.services
-import arktwin.center.services.{EdgeAgentsPostRequest, EdgeAgentsPostResponse, RegisterClient}
+import arktwin.center.services.{CreateAgentRequest, CreateAgentResponse, RegisterClient}
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
@@ -22,10 +22,10 @@ import sttp.tapir.server.pekkohttp.PekkoHttpServerInterpreter
 import scala.concurrent.ExecutionContext
 
 object EdgeAgentsPost:
-  type Request = EdgeAgentsPostRequest
-  type Response = EdgeAgentsPostResponse
-  val Request: EdgeAgentsPostRequest.type = EdgeAgentsPostRequest
-  val Response: EdgeAgentsPostResponse.type = EdgeAgentsPostResponse
+  type Request = CreateAgentRequest
+  type Response = CreateAgentResponse
+  val Request: CreateAgentRequest.type = CreateAgentRequest
+  val Response: CreateAgentResponse.type = CreateAgentResponse
   given codecRequest: JsonValueCodec[Seq[Request]] = JsonCodecMaker.makeWithoutDiscriminator
   given codecResponse: JsonValueCodec[Seq[Response]] = JsonCodecMaker.makeWithoutDiscriminator
 
@@ -68,8 +68,8 @@ object EdgeAgentsPost:
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogic: requests =>
         val requestTime = Timestamp.machineNow()
-        RequestValidator(services.EdgeAgentsPostRequests(requests))
-          .map(client.edgeAgentsPost)
+        RequestValidator(services.CreateAgentsRequest(requests))
+          .map(client.createAgents)
           .map(_.map(_.responses))
           .sequence
           .recover(ErrorStatus.handleFailure)

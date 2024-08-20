@@ -5,7 +5,8 @@ package arktwin.common
 import org.apache.pekko.actor.typed.MailboxSelector
 
 object MailboxConfig:
-  def apply(relativePath: String): MailboxSelector =
+  def apply(target: Any): MailboxSelector =
+    val relativePath = target.getClass.getName
     MailboxSelector.fromConfig(
       "pekko.actor.typed.mailbox."
         + (if relativePath.endsWith("$") then relativePath.dropRight(1) else relativePath)

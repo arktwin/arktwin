@@ -41,17 +41,15 @@ class ChartService(
     val publishBatchNumCounter = kamon.chartPublishBatchNumCounter(edgeId)
     val publishMachineLatencyHistogram = kamon.chartPublishMachineLatencyHistogram(edgeId)
 
-    val chartRecorderFuture = atlas ? (Atlas.SpawnRecorder(
-      edgeId,
-      _: ActorRef[ActorRef[ChartRecorder.Message]]
-    ))
-    val chartRouterFuture = atlas ? (Atlas.SpawnRouter(
-      edgeId,
-      _: ActorRef[ActorRef[ChartRouter.Message]]
-    ))
     for
-      chartRecorder <- chartRecorderFuture
-      chartRouter <- chartRouterFuture
+      chartRecorder <- atlas ? (Atlas.SpawnChartRecorder(
+        edgeId,
+        _: ActorRef[ActorRef[ChartRecorder.Message]]
+      ))
+      chart <- atlas ? (Atlas.SpawnChart(
+        edgeId,
+        _: ActorRef[ActorRef[Chart.Message]]
+      ))
     do
       in
         .log(logName)
@@ -74,9 +72,9 @@ class ChartService(
             publishBatch.agents.size
           )
 
-          ChartRouter.PublishBatch(publishBatch.agents, currentMachineTimestamp)
+          Chart.PublishBatch(publishBatch.agents, currentMachineTimestamp)
         .wireTap(ActorSink.actorRef(chartRecorder, Terminate, _ => Terminate))
-        .to(ActorSink.actorRef(chartRouter, Terminate, _ => Terminate))
+        .to(ActorSink.actorRef(chart, Terminate, _ => Terminate))
         .run()
       scribe.info(s"[$logName] connected")
     Future.never
@@ -90,8 +88,8 @@ class ChartService(
     val subscribeBatchNumCounter = kamon.chartSubscribeBatchNumCounter(edgeId)
     val subscribeMachineLatencyHistogram = kamon.chartSubscribeMachineLatencyHistogram(edgeId)
 
-    val (subscriber, source) = ActorSource
-      .actorRef[ChartRouter.SubscribeBatch](
+    val (chartSubscriber, source) = ActorSource
+      .actorRef[Chart.SubscribeBatch](
         PartialFunction.empty,
         PartialFunction.empty,
         config.subscribeBufferSize,
@@ -123,6 +121,7 @@ class ChartService(
 
         ChartSubscribeBatch(subscribeBatch.flatMap(_.agents), currentMachineTimestamp)
       .preMaterialize()
-    atlas ! Atlas.AddSubscriber(edgeId, subscriber)
+    atlas ! Atlas.AddChartSubscriber(edgeId, chartSubscriber)
+    scribe.info(s"spawned a chart subscriber for $edgeId: ${chartSubscriber.path}")
     scribe.info(s"[$logName] connected")
     source

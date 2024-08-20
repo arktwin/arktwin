@@ -103,9 +103,9 @@ object Edge:
     val registerClient = RegisterClient(grpcSettings)
 
     try
-      val EdgeCreateResponse(edgeId, runId) =
+      val CreateEdgeResponse(edgeId, runId) =
         Await.result(
-          registerClient.edgeCreate(EdgeCreateRequest(config.static.edgeIdPrefix)),
+          registerClient.createEdge(CreateEdgeRequest(config.static.edgeIdPrefix)),
           1.minute
         )
       scribe.info(s"Run ID: $runId")

@@ -55,7 +55,7 @@ object CenterAgentsDelete:
       endpoint.serverLogic: request =>
         val requestTime = Timestamp.machineNow()
         RequestValidator(request.asMessage)
-          .map(client.centerAgentsDelete(_).map(_ => {}))
+          .map(client.deleteAgents(_).map(_ => {}))
           .sequence
           .recover(ErrorStatus.handleFailure)
           .andThen: _ =>
