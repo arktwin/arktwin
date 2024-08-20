@@ -4,8 +4,8 @@ package arktwin.edge.actors.sinks
 
 import arktwin.center.services.ChartAgent
 import arktwin.common.MailboxConfig
-import arktwin.common.data.Timestamp
-import arktwin.common.data.TimestampEx.*
+import arktwin.common.data.TimestampEx
+import arktwin.common.data.TimestampEx.given
 import arktwin.common.data.Vector3EnuEx.*
 import arktwin.edge.CullingConfig
 import arktwin.edge.actors.EdgeConfigurator
@@ -17,6 +17,7 @@ import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import org.apache.pekko.dispatch.ControlMessage
 
 import scala.collection.mutable
+import scala.math.Ordered.orderingToOrdered
 
 object Chart:
   type Message = Catch | Get | UpdateFirstAgents | CullingConfig | Nop.type
@@ -54,7 +55,7 @@ object Chart:
         val oldDistance = distances.get(agent.agentId)
         val oldTimestamp = oldDistance
           .map(orderedAgents(_, agent.agentId).transform.timestamp)
-          .getOrElse(Timestamp.minValue)
+          .getOrElse(TimestampEx.minValue)
         if agent.transform.timestamp >= oldTimestamp then
           for od <- oldDistance do orderedAgents -= ((od, agent.agentId))
 

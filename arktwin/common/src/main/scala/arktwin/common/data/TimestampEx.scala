@@ -8,17 +8,7 @@ import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZoneOffset, ZonedDateTime}
 
 object TimestampEx:
-  implicit class TimestampExtension(val a: Timestamp)
-      extends AnyVal
-      with Ordered[TimestampExtension]:
-    def compare(that: TimestampExtension): Int =
-      Ordering
-        .by((ex: TimestampExtension) =>
-          val n = Timestamp.normalize(ex.a)
-          (n.seconds, n.nanos)
-        )
-        .compare(this, that)
-
+  implicit class TimestampExtension(private val a: Timestamp) extends AnyVal:
     def -(that: Timestamp): Duration = Duration.normalize(
       math.subtractExact(a.seconds, that.seconds),
       a.nanos.toLong - that.nanos
@@ -39,9 +29,7 @@ object TimestampEx:
         .ofEpochSecond(a.seconds, a.nanos, ZoneOffset.UTC)
         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
-  implicit class TimestampCompanionExtension(val a: Timestamp.type):
-    val minValue: Timestamp = Timestamp(Long.MinValue, 0)
-
+  implicit class TimestampCompanionExtension(private val a: Timestamp.type) extends AnyVal:
     def from(value: ZonedDateTime): Timestamp = Timestamp(value.toEpochSecond, value.getNano)
 
     def machineNow(): Timestamp = from(ZonedDateTime.now())
@@ -64,3 +52,10 @@ object TimestampEx:
       Timestamp(s, n.toInt)
 
     def normalize(timestamp: Timestamp): Timestamp = normalize(timestamp.seconds, timestamp.nanos)
+
+  val minValue: Timestamp = Timestamp(Long.MinValue, 0)
+
+  given Ordering[Timestamp] = Ordering.by((a: Timestamp) =>
+    val n = Timestamp.normalize(a)
+    (n.seconds, n.nanos)
+  )

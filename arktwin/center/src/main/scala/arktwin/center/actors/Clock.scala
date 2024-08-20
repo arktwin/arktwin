@@ -7,7 +7,7 @@ import arktwin.center.ClockConfig.Start.{Absolute, Relative, Schedule}
 import arktwin.center.services.ClockBase
 import arktwin.center.services.ClockBaseEx.*
 import arktwin.common.MailboxConfig
-import arktwin.common.data.DurationEx.*
+import arktwin.common.data.DurationEx.given
 import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.{Duration, Timestamp}
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
@@ -15,6 +15,7 @@ import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
 import scala.concurrent.duration.DurationDouble
+import scala.math.Ordered.orderingToOrdered
 
 object Clock:
   type Message = UpdateSpeed | AddSubscriber | RemoveSubscriber
