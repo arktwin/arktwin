@@ -20,7 +20,7 @@ class AtlasSuite extends ActorTestBase:
   given Scheduler = testKit.system.scheduler
   given Ordering[ChartAgent] = Ordering.by(a => (a.agentId, a.transform.timestamp))
 
-  test("broadcast"):
+  test(AtlasConfig.Broadcast.getClass.getSimpleName):
     val atlasConfig = AtlasConfig(AtlasConfig.Broadcast(), 100.millis)
     val atlas = testKit.spawn(Atlas(atlasConfig, CenterKamon("")))
 
@@ -81,7 +81,7 @@ class AtlasSuite extends ActorTestBase:
     subscriberA.expectNoMessage()
     subscriberC.expectNoMessage()
 
-  test("grid culling"):
+  test(AtlasConfig.GridCulling.getClass.getSimpleName):
     val atlasConfig = AtlasConfig(AtlasConfig.GridCulling(Vector3Enu(10, 100, 1000)), 100.millis)
     val atlas = testKit.spawn(Atlas(atlasConfig, CenterKamon("")))
 
