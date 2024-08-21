@@ -5,6 +5,7 @@ package arktwin.center.actors
 import arktwin.center.AtlasConfig
 import arktwin.center.actors.ChartRecorder.ChartRecord
 import arktwin.center.util.CenterKamon
+import arktwin.center.util.CommonMessages.Timeout
 import arktwin.common.MailboxConfig
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
@@ -14,14 +15,16 @@ import scala.collection.mutable
 
 object Atlas:
   type Message = SpawnChart | RemoveChart | SpawnChartRecorder | RemoveChartRecorder |
-    AddChartSubscriber | RemoveChartSubscriber | ResetTimer.type
+    AddChartSubscriber | RemoveChartSubscriber | SpawnUpdateRouteTable.type |
+    UpdateRouteTableTerminated.type
   case class SpawnChart(edgeId: String, replyTo: ActorRef[ActorRef[Chart.Message]])
   case class RemoveChart(edgeId: String)
   case class SpawnChartRecorder(edgeId: String, replyTo: ActorRef[ActorRef[ChartRecorder.Message]])
   case class RemoveChartRecorder(edgeId: String)
   case class AddChartSubscriber(edgeId: String, subscriber: ActorRef[Chart.SubscribeBatch])
   case class RemoveChartSubscriber(edgeId: String)
-  object ResetTimer
+  object SpawnUpdateRouteTable
+  object UpdateRouteTableTerminated
 
   case class PartitionIndex(x: Int, y: Int, z: Int):
     def neighbors: Seq[PartitionIndex] =
@@ -46,7 +49,7 @@ object Atlas:
       kamon: CenterKamon
   ): Behavior[Message] = Behaviors.setup: context =>
     Behaviors.withTimers: timer =>
-      timer.startSingleTimer(ResetTimer, config.interval)
+      timer.startSingleTimer(SpawnUpdateRouteTable, config.routeTableUpdateInterval)
 
       var chartRecorders = Map[String, ActorRef[ChartRecorder.Message]]()
       var charts = Map[String, ActorRef[Chart.Message]]()
@@ -73,7 +76,7 @@ object Atlas:
 
         case SpawnChartRecorder(edgeId, replyTo) =>
           val chartRecorder = context.spawnAnonymous(
-            ChartRecorder(edgeId, config),
+            ChartRecorder(edgeId),
             MailboxConfig(ChartRecorder)
           )
           replyTo ! chartRecorder
@@ -95,9 +98,12 @@ object Atlas:
           chartSubscribers -= edgeId
           Behaviors.same
 
-        case ResetTimer =>
-          timer.startSingleTimer(ResetTimer, config.interval)
-          context.spawnAnonymous(
+        case UpdateRouteTableTerminated =>
+          timer.startSingleTimer(SpawnUpdateRouteTable, config.routeTableUpdateInterval)
+          Behaviors.same
+
+        case SpawnUpdateRouteTable =>
+          val child = context.spawnAnonymous(
             updateRouteTable(
               chartRecorders,
               charts,
@@ -105,69 +111,77 @@ object Atlas:
               config
             )
           )
+          context.watchWith(child, UpdateRouteTableTerminated)
           Behaviors.same
 
-  // TODO should time out?
   private def updateRouteTable(
       chartRecorders: Map[String, ActorRef[ChartRecorder.Message]],
       charts: Map[String, ActorRef[Chart.Message]],
       chartSubscribers: Map[String, ActorRef[Chart.SubscribeBatch]],
       config: AtlasConfig
-  ): Behavior[ChartRecord] = Behaviors.setup: context =>
-    config.culling match
-      case AtlasConfig.Broadcast() =>
-        val updateRouteTable = Chart.UpdateRouteTable(_ => chartSubscribers)
-        for (edgeId, chart) <- charts do chart ! updateRouteTable
-        Behaviors.stopped
+  ): Behavior[ChartRecord | Timeout.type] = Behaviors.setup: context =>
+    Behaviors.withTimers: timer =>
+      config.culling match
+        case AtlasConfig.Broadcast() =>
+          val updateRouteTable = Chart.UpdateRouteTable(_ => chartSubscribers)
+          for (edgeId, chart) <- charts do chart ! updateRouteTable
+          Behaviors.stopped
 
-      case AtlasConfig.GridCulling(gridCellSize) =>
-        for (_, chartRecorder) <- chartRecorders do
-          chartRecorder ! ChartRecorder.Get(config, context.self)
-        val records = mutable.ArrayBuffer[ChartRecord]()
-        Behaviors.receiveMessage:
-          case record: ChartRecord if records.size + 1 >= chartRecorders.size =>
-            records.addOne(record)
-            val partitionToSubscriber =
-              records
-                .flatMap(record =>
-                  chartSubscribers
-                    .get(record.edgeId)
-                    .toSeq
-                    .flatMap(chartSubscriber =>
-                      record.indexes
-                        .flatMap(_.neighbors)
-                        .toSet
-                        .map((_, (record.edgeId, chartSubscriber)))
-                    )
-                )
-                .groupMap(_._1)(_._2)
-                .view
-                .mapValues(_.toMap)
-                .toMap
+        case AtlasConfig.GridCulling(gridCellSize) =>
+          timer.startSingleTimer(Timeout, config.routeTableUpdateInterval)
 
-            val updateRouteTable = Chart.UpdateRouteTable(vector3 =>
-              partitionToSubscriber
-                .getOrElse(
-                  PartitionIndex(
-                    math.floor(vector3.x / gridCellSize.x).toInt,
-                    math.floor(vector3.y / gridCellSize.y).toInt,
-                    math.floor(vector3.z / gridCellSize.z).toInt
-                  ),
-                  Map()
-                )
-            )
-            for (edgeId, chart) <- charts do chart ! updateRouteTable
+          for (_, chartRecorder) <- chartRecorders do
+            chartRecorder ! ChartRecorder.Get(config, context.self)
+          val records = mutable.ArrayBuffer[ChartRecord]()
 
-            context.log.info(
-              partitionToSubscriber
-                .map((i, senders) =>
-                  s"[${i.x},${i.y},${i.z}]->${senders.map(_._1).mkString("(", ",", ")")}"
-                )
-                .mkString("", ", ", "")
-            )
+          Behaviors.receiveMessage:
+            case record: ChartRecord if records.size + 1 < chartRecorders.size =>
+              records.addOne(record)
+              Behaviors.same
 
-            Behaviors.stopped
+            case record: ChartRecord =>
+              records.addOne(record)
+              val partitionToSubscriber =
+                records
+                  .flatMap(record =>
+                    chartSubscribers
+                      .get(record.edgeId)
+                      .toSeq
+                      .flatMap(chartSubscriber =>
+                        record.indexes
+                          .flatMap(_.neighbors)
+                          .toSet
+                          .map((_, (record.edgeId, chartSubscriber)))
+                      )
+                  )
+                  .groupMap(_._1)(_._2)
+                  .view
+                  .mapValues(_.toMap)
+                  .toMap
 
-          case record: ChartRecord =>
-            records.addOne(record)
-            Behaviors.same
+              val updateRouteTable = Chart.UpdateRouteTable(vector3 =>
+                partitionToSubscriber
+                  .getOrElse(
+                    PartitionIndex(
+                      math.floor(vector3.x / gridCellSize.x).toInt,
+                      math.floor(vector3.y / gridCellSize.y).toInt,
+                      math.floor(vector3.z / gridCellSize.z).toInt
+                    ),
+                    Map()
+                  )
+              )
+              for (edgeId, chart) <- charts do chart ! updateRouteTable
+
+              context.log.debug(
+                partitionToSubscriber.toSeq
+                  .sortBy((index, _) => (index.x, index.y, index.z))
+                  .map((i, senders) =>
+                    s"[${i.x},${i.y},${i.z}]->${senders.map(_._1).mkString("(", ",", ")")}"
+                  )
+                  .mkString("", ", ", "")
+              )
+
+              Behaviors.stopped
+
+            case Timeout =>
+              Behaviors.stopped
