@@ -53,7 +53,7 @@ case class DynamicCenterConfig(
 
 case class AtlasConfig(
     culling: AtlasConfig.Culling,
-    interval: FiniteDuration
+    routeTableUpdateInterval: FiniteDuration
 )
 
 object AtlasConfig:

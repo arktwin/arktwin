@@ -5,3 +5,4 @@ package arktwin.center.util
 object CommonMessages:
   object Nop
   object Terminate
+  object Timeout

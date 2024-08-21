@@ -4,11 +4,14 @@ package arktwin.center.actors
 
 import arktwin.center.AtlasConfig
 import arktwin.center.actors.Atlas.PartitionIndex
+import arktwin.center.services.ChartAgent
 import arktwin.center.util.CommonMessages.Terminate
+import arktwin.common.data.TimestampEx.given
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
 import scala.collection.mutable
+import scala.math.Ordered.orderingToOrdered
 
 object ChartRecorder:
   type Message = Chart.PublishBatch | Get | Terminate.type
@@ -19,32 +22,36 @@ object ChartRecorder:
 
   case class ChartRecord(edgeId: String, indexes: Set[PartitionIndex])
 
-  def apply(edgeId: String, initialConfig: AtlasConfig): Behavior[Message] =
-    var config = initialConfig
-    var indexes = mutable.Set[PartitionIndex]()
+  def apply(edgeId: String): Behavior[Message] =
+    // TODO expire agents
+    val agents = mutable.Map[String, ChartAgent]()
 
     Behaviors.receiveMessage:
+      // TODO consider relative coordinates
       case publishBatch: Chart.PublishBatch =>
-        // TODO consider relative coordinates
+        for
+          newAgent <- publishBatch.agents
+          if agents
+            .get(newAgent.agentId)
+            .forall(_.transform.timestamp <= newAgent.transform.timestamp)
+        do agents(newAgent.agentId) = newAgent
+        Behaviors.same
 
+      case Get(config, replyTo) =>
         config.culling match
           case AtlasConfig.Broadcast() =>
 
           case AtlasConfig.GridCulling(gridCellSize) =>
-            for agent <- publishBatch.agents do
-              indexes.add(
+            val indexes = agents
+              .map((_, agent) =>
                 PartitionIndex(
                   math.floor(agent.transform.localTranslationMeter.x / gridCellSize.x).toInt,
                   math.floor(agent.transform.localTranslationMeter.y / gridCellSize.y).toInt,
                   math.floor(agent.transform.localTranslationMeter.z / gridCellSize.z).toInt
                 )
               )
-        Behaviors.same
-
-      case Get(newConfig, replyTo) =>
-        replyTo ! ChartRecord(edgeId, indexes.toSet)
-        config = newConfig
-        indexes = mutable.Set()
+              .toSet
+            replyTo ! ChartRecord(edgeId, indexes)
         Behaviors.same
 
       case Terminate =>

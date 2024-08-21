@@ -20,23 +20,23 @@ class AtlasSuite extends ActorTestBase:
   given Scheduler = testKit.system.scheduler
   given Ordering[ChartAgent] = Ordering.by(a => (a.agentId, a.transform.timestamp))
 
-  test("broadcast"):
+  test(AtlasConfig.Broadcast.getClass.getSimpleName):
     val atlasConfig = AtlasConfig(AtlasConfig.Broadcast(), 100.millis)
     val atlas = testKit.spawn(Atlas(atlasConfig, CenterKamon("")))
 
     val (publisherA, subscriberA) = createPubSub("A", atlas)
-    val a1 = ChartAgent("a1", transformEnu(Timestamp(0, 0), Vector3Enu(1, 2, 3)))
-    val a2 = ChartAgent("a2", transformEnu(Timestamp(0, 0), Vector3Enu(1, 2, 3)))
-    Thread.sleep(atlasConfig.interval.toMillis * 2)
+    Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
 
+    val a1 = chartAgent("a1", Timestamp(0, 0), Vector3Enu(1, 2, 3))
+    val a2 = chartAgent("a2", Timestamp(0, 0), Vector3Enu(1, 2, 3))
     publisherA ! Chart.PublishBatch(Seq(a1, a2), Timestamp(0, 0))
     subscriberA.expectNoMessage()
 
     val (publisherB, subscriberB) = createPubSub("B", atlas)
-    val b1 = ChartAgent("b1", transformEnu(Timestamp(0, 0), Vector3Enu(1, 2, 3)))
-    val b2 = ChartAgent("b2", transformEnu(Timestamp(0, 0), Vector3Enu(1, 2, 3)))
-    Thread.sleep(atlasConfig.interval.toMillis * 2)
+    Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
 
+    val b1 = chartAgent("b1", Timestamp(0, 0), Vector3Enu(1, 2, 3))
+    val b2 = chartAgent("b2", Timestamp(0, 0), Vector3Enu(1, 2, 3))
     publisherA ! Chart.PublishBatch(Seq(a1, a2), Timestamp(0, 0))
     publisherB ! Chart.PublishBatch(Seq(b1), Timestamp(0, 0))
     publisherB ! Chart.PublishBatch(Seq(b2), Timestamp(0, 0))
@@ -46,10 +46,10 @@ class AtlasSuite extends ActorTestBase:
     subscriberB.expectNoMessage()
 
     val (publisherC, subscriberC) = createPubSub("C", atlas)
-    val c1 = ChartAgent("c1", transformEnu(Timestamp(0, 0), Vector3Enu(1, 2, 3)))
-    val c2 = ChartAgent("c2", transformEnu(Timestamp(0, 0), Vector3Enu(1, 2, 3)))
-    Thread.sleep(atlasConfig.interval.toMillis * 2)
+    Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
 
+    val c1 = chartAgent("c1", Timestamp(0, 0), Vector3Enu(1, 2, 3))
+    val c2 = chartAgent("c2", Timestamp(0, 0), Vector3Enu(1, 2, 3))
     publisherA ! Chart.PublishBatch(Seq(a1, a2), Timestamp(0, 0))
     publisherB ! Chart.PublishBatch(Seq(b1, b2), Timestamp(0, 0))
     publisherC ! Chart.PublishBatch(Seq(c1, c2), Timestamp(0, 0))
@@ -71,7 +71,7 @@ class AtlasSuite extends ActorTestBase:
 
     publisherB ! Terminate
     subscriberB.stop()
-    Thread.sleep(atlasConfig.interval.toMillis * 2)
+    Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
 
     publisherA ! Chart.PublishBatch(Seq(a1, a2), Timestamp(0, 0))
     publisherB ! Chart.PublishBatch(Seq(b1, b2), Timestamp(0, 0))
@@ -81,7 +81,58 @@ class AtlasSuite extends ActorTestBase:
     subscriberA.expectNoMessage()
     subscriberC.expectNoMessage()
 
-  // TODO test("grid culling"):
+  test(AtlasConfig.GridCulling.getClass.getSimpleName):
+    val atlasConfig = AtlasConfig(AtlasConfig.GridCulling(Vector3Enu(10, 100, 1000)), 100.millis)
+    val atlas = testKit.spawn(Atlas(atlasConfig, CenterKamon("")))
+
+    val (publisherA, subscriberA) = createPubSub("A", atlas)
+    Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
+
+    val a1_0 = chartAgent("a1", Timestamp(0, 0), Vector3Enu(1, 1, 1)) // [0, 0, 0]
+    val a2_0 = chartAgent("a2", Timestamp(0, 0), Vector3Enu(1, 1, 1)) // [0, 0, 0]
+    publisherA ! Chart.PublishBatch(Seq(a1_0, a2_0), Timestamp(0, 0))
+    subscriberA.expectNoMessage()
+
+    val (publisherB, subscriberB) = createPubSub("B", atlas)
+    Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
+
+    val b1_0 = chartAgent("b1", Timestamp(0, 0), Vector3Enu(1, 1, 1)) // [0, 0, 0]
+    val b2_0 = chartAgent("b2", Timestamp(0, 0), Vector3Enu(21, 1, 1)) // [2, 0, 0]
+    publisherB ! Chart.PublishBatch(Seq(b1_0, b2_0), Timestamp(0, 0))
+    subscriberA.receiveMessage().agents.sorted shouldEqual Seq(b1_0)
+    subscriberA.expectNoMessage()
+    subscriberB.expectNoMessage()
+
+    val (publisherC, subscriberC) = createPubSub("C", atlas)
+    Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
+
+    val c1_0 = chartAgent("c1", Timestamp(0, 0), Vector3Enu(11, 1, 1)) // [1, 0, 0]
+    val c2_0 = chartAgent("c2", Timestamp(0, 0), Vector3Enu(31, 1, 1001)) // [3, 0, 1]
+    publisherC ! Chart.PublishBatch(Seq(c1_0, c2_0), Timestamp(0, 0))
+    subscriberA.receiveMessage().agents.sorted shouldEqual Seq(c1_0)
+    subscriberB.receiveMessage().agents.sorted shouldEqual Seq(c1_0, c2_0)
+    subscriberA.expectNoMessage()
+    subscriberB.expectNoMessage()
+    subscriberC.expectNoMessage()
+
+    Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
+
+    val a1_1 = chartAgent("a1", Timestamp(1, 0), Vector3Enu(41, 101, 1001)) // [4, 1, 1]
+    val a2_1 = chartAgent("a2", Timestamp(1, 0), Vector3Enu(41, 201, -1)) // [4, 2, -1]
+    publisherA ! Chart.PublishBatch(Seq(a1_1, a2_1), Timestamp(0, 0))
+    subscriberC.receiveMessage().agents.sorted shouldEqual Seq(a1_1)
+    subscriberA.expectNoMessage()
+    subscriberB.expectNoMessage()
+    subscriberC.expectNoMessage()
+
+    publisherB ! Terminate
+    subscriberB.stop()
+    Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
+
+    publisherC ! Chart.PublishBatch(Seq(c1_0, c2_0), Timestamp(0, 0))
+    subscriberA.receiveMessage().agents.sorted shouldEqual Seq(c2_0)
+    subscriberA.expectNoMessage()
+    subscriberC.expectNoMessage()
 
   private def createPubSub(
       edgeId: String,
@@ -108,15 +159,19 @@ class AtlasSuite extends ActorTestBase:
     atlas ! Atlas.AddChartSubscriber(edgeId, chartSubscriber.ref)
     (chartPublisher, chartSubscriber)
 
-  private def transformEnu(
+  private def chartAgent(
+      agentId: String,
       timestamp: Timestamp,
       localTranslation: Vector3Enu
   ) =
-    TransformEnu(
-      timestamp,
-      None,
-      Vector3Enu(1, 1, 1),
-      QuaternionEnu(1, 0, 0, 0),
-      localTranslation,
-      Vector3Enu(0, 0, 0)
+    ChartAgent(
+      agentId,
+      TransformEnu(
+        timestamp,
+        None,
+        Vector3Enu(1, 1, 1),
+        QuaternionEnu(1, 0, 0, 0),
+        localTranslation,
+        Vector3Enu(0, 0, 0)
+      )
     )
