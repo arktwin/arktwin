@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.7.5 Chrome/126.0.6478.183 Electron/31.3.0 Safari/537.36" version="24.7.5">
   <diagram name="ページ1" id="t94YC5nv_LQx9OQjXFBO">
-    <mxGraphModel dx="1338" dy="783" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="1430" dy="837" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -163,7 +163,7 @@
             <mxPoint x="210" y="320" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="b8Y9SWuDgDwBU1Piw9FO-59" value="&lt;b&gt;2.1 Spawn a router&lt;/b&gt;&lt;div style=&quot;font-size: 6px;&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;div style=&quot;line-height: 160%; font-size: 12px;&quot;&gt;&lt;div style=&quot;line-height: 120%;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- initial route table&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+        <mxCell id="b8Y9SWuDgDwBU1Piw9FO-59" value="&lt;b&gt;2.1 spawn actors&lt;/b&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="220" y="340" width="110" height="40" as="geometry" />
         </mxCell>
         <mxCell id="b8Y9SWuDgDwBU1Piw9FO-61" value="&lt;b&gt;2.3 collect records&lt;/b&gt;&lt;div style=&quot;font-size: 6px;&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;div style=&quot;line-height: 160%; font-size: 12px;&quot;&gt;&lt;div style=&quot;line-height: 120%;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- partition indexes where agents exist&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
@@ -475,14 +475,26 @@
         <mxCell id="b8Y9SWuDgDwBU1Piw9FO-201" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#CC0000;strokeColor=none;" parent="1" vertex="1">
           <mxGeometry x="405" y="750" width="10" height="10" as="geometry" />
         </mxCell>
-        <mxCell id="VplTwXJqcuHi7feVS-UU-1" value="&lt;b&gt;1.1 publish&lt;/b&gt;&lt;div style=&quot;font-size: 6px;&quot;&gt;&lt;br class=&quot;Apple-interchange-newline&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;- micro batch of&lt;/font&gt;&lt;span style=&quot;font-size: 12px; background-color: initial;&quot;&gt;&amp;nbsp;agent data&lt;/span&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+        <mxCell id="VplTwXJqcuHi7feVS-UU-1" value="&lt;b&gt;1.1 publish&lt;/b&gt;&lt;div style=&quot;font-size: 6px;&quot;&gt;&lt;br class=&quot;Apple-interchange-newline&quot;&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;- micro batch of&lt;/font&gt;&lt;span style=&quot;font-size: 12px; background-color: initial;&quot;&gt;&amp;nbsp;agent data&lt;/span&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="280" y="100" width="150" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="VplTwXJqcuHi7feVS-UU-2" value="&lt;b&gt;1.3 subscribe&lt;/b&gt;&lt;div style=&quot;font-size: 6px;&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;div style=&quot;line-height: 19.2px; font-size: 12px;&quot;&gt;&lt;div style=&quot;line-height: 14.4px;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- micro batch of&lt;/span&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&amp;nbsp;agent data&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+        <mxCell id="VplTwXJqcuHi7feVS-UU-2" value="&lt;b&gt;1.3 subscribe&lt;/b&gt;&lt;div style=&quot;font-size: 6px;&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;div style=&quot;line-height: 19.2px; font-size: 12px;&quot;&gt;&lt;div style=&quot;line-height: 14.4px;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;- micro batch of&lt;/span&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&amp;nbsp;agent data&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="560" y="100" width="160" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="VplTwXJqcuHi7feVS-UU-3" value="&lt;b&gt;1.2 repack and route&lt;/b&gt;&lt;div style=&quot;font-size: 6px;&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+        <mxCell id="VplTwXJqcuHi7feVS-UU-3" value="&lt;b&gt;1.2 repack and route&lt;/b&gt;&lt;div style=&quot;font-size: 6px;&quot;&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="420" y="100" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="lbgtuX8Jc-KsPnuTRVgF-1" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;strokeWidth=2;fillColor=#ffe6cc;strokeColor=#d79b00;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" edge="1" parent="1" source="b8Y9SWuDgDwBU1Piw9FO-8" target="b8Y9SWuDgDwBU1Piw9FO-11">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="310" y="430" as="sourcePoint" />
+            <mxPoint x="462" y="184" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lbgtuX8Jc-KsPnuTRVgF-2" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;strokeWidth=2;fillColor=#ffe6cc;strokeColor=#d79b00;movable=1;resizable=1;rotatable=1;deletable=1;editable=1;locked=0;connectable=1;" edge="1" parent="1" source="b8Y9SWuDgDwBU1Piw9FO-8" target="b8Y9SWuDgDwBU1Piw9FO-20">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="310" y="430" as="sourcePoint" />
+            <mxPoint x="462" y="244" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
