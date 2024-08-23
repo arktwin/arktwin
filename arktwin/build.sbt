@@ -4,7 +4,7 @@ import scalapb.GeneratorOption.FlatPackage
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val gatlingVersion = "3.11.5"
-val jsoniterScalaVersion = "2.30.7"
+val jsoniterScalaVersion = "2.30.8"
 val kamonVersion = "2.7.3"
 val pekkoHttpVersion = "1.0.1"
 val pekkoVersion = "1.0.3"
@@ -22,27 +22,29 @@ val apacheLicenseV2 = Some(
   )
 )
 
-inThisBuild(List(
-  scalaVersion := "3.5.0",
-  scalacOptions ++= Seq(
-    "-deprecation",
-    "-feature",
-    "-unchecked",
-    "-Xmax-inlines",
-    "64",
-    "-Wconf:src=pekko-grpc/.*:silent",
-    "-Wunused:all"
-  ),
-  scalafixOnCompile := true,
-  semanticdbEnabled := true,
-  scalafmtOnCompile := true,
-  headerEmptyLine := false,
-  versionScheme := Some("semver-spec"),
-  publish / skip := true,
-  run / fork := true,
-  Test / fork := true,
-  outputStrategy := Some(StdoutOutput)
-))
+inThisBuild(
+  List(
+    scalaVersion := "3.5.0",
+    scalacOptions ++= Seq(
+      "-deprecation",
+      "-feature",
+      "-unchecked",
+      "-Xmax-inlines",
+      "64",
+      "-Wconf:src=pekko-grpc/.*:silent",
+      "-Wunused:all"
+    ),
+    scalafixOnCompile := true,
+    semanticdbEnabled := true,
+    scalafmtOnCompile := true,
+    headerEmptyLine := false,
+    versionScheme := Some("semver-spec"),
+    publish / skip := true,
+    run / fork := true,
+    Test / fork := true,
+    outputStrategy := Some(StdoutOutput)
+  )
+)
 
 lazy val root = (project in file("."))
   .aggregate(common, center, edge, e2e)
@@ -66,7 +68,8 @@ lazy val common = (project in file("common"))
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
     Compile / PB.targets +=
-      scalapb.validate.gen(FlatPackage) -> (Compile / pekkoGrpcCodeGeneratorSettings / target).value,
+      scalapb.validate
+        .gen(FlatPackage) -> (Compile / pekkoGrpcCodeGeneratorSettings / target).value,
     pekkoGrpcCodeGeneratorSettings += "server_power_apis"
   )
 
