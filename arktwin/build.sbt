@@ -34,6 +34,7 @@ inThisBuild(
       "-Wconf:src=pekko-grpc/.*:silent",
       "-Wunused:all"
     ),
+    usePipelining := true,
     scalafixOnCompile := true,
     semanticdbEnabled := true,
     scalafmtOnCompile := true,
