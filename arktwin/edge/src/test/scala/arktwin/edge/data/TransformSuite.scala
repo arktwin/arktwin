@@ -3,7 +3,8 @@
 package arktwin.edge.data
 
 import arktwin.common.data.Timestamp
-import arktwin.edge.data.EulerAnglesConfig.Order.*
+import arktwin.edge.configs.EulerAnglesConfig.Order.*
+import arktwin.edge.configs.{CoordinateConfig, EulerAnglesConfig, QuaternionConfig, Vector3Config}
 import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers

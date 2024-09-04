@@ -6,6 +6,7 @@ import arktwin.common.data.*
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.TimestampEx.given
 import arktwin.common.data.Vector3EnuEx.*
+import arktwin.edge.configs.CoordinateConfig
 import sttp.tapir.Schema.annotations.description
 
 import scala.math.Ordered.orderingToOrdered
@@ -58,9 +59,3 @@ object Transform:
       Vector3.fromEnu(a.localTranslationMeter, config.vector3),
       Some(Vector3.fromEnu(a.localTranslationSpeedMps, config.vector3))
     )
-
-// TODO how to reflect rotation to ENU?
-case class CoordinateConfig(
-    vector3: Vector3Config,
-    rotation: RotationConfig
-)

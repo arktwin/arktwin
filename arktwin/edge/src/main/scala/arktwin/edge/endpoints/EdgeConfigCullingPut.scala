@@ -5,8 +5,8 @@ package arktwin.edge.endpoints
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
-import arktwin.edge.CullingConfig
 import arktwin.edge.actors.EdgeConfigurator
+import arktwin.edge.configs.CullingConfig
 import arktwin.edge.util.JsonDerivation.given
 import arktwin.edge.util.{EdgeKamon, ErrorStatus}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec

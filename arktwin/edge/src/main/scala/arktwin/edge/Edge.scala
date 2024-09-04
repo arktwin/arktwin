@@ -7,6 +7,7 @@ import arktwin.common.LoggerConfigurator
 import arktwin.edge.actors.adapters.*
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
 import arktwin.edge.actors.{DeadLetterListener, EdgeConfigurator}
+import arktwin.edge.configs.EdgeConfig
 import arktwin.edge.connectors.{ChartConnector, ClockConnector, RegisterConnector}
 import arktwin.edge.endpoints.*
 import arktwin.edge.util.{EdgeKamon, EdgeReporter}

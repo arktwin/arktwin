@@ -2,8 +2,8 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.center.actors
 
-import arktwin.center.ClockConfig
-import arktwin.center.ClockConfig.Start.{Absolute, Relative, Schedule}
+import arktwin.center.configs.ClockConfig
+import arktwin.center.configs.ClockConfig.Start.{Absolute, Relative, Schedule}
 import arktwin.center.services.ClockBase
 import arktwin.center.services.ClockBaseEx.*
 import arktwin.common.MailboxConfig

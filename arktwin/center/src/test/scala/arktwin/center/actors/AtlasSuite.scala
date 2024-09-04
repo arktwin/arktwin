@@ -2,7 +2,7 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.center.actors
 
-import arktwin.center.AtlasConfig
+import arktwin.center.configs.AtlasConfig
 import arktwin.center.services.ChartAgent
 import arktwin.center.test.ActorTestBase
 import arktwin.center.util.CenterKamon

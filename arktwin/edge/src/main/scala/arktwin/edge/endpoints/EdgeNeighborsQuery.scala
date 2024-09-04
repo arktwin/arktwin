@@ -5,8 +5,8 @@ package arktwin.edge.endpoints
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
-import arktwin.edge.StaticEdgeConfig
 import arktwin.edge.actors.adapters.EdgeNeighborsQueryAdapter
+import arktwin.edge.configs.StaticEdgeConfig
 import arktwin.edge.data.*
 import arktwin.edge.util.JsonDerivation.given
 import arktwin.edge.util.{EdgeKamon, ErrorStatus}

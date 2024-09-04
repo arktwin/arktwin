@@ -1,16 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2024 TOYOTA MOTOR CORPORATION
-package arktwin.edge
+package arktwin.edge.configs
 
 import arktwin.center.services.CreateEdgeRequest
 import arktwin.common.LoggerConfigurator.LogLevel
-import arktwin.edge.data.CoordinateConfig
 import com.typesafe.config.Config
 import pureconfig.*
 import pureconfig.error.ConfigReaderFailures
 import pureconfig.generic.derivation.default.*
 import scalapb.validate.{Failure, Validator}
-import sttp.tapir.Schema.annotations.description
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -45,28 +43,3 @@ object EdgeConfig:
         )
       case _ =>
     config
-
-case class DynamicEdgeConfig(
-    coordinate: CoordinateConfig,
-    culling: CullingConfig
-)
-
-case class CullingConfig(
-    @description("If true, edge culling is enabled.")
-    edgeCulling: Boolean,
-    @description("If first agents is greater than maxFirstAgents, edge culling is disabled.")
-    maxFirstAgents: Int
-)
-
-case class StaticEdgeConfig(
-    edgeIdPrefix: String,
-    host: String,
-    port: Int,
-    logLevel: LogLevel,
-    logLevelColor: Boolean,
-    actorTimeout: FiniteDuration,
-    endpointTimeout: FiniteDuration,
-    clockInitialStashSize: Int,
-    publishBatchSize: Int,
-    publishBufferSize: Int
-)
