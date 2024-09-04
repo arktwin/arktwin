@@ -4,7 +4,6 @@ package arktwin.edge.config
 
 import arktwin.center.services.CreateEdgeRequest
 import arktwin.common.LoggerConfigurator.LogLevel
-import arktwin.edge.data.CoordinateConfig
 import com.typesafe.config.Config
 import pureconfig.*
 import pureconfig.error.ConfigReaderFailures

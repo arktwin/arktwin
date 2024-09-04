@@ -3,8 +3,7 @@
 package arktwin.edge.actors
 
 import arktwin.edge.actors.EdgeConfigurator.*
-import arktwin.edge.config.CullingConfig
-import arktwin.edge.data.{CoordinateConfig, QuaternionConfig}
+import arktwin.edge.config.{CoordinateConfig, CullingConfig, QuaternionConfig}
 import arktwin.edge.endpoints.EdgeConfigGet
 import arktwin.edge.test.ActorTestBase
 import org.apache.pekko.actor.typed.receptionist.Receptionist

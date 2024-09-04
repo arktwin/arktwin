@@ -6,11 +6,12 @@ import arktwin.center.services.{ChartAgent, ClockBase}
 import arktwin.common.data.{QuaternionEnu, Timestamp, TransformEnu, Vector3Enu}
 import arktwin.edge.actors.adapters.EdgeAgentsPutAdapter.*
 import arktwin.edge.actors.sinks.{Chart, Clock}
+import arktwin.edge.config.Vector3Config.Direction.{East, North, Up}
+import arktwin.edge.config.Vector3Config.LengthUnit.Meter
+import arktwin.edge.config.Vector3Config.TimeUnit.Second
+import arktwin.edge.config.{CoordinateConfig, QuaternionConfig, Vector3Config}
 import arktwin.edge.connectors.{ChartConnector, RegisterConnector}
 import arktwin.edge.data.*
-import arktwin.edge.data.Vector3Config.Direction.{East, North, Up}
-import arktwin.edge.data.Vector3Config.LengthUnit.Meter
-import arktwin.edge.data.Vector3Config.TimeUnit.Second
 import arktwin.edge.endpoints.EdgeAgentsPut.{Request, Response}
 import arktwin.edge.endpoints.{EdgeAgentsPutRequestAgent, EdgeConfigGet}
 import arktwin.edge.test.ActorTestBase
