@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2024 TOYOTA MOTOR CORPORATION
-package arktwin.center
+package arktwin.center.config
 
 import arktwin.common.LoggerConfigurator.LogLevel
 import arktwin.common.data.{Duration, Timestamp, Vector3Enu}

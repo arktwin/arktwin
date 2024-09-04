@@ -2,8 +2,8 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.center.services
 
-import arktwin.center.StaticCenterConfig
 import arktwin.center.actors.Register
+import arktwin.center.config.StaticCenterConfig
 import arktwin.center.util.CommonMessages.Nop
 import arktwin.common.GrpcHeaderKey
 import com.google.protobuf.empty.Empty

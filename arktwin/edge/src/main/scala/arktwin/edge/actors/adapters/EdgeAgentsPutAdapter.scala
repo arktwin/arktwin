@@ -8,9 +8,9 @@ import arktwin.common.MailboxConfig
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.{Timestamp, TransformEnu}
-import arktwin.edge.StaticEdgeConfig
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.sinks.{Chart, Clock}
+import arktwin.edge.config.StaticEdgeConfig
 import arktwin.edge.connectors.{ChartConnector, RegisterConnector}
 import arktwin.edge.data.CoordinateConfig
 import arktwin.edge.endpoints.EdgeAgentsPut

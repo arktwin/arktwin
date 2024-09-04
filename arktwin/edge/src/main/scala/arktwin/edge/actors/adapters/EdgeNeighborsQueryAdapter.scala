@@ -8,10 +8,10 @@ import arktwin.common.MailboxConfig
 import arktwin.common.data.DurationEx.*
 import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.TransformEnuEx.*
-import arktwin.edge.StaticEdgeConfig
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.sinks.Chart.CullingAgent
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
+import arktwin.edge.config.StaticEdgeConfig
 import arktwin.edge.data.{CoordinateConfig, Transform}
 import arktwin.edge.endpoints.EdgeNeighborsQuery.{Request, Response, ResponseAgent}
 import arktwin.edge.endpoints.{EdgeNeighborsQuery, NeighborChange}

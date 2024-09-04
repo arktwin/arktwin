@@ -2,8 +2,8 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.center.actors
 
-import arktwin.center.AtlasConfig
 import arktwin.center.actors.Atlas.PartitionIndex
+import arktwin.center.config.AtlasConfig
 import arktwin.center.services.ChartAgent
 import arktwin.center.util.CommonMessages.Terminate
 import arktwin.common.data.TimestampEx.given

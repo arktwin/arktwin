@@ -7,9 +7,9 @@ import arktwin.common.data.DurationEx.*
 import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
 import arktwin.edge.actors.EdgeConfigurator
+import arktwin.edge.config.{DynamicEdgeConfig, EdgeConfig, StaticEdgeConfig}
 import arktwin.edge.util.JsonDerivation.given
 import arktwin.edge.util.{EdgeKamon, ErrorStatus}
-import arktwin.edge.{DynamicEdgeConfig, EdgeConfig, StaticEdgeConfig}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable

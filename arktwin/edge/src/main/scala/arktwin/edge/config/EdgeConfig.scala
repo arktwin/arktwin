@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2024 TOYOTA MOTOR CORPORATION
-package arktwin.edge
+package arktwin.edge.config
 
 import arktwin.center.services.CreateEdgeRequest
 import arktwin.common.LoggerConfigurator.LogLevel
