@@ -7,7 +7,7 @@ import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.Vector3EnuEx.*
 
 object TransformEnuEx:
-  implicit class TransformEnuExtension(private val a: TransformEnu) extends AnyVal:
+  extension (a: TransformEnu)
     def extrapolate(targetTimestamp: Timestamp): TransformEnu =
       a.copy(
         timestamp = targetTimestamp,

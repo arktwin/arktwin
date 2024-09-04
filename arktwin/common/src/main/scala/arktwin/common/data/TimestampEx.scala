@@ -8,8 +8,8 @@ import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZoneOffset, ZonedDateTime}
 
 object TimestampEx:
-  implicit class TimestampExtension(private val a: Timestamp) extends AnyVal:
-    def -(that: Timestamp): Duration = Duration.normalize(
+  extension (a: Timestamp)
+    def -(that: Timestamp): Duration = DurationEx.normalize(Duration)(
       math.subtractExact(a.seconds, that.seconds),
       a.nanos.toLong - that.nanos
     )
@@ -29,7 +29,7 @@ object TimestampEx:
         .ofEpochSecond(a.seconds, a.nanos, ZoneOffset.UTC)
         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
-  implicit class TimestampCompanionExtension(private val a: Timestamp.type) extends AnyVal:
+  extension (a: Timestamp.type)
     def from(value: ZonedDateTime): Timestamp = Timestamp(value.toEpochSecond, value.getNano)
 
     def machineNow(): Timestamp = from(ZonedDateTime.now())
