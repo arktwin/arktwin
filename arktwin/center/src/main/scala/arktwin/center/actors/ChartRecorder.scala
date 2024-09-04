@@ -3,7 +3,7 @@
 package arktwin.center.actors
 
 import arktwin.center.actors.Atlas.PartitionIndex
-import arktwin.center.config.AtlasConfig
+import arktwin.center.configs.AtlasConfig
 import arktwin.center.services.ChartAgent
 import arktwin.center.util.CommonMessages.Terminate
 import arktwin.common.data.TimestampEx.given

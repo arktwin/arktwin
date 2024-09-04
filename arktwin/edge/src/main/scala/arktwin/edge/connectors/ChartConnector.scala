@@ -8,7 +8,7 @@ import arktwin.common.data.DurationEx.*
 import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
 import arktwin.edge.actors.sinks.Chart
-import arktwin.edge.config.StaticEdgeConfig
+import arktwin.edge.configs.StaticEdgeConfig
 import arktwin.edge.util.CommonMessages.Nop
 import arktwin.edge.util.EdgeKamon
 import com.google.protobuf.empty.Empty

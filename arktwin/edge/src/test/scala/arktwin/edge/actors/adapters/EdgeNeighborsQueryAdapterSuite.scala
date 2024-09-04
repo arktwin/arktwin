@@ -7,12 +7,12 @@ import arktwin.common.data.{QuaternionEnu, Timestamp, TransformEnu, Vector3Enu}
 import arktwin.edge.actors.adapters.EdgeNeighborsQueryAdapter.*
 import arktwin.edge.actors.sinks.Chart.CullingAgent
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
-import arktwin.edge.config.EulerAnglesConfig.AngleUnit.Degree
-import arktwin.edge.config.EulerAnglesConfig.Order.XYZ
-import arktwin.edge.config.Vector3Config.Direction.{East, North, Up}
-import arktwin.edge.config.Vector3Config.LengthUnit.Meter
-import arktwin.edge.config.Vector3Config.TimeUnit.Second
-import arktwin.edge.config.{CoordinateConfig, EulerAnglesConfig, Vector3Config}
+import arktwin.edge.configs.EulerAnglesConfig.AngleUnit.Degree
+import arktwin.edge.configs.EulerAnglesConfig.Order.XYZ
+import arktwin.edge.configs.Vector3Config.Direction.{East, North, Up}
+import arktwin.edge.configs.Vector3Config.LengthUnit.Meter
+import arktwin.edge.configs.Vector3Config.TimeUnit.Second
+import arktwin.edge.configs.{CoordinateConfig, EulerAnglesConfig, Vector3Config}
 import arktwin.edge.data.*
 import arktwin.edge.endpoints.EdgeConfigGet
 import arktwin.edge.endpoints.EdgeNeighborsQuery.{Request, Response, ResponseAgent}

@@ -3,7 +3,7 @@
 package arktwin.center.services
 
 import arktwin.center.actors.Clock
-import arktwin.center.config.StaticCenterConfig
+import arktwin.center.configs.StaticCenterConfig
 import arktwin.common.GrpcHeaderKey
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.NotUsed

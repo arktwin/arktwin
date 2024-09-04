@@ -3,7 +3,7 @@
 package arktwin.edge.actors
 
 import arktwin.common.MailboxConfig
-import arktwin.edge.config.{CoordinateConfig, CullingConfig, EdgeConfig}
+import arktwin.edge.configs.{CoordinateConfig, CullingConfig, EdgeConfig}
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.{Receptionist, ServiceKey}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors

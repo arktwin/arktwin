@@ -3,7 +3,7 @@
 package arktwin.center.services
 
 import arktwin.center.actors.*
-import arktwin.center.config.StaticCenterConfig
+import arktwin.center.configs.StaticCenterConfig
 import arktwin.center.util.CenterKamon
 import arktwin.center.util.CommonMessages.Terminate
 import arktwin.common.GrpcHeaderKey

@@ -4,7 +4,7 @@ package arktwin.edge.data
 
 import arktwin.common.data.QuaternionEnu
 import arktwin.common.data.QuaternionEnuEx.*
-import arktwin.edge.config.{EulerAnglesConfig, QuaternionConfig, RotationConfig}
+import arktwin.edge.configs.{EulerAnglesConfig, QuaternionConfig, RotationConfig}
 import arktwin.edge.util.JsonDerivation
 import sttp.tapir.*
 

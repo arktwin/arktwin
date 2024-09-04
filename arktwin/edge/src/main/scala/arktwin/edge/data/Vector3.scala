@@ -4,7 +4,7 @@ package arktwin.edge.data
 
 import arktwin.common.data.Vector3Enu
 import arktwin.common.data.Vector3EnuEx.*
-import arktwin.edge.config.Vector3Config
+import arktwin.edge.configs.Vector3Config
 
 case class Vector3(
     x: Double,

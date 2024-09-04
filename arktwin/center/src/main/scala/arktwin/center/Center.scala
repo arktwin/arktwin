@@ -3,7 +3,7 @@
 package arktwin.center
 
 import arktwin.center.actors.{Clock, Register, *}
-import arktwin.center.config.CenterConfig
+import arktwin.center.configs.CenterConfig
 import arktwin.center.services.*
 import arktwin.center.util.{CenterKamon, CenterReporter}
 import arktwin.common.LoggerConfigurator

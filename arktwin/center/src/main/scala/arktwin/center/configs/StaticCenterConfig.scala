@@ -1,20 +1,19 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2024 TOYOTA MOTOR CORPORATION
-package arktwin.edge.config
+package arktwin.center.configs
 
 import arktwin.common.LoggerConfigurator.LogLevel
 
 import scala.concurrent.duration.FiniteDuration
 
-case class StaticEdgeConfig(
-    edgeIdPrefix: String,
+case class StaticCenterConfig(
+    clock: ClockConfig,
+    runIdPrefix: String,
     host: String,
     port: Int,
     logLevel: LogLevel,
     logLevelColor: Boolean,
-    actorTimeout: FiniteDuration,
-    endpointTimeout: FiniteDuration,
-    clockInitialStashSize: Int,
-    publishBatchSize: Int,
-    publishBufferSize: Int
+    subscribeBatchSize: Int,
+    subscribeBatchInterval: FiniteDuration,
+    subscribeBufferSize: Int
 )

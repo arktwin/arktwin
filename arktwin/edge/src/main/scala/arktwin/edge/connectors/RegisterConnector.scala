@@ -5,7 +5,7 @@ package arktwin.edge.connectors
 import arktwin.center.services.{RegisterAgentUpdated, RegisterAgentsPublish, RegisterClient}
 import arktwin.common.GrpcHeaderKey
 import arktwin.edge.actors.sinks.Register
-import arktwin.edge.config.StaticEdgeConfig
+import arktwin.edge.configs.StaticEdgeConfig
 import arktwin.edge.util.CommonMessages.Nop
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.actor.typed.ActorRef

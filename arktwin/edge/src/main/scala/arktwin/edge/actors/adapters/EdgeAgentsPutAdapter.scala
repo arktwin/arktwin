@@ -10,7 +10,7 @@ import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.{Timestamp, TransformEnu}
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.sinks.{Chart, Clock}
-import arktwin.edge.config.{CoordinateConfig, StaticEdgeConfig}
+import arktwin.edge.configs.{CoordinateConfig, StaticEdgeConfig}
 import arktwin.edge.connectors.{ChartConnector, RegisterConnector}
 import arktwin.edge.endpoints.EdgeAgentsPut
 import arktwin.edge.endpoints.EdgeAgentsPut.{Request, Response}
