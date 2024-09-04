@@ -4,7 +4,7 @@ package arktwin.edge.data
 
 import arktwin.common.data.*
 import arktwin.common.data.DurationEx.*
-import arktwin.common.data.TimestampEx.given
+import arktwin.common.data.TimestampEx.{*, given}
 import arktwin.common.data.Vector3EnuEx.*
 import arktwin.edge.configs.CoordinateConfig
 import sttp.tapir.Schema.annotations.description

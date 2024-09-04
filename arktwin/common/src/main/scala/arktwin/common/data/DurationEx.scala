@@ -5,7 +5,7 @@ package arktwin.common.data
 import scala.concurrent.duration.Duration as ScalaDuration
 
 object DurationEx:
-  implicit class DurationExtension(private val a: Duration) extends AnyVal:
+  extension (a: Duration)
     def secondsDouble: Double =
       a.seconds + (a.nanos.toDouble / nanosPerSecond)
 
@@ -36,7 +36,7 @@ object DurationEx:
       secondsDouble / that
     )
 
-  implicit class DurationCompanionExtension(private val a: Duration.type) extends AnyVal:
+  extension (a: Duration.type)
     def from(value: ScalaDuration): Duration =
       normalize(0, value.toNanos)
 
