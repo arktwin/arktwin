@@ -12,7 +12,7 @@ val pureConfigVersion = "0.17.7"
 val scalaTestVersion = "3.2.19"
 val scribeVersion = "3.15.0"
 val tapirSpecVersion = "0.11.3"
-val tapirVersion = "1.11.1"
+val tapirVersion = "1.11.2"
 
 val apacheLicenseV2 = Some(
   HeaderLicense.Custom(
