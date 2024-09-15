@@ -3,6 +3,8 @@
 .idea/
 .metals/
 .vscode/
+dist/
+node_modules/
 temp/
 target/
 *.class

@@ -1,5 +1,7 @@
 import scalapb.GeneratorOption.FlatPackage
 
+import scala.sys.process.Process
+
 // avoid conflict with io.gatling.sbt.GatlingPlugin.autoImport.assembly
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
@@ -80,7 +82,7 @@ lazy val center = (project in file("center"))
   .settings(
     name := "arktwin-center",
     assemblyJarName := "arktwin-center.jar",
-    assembly / assemblyMergeStrategy := {
+    assemblyMergeStrategy := {
       case a if a.endsWith(".proto") =>
         MergeStrategy.discard
       // see https://github.com/sbt/sbt-assembly/issues/391
@@ -121,8 +123,12 @@ lazy val edge = (project in file("edge"))
   .enablePlugins(BuildInfoPlugin, AutomateHeaderPlugin)
   .settings(
     name := "arktwin-edge",
+    assembly := {
+      (viewer / Keys.`package`).value
+      assembly.value
+    },
     assemblyJarName := "arktwin-edge.jar",
-    assembly / assemblyMergeStrategy := {
+    assemblyMergeStrategy := {
       case a if a.endsWith(".proto") =>
         MergeStrategy.discard
       // see https://github.com/sbt/sbt-assembly/issues/391
@@ -143,6 +149,7 @@ lazy val edge = (project in file("edge"))
         f.data.getName.startsWith("okio") && !f.data.getName.startsWith("okio-jvm")
       }
     },
+    Compile / unmanagedResourceDirectories += (viewer / baseDirectory).value / "dist",
     headerLicense := apacheLicenseV2,
     headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
@@ -166,6 +173,16 @@ lazy val edge = (project in file("edge"))
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     )
   )
+
+lazy val viewer = (project in file("viewer")).settings(
+  name := "arktwin-viewer",
+  Keys.`package` := {
+    Process("npm install", baseDirectory.value).!
+    Process("npm run build", baseDirectory.value).!
+    baseDirectory.value / "dist"
+  },
+  run := Process("npm run dev", baseDirectory.value).!,
+)
 
 lazy val e2e = (project in file("e2e"))
   .enablePlugins(GatlingPlugin, AutomateHeaderPlugin)

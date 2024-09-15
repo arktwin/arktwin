@@ -25,6 +25,7 @@ However, each agent-based software can connect to ArkTwin via local REST API pro
 
 1. install Java Development Kit (recommended: [Eclipse Temurin 21 LTS](https://adoptium.net/temurin/releases/?variant=openjdk21&jvmVariant=hotspot))
 1. install [sbt](https://www.scala-sbt.org/download)
+1. install [Node.js](https://nodejs.org/en/download/package-manager)
 1. `cd arktwin`
 1. `sbt assembly`
 1. pick up `arktwin-center.jar` from `center/target/scala-*.*.*/`
@@ -45,6 +46,7 @@ The default endpoints for ArkTwin is as follows:
 | ArkTwin Edge | REST Docs | [localhost:2237/docs/](http://localhost:2237/docs/) |
 | ArkTwin Edge | Health Check | [localhost:2237/health](http://localhost:2237/health) |
 | ArkTwin Edge | Prometheus Exporter | [localhost:2237/metrics](http://localhost:2237/metrics) |
+| ArkTwin Edge | Agents Viewer | [localhost:2237/viewer/](http://localhost:2237/viewer/) |
 
 If you want to change the host and port settings, see [# Environment Variables](#environment-variables).
 
