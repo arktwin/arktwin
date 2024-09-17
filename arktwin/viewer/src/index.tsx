@@ -1,11 +1,10 @@
-import { MaterialReactTable, useMaterialReactTable, type MRT_ColumnDef } from 'material-react-table'
-import React, { useEffect, useMemo, useState } from 'react'
-import { createRoot } from 'react-dom/client'
+import { EdgeNeighborsQueryResponse, Transform } from './types'
 import { Box, MapControls, OrthographicCamera } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { RowSelectionState } from '@tanstack/react-table'
-
-import { EdgeNeighborsQueryResponse, Transform } from './types'
+import { MaterialReactTable, useMaterialReactTable, type MRT_ColumnDef } from 'material-react-table'
+import React, { useEffect, useMemo, useState } from 'react'
+import { createRoot } from 'react-dom/client'
 
 createRoot(document.getElementById('app')!).render(<App />)
 
