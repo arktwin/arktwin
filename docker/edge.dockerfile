@@ -10,7 +10,7 @@ RUN $JAVA_HOME/bin/jlink \
 FROM sbtscala/scala-sbt:eclipse-temurin-jammy-21.0.2_13_1.10.1_3.5.0 AS jar-build
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh && \
     bash nodesource_setup.sh && \
-    apt-get install -y 
+    apt-get install -y nodejs
 WORKDIR /arktwin/
 COPY arktwin/ /arktwin/
 RUN sbt assembly
