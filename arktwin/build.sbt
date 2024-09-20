@@ -4,7 +4,7 @@ import scalapb.GeneratorOption.FlatPackage
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val gatlingVersion = "3.12.0"
-val jsoniterScalaVersion = "2.30.10"
+val jsoniterScalaVersion = "2.30.11"
 val kamonVersion = "2.7.3"
 val pekkoHttpVersion = "1.0.1"
 val pekkoVersion = "1.1.1"
