@@ -6,7 +6,7 @@ import scala.sys.process.Process
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val gatlingVersion = "3.12.0"
-val jsoniterScalaVersion = "2.30.9"
+val jsoniterScalaVersion = "2.30.11"
 val kamonVersion = "2.7.3"
 val pekkoHttpVersion = "1.0.1"
 val pekkoVersion = "1.1.1"
@@ -14,7 +14,7 @@ val pureConfigVersion = "0.17.7"
 val scalaTestVersion = "3.2.19"
 val scribeVersion = "3.15.0"
 val tapirSpecVersion = "0.11.3"
-val tapirVersion = "1.11.3"
+val tapirVersion = "1.11.4"
 
 val apacheLicenseV2 = Some(
   HeaderLicense.Custom(
@@ -26,7 +26,7 @@ val apacheLicenseV2 = Some(
 
 inThisBuild(
   List(
-    scalaVersion := "3.5.0",
+    scalaVersion := "3.5.1",
     scalacOptions ++= Seq(
       "-deprecation",
       "-feature",
