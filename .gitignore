@@ -9,6 +9,7 @@ temp/
 target/
 *.class
 *.log
+*.tsbuildinfo
 .sdkmanrc
 metals.sbt
 

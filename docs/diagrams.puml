@@ -83,8 +83,11 @@ frame "Local Network<plain>, which can deny inbound connections</plain>" {
   }
 
   rectangle "Web UI" as webui {
-    rectangle "/docs" {
+    rectangle "/docs/" {
       rectangle "Swagger"
+    }
+    rectangle "/viewer/" {
+      rectangle "React"
     }
   }
   node "<b>Agent Simulator / VR</b>\nwhich can push and pull data synchronously" as Simulator
