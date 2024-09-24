@@ -3,10 +3,13 @@
 .idea/
 .metals/
 .vscode/
+dist/
+node_modules/
 temp/
 target/
 *.class
 *.log
+*.tsbuildinfo
 .sdkmanrc
 metals.sbt
 

@@ -157,6 +157,8 @@ object Edge:
           .bind(
             path("")(getFromResource("root.html")) ~
               path("docs"./)(getFromResource("docs.html")) ~
+              path("viewer"./)(getFromResource("viewer/index.html")) ~
+              pathPrefix("viewer")(getFromResourceDirectory("viewer/")) ~
               PekkoHttpServerInterpreter().toRoute(
                 SwaggerUI[Future](
                   centerYaml,
