@@ -1,28 +1,28 @@
-import { EdgeNeighborsQueryResponse } from './types'
 import { ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { Box, MapControls } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import {
-  MaterialReactTable,
-  useMaterialReactTable,
   type MRT_ColumnDef,
   type MRT_RowSelectionState,
+  MaterialReactTable,
+  useMaterialReactTable,
 } from 'material-react-table'
 import { useEffect, useMemo, useState } from 'react'
-import * as THREE from 'three'
+import { Euler, OrthographicCamera } from 'three'
+import type { EdgeNeighborsQueryResponse } from './types.tsx'
 
 class Agent {
   constructor(
-    public id: string,
-    public kind: string,
-    public x: number,
-    public y: number,
-    public z: number,
+    readonly id: string,
+    readonly kind: string,
+    readonly x: number,
+    readonly y: number,
+    readonly z: number,
   ) {}
 }
 
 export function App(): JSX.Element {
-  const [selectedAgentIds, setSelectedAgentIds] = useState<Array<string>>([])
+  const [selectedAgentIds, setSelectedAgentIds] = useState<string[]>([])
   const [agents, updateAgents] = useState<Agent[]>([])
   const [projectionAxes, setProjectionAxes] = useState<'xy' | 'yz' | 'xz'>('xy')
 
@@ -37,12 +37,13 @@ export function App(): JSX.Element {
         .then((response) => response.json())
         .then((data: EdgeNeighborsQueryResponse) => {
           updateAgents(
-            Object.entries(data.neighbors)
-              .filter(([_id, agent]) => agent.kind != null && agent.transform != null)
-              .map(([id, agent]) => {
-                const v = agent.transform!.localTranslation
-                return new Agent(id, agent.kind!, v.x, v.y, v.z)
-              }),
+            Object.entries(data.neighbors).flatMap(([id, neighbor]) => {
+              if (neighbor.kind != null && neighbor.transform != null) {
+                const v = neighbor.transform.localTranslation
+                return [new Agent(id, neighbor.kind, v.x, v.y, v.z)]
+              }
+              return []
+            }),
           )
         })
     }, 1000)
@@ -83,9 +84,11 @@ export function App(): JSX.Element {
           color="primary"
           value={projectionAxes}
           onChange={(_event, value) => {
-            if (value != null) setProjectionAxes(value)
+            if (value != null) {
+              setProjectionAxes(value)
+            }
           }}
-          exclusive
+          exclusive={true}
         >
           <ToggleButton value="xy">XY</ToggleButton>
           <ToggleButton value="yz">YZ</ToggleButton>
@@ -104,9 +107,9 @@ export function App(): JSX.Element {
 }
 
 function AgentsTable(props: {
-  agents: Array<Agent>
-  selectedAgentIds: Array<string>
-  setSelectedAgentIds: (a: Array<string>) => void
+  agents: Agent[]
+  selectedAgentIds: string[]
+  setSelectedAgentIds: (a: string[]) => void
 }): JSX.Element {
   const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({})
 
@@ -165,28 +168,26 @@ function AgentsTable(props: {
 }
 
 function AgentsCanvas(props: {
-  agents: Array<Agent>
-  selectedAgentIds: Array<string>
+  agents: Agent[]
+  selectedAgentIds: string[]
   projectionAxes: 'xy' | 'yz' | 'xz'
 }): JSX.Element {
   const { agents, projectionAxes } = props
   const gridSize = useMemo<number>(
     () =>
-      Math.pow(
-        10,
-        Math.ceil(
-          Math.log10(
-            Math.max(
-              ...(['xy', 'xz'].includes(projectionAxes)
-                ? agents.map((agent) => Math.abs(agent.x))
-                : []),
-              ...(['xy', 'yz'].includes(projectionAxes)
-                ? agents.map((agent) => Math.abs(agent.y))
-                : []),
-              ...(['yz', 'xz'].includes(projectionAxes)
-                ? agents.map((agent) => Math.abs(agent.z))
-                : []),
-            ),
+      10 **
+      Math.ceil(
+        Math.log10(
+          Math.max(
+            ...(['xy', 'xz'].includes(projectionAxes)
+              ? agents.map((agent) => Math.abs(agent.x))
+              : []),
+            ...(['xy', 'yz'].includes(projectionAxes)
+              ? agents.map((agent) => Math.abs(agent.y))
+              : []),
+            ...(['yz', 'xz'].includes(projectionAxes)
+              ? agents.map((agent) => Math.abs(agent.z))
+              : []),
           ),
         ),
       ),
@@ -196,11 +197,13 @@ function AgentsCanvas(props: {
   const girdRoation = (() => {
     switch (props.projectionAxes) {
       case 'xy':
-        return new THREE.Euler(Math.PI / 2, 0, 0)
+        return new Euler(Math.PI / 2, 0, 0)
       case 'yz':
-        return new THREE.Euler(0, 0, Math.PI / 2)
+        return new Euler(0, 0, Math.PI / 2)
       case 'xz':
-        return new THREE.Euler(0, 0, 0)
+        return new Euler(0, 0, 0)
+      default:
+        return new Euler(0, 0, 0)
     }
   })()
 
@@ -233,14 +236,17 @@ function AgentsCanvas(props: {
   )
 }
 
-function Camera(props: { gridSize: number; projectionAxes: 'xy' | 'yz' | 'xz' }): JSX.Element {
+function Camera(props: {
+  gridSize: number
+  projectionAxes: 'xy' | 'yz' | 'xz'
+}): JSX.Element {
   const { gridSize, projectionAxes } = props
 
   // see https://r3f.docs.pmnd.rs/api/hooks#exchanging-defaults
   const setThreeState = useThree((state) => state.set)
 
   useEffect(() => {
-    const camera = new THREE.OrthographicCamera(
+    const camera = new OrthographicCamera(
       -gridSize * 1.1,
       gridSize * 1.1,
       gridSize * 1.1,
@@ -249,18 +255,23 @@ function Camera(props: { gridSize: number; projectionAxes: 'xy' | 'yz' | 'xz' })
       Number.MAX_SAFE_INTEGER / 5,
     )
     switch (projectionAxes) {
-      case 'xy':
+      case 'xy': {
         camera.position.set(0, 0, Number.MAX_SAFE_INTEGER / 10)
         camera.lookAt(0, 0, 0)
         break
-      case 'yz':
+      }
+      case 'yz': {
         camera.position.set(Number.MAX_SAFE_INTEGER / 10, 0, 0)
         camera.lookAt(0, 0, 0)
         break
-      case 'xz':
+      }
+      case 'xz': {
         camera.position.set(0, Number.MAX_SAFE_INTEGER / 10, 0)
         camera.lookAt(0, 0, 0)
         camera.scale.y = -1
+        break
+      }
+      default:
         break
     }
     setThreeState({ camera })
@@ -275,6 +286,8 @@ function Camera(props: { gridSize: number; projectionAxes: 'xy' | 'yz' | 'xz' })
         state.camera.rotation.set(Math.PI / 2, Math.PI / 2, 0)
         break
       case 'xz':
+        break
+      default:
         break
     }
   })

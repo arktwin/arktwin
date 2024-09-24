@@ -1,4 +1,7 @@
-import { App } from './functions'
 import { createRoot } from 'react-dom/client'
+import { App } from './functions.tsx'
 
-createRoot(document.getElementById('app')!).render(<App />)
+const app = document.getElementById('app')
+if (app != null) {
+  createRoot(app).render(<App />)
+}
