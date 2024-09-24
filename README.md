@@ -46,7 +46,7 @@ The default endpoints for ArkTwin is as follows:
 | ArkTwin Edge | REST Docs | [localhost:2237/docs/](http://localhost:2237/docs/) |
 | ArkTwin Edge | Health Check | [localhost:2237/health](http://localhost:2237/health) |
 | ArkTwin Edge | Prometheus Exporter | [localhost:2237/metrics](http://localhost:2237/metrics) |
-| ArkTwin Edge | Agents Viewer | [localhost:2237/viewer/](http://localhost:2237/viewer/) |
+| ArkTwin Edge | Neighbors Viewer | [localhost:2237/viewer/](http://localhost:2237/viewer/) |
 
 If you want to change the host and port settings, see [# Environment Variables](#environment-variables).
 
