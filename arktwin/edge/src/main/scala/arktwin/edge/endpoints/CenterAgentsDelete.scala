@@ -61,5 +61,3 @@ object CenterAgentsDelete:
           .andThen: _ =>
             requestNumCounter.increment()
             processMachineTimeHistogram.record((Timestamp.machineNow() - requestTime).millisLong)
-
-case class CenterAgentsDeleteResponse(agentIds: Seq[String])

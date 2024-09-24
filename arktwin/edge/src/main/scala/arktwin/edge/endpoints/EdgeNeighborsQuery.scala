@@ -41,7 +41,7 @@ object EdgeNeighborsQuery:
   )
 
   val inExample: Request =
-    Request(Some(Timestamp(234, 100_000_000)), Some(100), changeDetection = true)
+    Request(Some(Timestamp(234, 100_000_000)), Some(100), changeDetection = false)
 
   val outExample: Response = Response(
     Timestamp(234, 100_000_000),
