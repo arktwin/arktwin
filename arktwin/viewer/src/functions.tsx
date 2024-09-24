@@ -37,12 +37,13 @@ export function App(): JSX.Element {
         .then((response) => response.json())
         .then((data: EdgeNeighborsQueryResponse) => {
           updateAgents(
-            Object.entries(data.neighbors)
-              .filter(([_id, agent]) => agent.kind != null && agent.transform != null)
-              .map(([id, agent]) => {
-                const v = agent.transform!.localTranslation
-                return new Agent(id, agent.kind!, v.x, v.y, v.z)
-              }),
+            Object.entries(data.neighbors).flatMap(([id, neighbor]) => {
+              if (neighbor.kind != null && neighbor.transform != null) {
+                const v = neighbor.transform.localTranslation
+                return [new Agent(id, neighbor.kind, v.x, v.y, v.z)]
+              }
+              return []
+            }),
           )
         })
     }, 1000)
