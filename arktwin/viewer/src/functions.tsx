@@ -9,7 +9,7 @@ import {
 } from 'material-react-table'
 import { useEffect, useMemo, useState } from 'react'
 import { Euler, OrthographicCamera } from 'three'
-import type { EdgeNeighborsQueryResponse } from './types.ts'
+import type { EdgeNeighborsQueryResponse } from './types.tsx'
 
 class Agent {
   constructor(
