@@ -13,9 +13,9 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.2",
-    "@types/react": "18.3.8",
+    "@types/react": "18.3.11",
     "@types/react-dom": "18.3.0",
-    "@types/three": "0.168.0",
+    "@types/three": "0.169.0",
     "@vitejs/plugin-react-swc": "3.7.0",
     "typescript": "5.6.2",
     "vite": "5.4.7"
@@ -25,13 +25,13 @@
     "@emotion/styled": "11.13.0",
     "@mui/icons-material": "6.1.1",
     "@mui/material": "6.1.1",
-    "@mui/x-date-pickers": "7.18.0",
+    "@mui/x-date-pickers": "7.19.0",
     "@react-three/drei": "9.114.0",
-    "@react-three/fiber": "8.17.7",
+    "@react-three/fiber": "8.17.9",
     "material-react-table": "3.0.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "three": "0.168.0"
+    "three": "0.169.0"
   },
   "overrides": {
     "vite": {
