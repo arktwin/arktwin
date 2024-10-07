@@ -20,7 +20,7 @@ jobs:
   CLA-Assistant:
     runs-on: ubuntu-latest
     steps:
-      - uses: contributor-assistant/github-action@v2.4.0
+      - uses: contributor-assistant/github-action@v2.6.1
         if: (github.event.comment.body == 'recheck' || github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA') || github.event_name == 'pull_request_target'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -28,4 +28,4 @@ jobs:
           path-to-signatures: signatures/version1/cla.json
           path-to-document: https://github.com/arktwin/arktwin/blob/main/CLA.md
           branch: main
-          allowlist: scala-steward
+          allowlist: dependabot[bot], scala-steward
