@@ -26,7 +26,7 @@
     "@mui/icons-material": "6.1.1",
     "@mui/material": "6.1.1",
     "@mui/x-date-pickers": "7.19.0",
-    "@react-three/drei": "9.113.0",
+    "@react-three/drei": "9.114.0",
     "@react-three/fiber": "8.17.9",
     "material-react-table": "3.0.1",
     "react": "18.3.1",
