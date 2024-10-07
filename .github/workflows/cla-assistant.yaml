@@ -28,4 +28,4 @@ jobs:
           path-to-signatures: signatures/version1/cla.json
           path-to-document: https://github.com/arktwin/arktwin/blob/main/CLA.md
           branch: main
-          allowlist: scala-steward
+          allowlist: dependabot[bot], scala-steward
