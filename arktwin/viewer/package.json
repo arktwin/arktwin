@@ -25,7 +25,7 @@
     "@emotion/styled": "11.13.0",
     "@mui/icons-material": "6.1.1",
     "@mui/material": "6.1.1",
-    "@mui/x-date-pickers": "7.18.0",
+    "@mui/x-date-pickers": "7.19.0",
     "@react-three/drei": "9.113.0",
     "@react-three/fiber": "8.17.7",
     "material-react-table": "3.0.1",
