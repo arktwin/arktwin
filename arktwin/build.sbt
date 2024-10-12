@@ -7,7 +7,7 @@ import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val gatlingVersion = "3.12.0"
 val jsoniterScalaVersion = "2.30.15"
-val kamonVersion = "2.7.4"
+val kamonVersion = "2.7.5"
 val pekkoHttpVersion = "1.1.0"
 val pekkoVersion = "1.1.2"
 val pureConfigVersion = "0.17.7"
