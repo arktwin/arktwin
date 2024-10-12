@@ -20,6 +20,8 @@ jobs:
           distribution: temurin
           cache: sbt
           cache-dependency-path: arktwin/build.sbt
+      
+      - uses: sbt/setup-sbt@v1
 
       # check before automatic execution at compile time
       - name: sbt scalafixAll --check
@@ -51,6 +53,8 @@ jobs:
           distribution: temurin
           cache: sbt
           cache-dependency-path: arktwin/build.sbt
+
+      - uses: sbt/setup-sbt@v1
 
       - name: sbt compile
         working-directory: arktwin
@@ -86,7 +90,9 @@ jobs:
           cache: sbt
           cache-dependency-path: arktwin/build.sbt
 
-      - name: Generate OpenAPI YAML files 
+      - uses: sbt/setup-sbt@v1
+
+      - name: Generate OpenAPI YAML files
         working-directory: arktwin
         run: |
           sbt "edge/run openapi-center ../temp/arktwin-center-head.yaml" "edge/run openapi-edge ../temp/arktwin-edge-head.yaml"
