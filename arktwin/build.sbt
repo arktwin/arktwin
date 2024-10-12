@@ -7,14 +7,14 @@ import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val gatlingVersion = "3.12.0"
 val jsoniterScalaVersion = "2.30.15"
-val kamonVersion = "2.7.4"
+val kamonVersion = "2.7.5"
 val pekkoHttpVersion = "1.1.0"
-val pekkoVersion = "1.1.1"
+val pekkoVersion = "1.1.2"
 val pureConfigVersion = "0.17.7"
 val scalaTestVersion = "3.2.19"
 val scribeVersion = "3.15.0"
 val tapirSpecVersion = "0.11.3"
-val tapirVersion = "1.11.5"
+val tapirVersion = "1.11.7"
 
 val apacheLicenseV2 = Some(
   HeaderLicense.Custom(

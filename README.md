@@ -26,7 +26,7 @@ However, each agent-based software can connect to ArkTwin via local REST API pro
 
 1. install Java Development Kit (recommended: [Eclipse Temurin 21 LTS](https://adoptium.net/temurin/releases/?variant=openjdk21&jvmVariant=hotspot))
 1. install [sbt](https://www.scala-sbt.org/download)
-1. install [Node.js](https://nodejs.org/en/download/package-manager)
+1. install [Node.js](https://nodejs.org/en/download/package-manager) (recommended: v22)
 1. `git checkout <release tag>`
 1. `cd arktwin`
 1. `sbt assembly`
