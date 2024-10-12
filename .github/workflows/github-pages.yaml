@@ -35,6 +35,8 @@ jobs:
           cache: sbt
           cache-dependency-path: arktwin/arktwin/build.sbt
 
+      - uses: sbt/setup-sbt@v1
+
       - name: Generate OpenAPI YAML files
         working-directory: arktwin/arktwin
         run: sbt "edge/run openapi-center ../../pages/dist/swagger-ui/center/arktwin-center.yaml" "edge/run openapi-edge ../../pages/dist/swagger-ui/edge/arktwin-edge.yaml"
