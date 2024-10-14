@@ -93,20 +93,15 @@ lazy val center = (project in file("center"))
       case a =>
         (assembly / assemblyMergeStrategy).value(a)
     },
-    assemblyExcludedJars := {
-      (assembly / fullClasspath).value.filter { f =>
-        // kamon-prometheus depends on okio with module name problems
-        // see https://github.com/square/okio/issues/1306
-        f.data.getName.startsWith("okio") && !f.data.getName.startsWith("okio-jvm")
-      }
-    },
     headerLicense := apacheLicenseV2,
     headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
       "com.github.pureconfig" %% "pureconfig-core" % pureConfigVersion,
       "com.outr" %% "scribe" % scribeVersion,
       "com.outr" %% "scribe-slf4j2" % scribeVersion,
-      "io.kamon" %% "kamon-prometheus" % kamonVersion,
+      // kamon-prometheus depends on okio with module name problems via okhttp
+      // see https://github.com/square/okio/issues/1306
+      "io.kamon" %% "kamon-prometheus" % kamonVersion exclude("com.squareup.okhttp3", "okhttp"),
       "io.kamon" %% "kamon-system-metrics" % kamonVersion,
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
@@ -142,13 +137,6 @@ lazy val edge = (project in file("edge"))
       case a =>
         (assembly / assemblyMergeStrategy).value(a)
     },
-    assemblyExcludedJars := {
-      (assembly / fullClasspath).value.filter { f =>
-        // kamon-prometheus depends on okio with module name problems
-        // see https://github.com/square/okio/issues/1306
-        f.data.getName.startsWith("okio") && !f.data.getName.startsWith("okio-jvm")
-      }
-    },
     Compile / unmanagedResourceDirectories += (viewer / baseDirectory).value / "dist",
     headerLicense := apacheLicenseV2,
     headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
@@ -162,7 +150,9 @@ lazy val edge = (project in file("edge"))
       "com.softwaremill.sttp.tapir" %% "tapir-openapi-docs" % tapirVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-pekko-http-server" % tapirVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui" % tapirVersion,
-      "io.kamon" %% "kamon-prometheus" % kamonVersion,
+      // kamon-prometheus depends on okio with module name problems via okhttp
+      // see https://github.com/square/okio/issues/1306
+      "io.kamon" %% "kamon-prometheus" % kamonVersion exclude("com.squareup.okhttp3", "okhttp"),
       "io.kamon" %% "kamon-system-metrics" % kamonVersion,
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
