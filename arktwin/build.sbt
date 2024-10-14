@@ -101,6 +101,7 @@ lazy val center = (project in file("center"))
       "com.outr" %% "scribe-slf4j2" % scribeVersion,
       // kamon-prometheus depends on okio with module name problems via okhttp
       // see https://github.com/square/okio/issues/1306
+      // prometheus page is delivered with pekko http instaed of okhttp
       "io.kamon" %% "kamon-prometheus" % kamonVersion exclude("com.squareup.okhttp3", "okhttp"),
       "io.kamon" %% "kamon-system-metrics" % kamonVersion,
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
@@ -152,6 +153,7 @@ lazy val edge = (project in file("edge"))
       "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui" % tapirVersion,
       // kamon-prometheus depends on okio with module name problems via okhttp
       // see https://github.com/square/okio/issues/1306
+      // prometheus page is delivered with pekko http instaed of okhttp
       "io.kamon" %% "kamon-prometheus" % kamonVersion exclude("com.squareup.okhttp3", "okhttp"),
       "io.kamon" %% "kamon-system-metrics" % kamonVersion,
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
