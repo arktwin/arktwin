@@ -12,7 +12,7 @@ val pekkoHttpVersion = "1.1.0"
 val pekkoVersion = "1.1.2"
 val pureConfigVersion = "0.17.7"
 val scalaTestVersion = "3.2.19"
-val scribeVersion = "3.15.0"
+val scribeVersion = "3.15.1"
 val tapirSpecVersion = "0.11.3"
 val tapirVersion = "1.11.7"
 
@@ -102,7 +102,7 @@ lazy val center = (project in file("center"))
       // kamon-prometheus depends on okio with module name problems via okhttp
       // see https://github.com/square/okio/issues/1306
       // prometheus page is delivered with pekko http instaed of okhttp
-      "io.kamon" %% "kamon-prometheus" % kamonVersion exclude("com.squareup.okhttp3", "okhttp"),
+      "io.kamon" %% "kamon-prometheus" % kamonVersion exclude ("com.squareup.okhttp3", "okhttp"),
       "io.kamon" %% "kamon-system-metrics" % kamonVersion,
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
@@ -154,7 +154,7 @@ lazy val edge = (project in file("edge"))
       // kamon-prometheus depends on okio with module name problems via okhttp
       // see https://github.com/square/okio/issues/1306
       // prometheus page is delivered with pekko http instaed of okhttp
-      "io.kamon" %% "kamon-prometheus" % kamonVersion exclude("com.squareup.okhttp3", "okhttp"),
+      "io.kamon" %% "kamon-prometheus" % kamonVersion exclude ("com.squareup.okhttp3", "okhttp"),
       "io.kamon" %% "kamon-system-metrics" % kamonVersion,
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
