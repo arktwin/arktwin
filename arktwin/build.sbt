@@ -6,7 +6,7 @@ import scala.sys.process.Process
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val gatlingVersion = "3.12.0"
-val jsoniterScalaVersion = "2.30.15"
+val jsoniterScalaVersion = "2.31.0"
 val kamonVersion = "2.7.5"
 val pekkoHttpVersion = "1.1.0"
 val pekkoVersion = "1.1.2"
@@ -102,7 +102,7 @@ lazy val center = (project in file("center"))
       // kamon-prometheus depends on okio with module name problems via okhttp
       // see https://github.com/square/okio/issues/1306
       // prometheus page is delivered with pekko http instaed of okhttp
-      "io.kamon" %% "kamon-prometheus" % kamonVersion exclude("com.squareup.okhttp3", "okhttp"),
+      "io.kamon" %% "kamon-prometheus" % kamonVersion exclude ("com.squareup.okhttp3", "okhttp"),
       "io.kamon" %% "kamon-system-metrics" % kamonVersion,
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
@@ -154,7 +154,7 @@ lazy val edge = (project in file("edge"))
       // kamon-prometheus depends on okio with module name problems via okhttp
       // see https://github.com/square/okio/issues/1306
       // prometheus page is delivered with pekko http instaed of okhttp
-      "io.kamon" %% "kamon-prometheus" % kamonVersion exclude("com.squareup.okhttp3", "okhttp"),
+      "io.kamon" %% "kamon-prometheus" % kamonVersion exclude ("com.squareup.okhttp3", "okhttp"),
       "io.kamon" %% "kamon-system-metrics" % kamonVersion,
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
