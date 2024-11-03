@@ -144,9 +144,18 @@ function AgentsTable(props: {
     [],
   )
 
+  const data = useMemo<Agent[]>(
+    () =>
+      props.agents.map(
+        (a) =>
+          new Agent(a.id, a.kind, toPrecision(a.x, 5), toPrecision(a.y, 5), toPrecision(a.z, 5)),
+      ),
+    [props.agents],
+  )
+
   const table = useMaterialReactTable({
     columns,
-    data: props.agents,
+    data: data,
     getRowId: (row) => row.id,
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -292,4 +301,8 @@ function Camera(props: {
     }
   })
   return <></>
+}
+
+function toPrecision(num: number, precision: number): number {
+  return Number.parseFloat(num.toPrecision(precision))
 }
