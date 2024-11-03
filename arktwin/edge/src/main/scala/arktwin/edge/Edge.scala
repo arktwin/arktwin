@@ -12,7 +12,6 @@ import arktwin.edge.connectors.{ChartConnector, ClockConnector, RegisterConnecto
 import arktwin.edge.endpoints.*
 import arktwin.edge.util.{EdgeKamon, EdgeReporter}
 import buildinfo.BuildInfo
-import io.grpc.StatusRuntimeException
 import kamon.Kamon
 import kamon.prometheus.PrometheusReporter
 import org.apache.pekko.actor.typed.*
@@ -20,7 +19,9 @@ import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.grpc.GrpcClientSettings
 import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.http.scaladsl.Http.ServerBinding
 import org.apache.pekko.http.scaladsl.server.Directives.*
+import org.apache.pekko.stream.BindFailedException
 import org.apache.pekko.util.Timeout
 import sttp.apispec.openapi.circe.yaml.RichOpenAPI
 import sttp.tapir.docs.openapi.OpenAPIDocsInterpreter
@@ -30,7 +31,7 @@ import sttp.tapir.swagger.{SwaggerUI, SwaggerUIOptions}
 import java.io.{File, FileWriter}
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, ExecutionContextExecutor, Future}
-import scala.util.Using
+import scala.util.{Failure, Success, Using}
 
 object Edge:
   val centerYaml: String = OpenAPIDocsInterpreter()
@@ -56,54 +57,81 @@ object Edge:
     )
     .toYaml
 
-  def main(args: Array[String]): Unit =
-    args.headOption match
-      case Some("openapi-center") =>
-        args.tail.headOption match
-          case Some(pathname) =>
-            val file = File(pathname)
-            Option(file.getParentFile).foreach(_.mkdirs())
-            Using(FileWriter(file))(_.write(centerYaml))
-          case None =>
-            println(centerYaml)
-        sys.exit()
-      case Some("openapi-edge") =>
-        args.tail.headOption match
-          case Some(pathname) =>
-            val file = File(pathname)
-            Option(file.getParentFile).foreach(_.mkdirs())
-            Using(FileWriter(file))(_.write(edgeYaml))
-          case None =>
-            println(edgeYaml)
-        sys.exit()
-      case _ =>
-        run()
+  def main(args: Array[String]): Unit = args.headOption match
+    case Some("generate-openapi-center") =>
+      args.tail.headOption match
+        case Some(pathname) =>
+          val file = File(pathname)
+          Option(file.getParentFile).foreach(_.mkdirs())
+          Using(FileWriter(file))(_.write(centerYaml))
+        case None =>
+          println(centerYaml)
+      sys.exit()
 
-  def run(): Unit =
-    val config = EdgeConfig.loadOrThrow()
-    val rawConfig = EdgeConfig.loadRawOrThrow()
+    case Some("generate-openapi-edge") =>
+      args.tail.headOption match
+        case Some(pathname) =>
+          val file = File(pathname)
+          Option(file.getParentFile).foreach(_.mkdirs())
+          Using(FileWriter(file))(_.write(edgeYaml))
+        case None =>
+          println(edgeYaml)
+      sys.exit()
 
-    LoggerConfigurator.init(config.static.logLevel, config.static.logLevelColor)
-    Kamon.init(rawConfig)
+    case Some("docs") =>
+      val config = EdgeConfig.loadOrThrow()
+      val rawConfig = EdgeConfig.loadRawOrThrow()
 
-    given actorSystem: ActorSystem[SpawnProtocol.Command] = ActorSystem(
-      Behaviors.setup[SpawnProtocol.Command](_ => SpawnProtocol()),
-      BuildInfo.name,
-      rawConfig
-    )
-    given ExecutionContextExecutor = actorSystem.executionContext
-    given Scheduler = actorSystem.scheduler
-    given Timeout = config.static.actorTimeout
+      LoggerConfigurator.init(config.static.logLevel, config.static.logLevelColor)
 
-    scribe.info(BuildInfo.toString)
-    scribe.info(config.toString)
-    scribe.debug(rawConfig.toString)
+      given actorSystem: ActorSystem[SpawnProtocol.Command] = ActorSystem(
+        Behaviors.setup[SpawnProtocol.Command](_ => SpawnProtocol()),
+        BuildInfo.name,
+        rawConfig
+      )
+      given ExecutionContextExecutor = actorSystem.executionContext
 
-    val grpcSettings = GrpcClientSettings.fromConfig("arktwin")
-    val adminClient = AdminClient(grpcSettings)
-    val registerClient = RegisterClient(grpcSettings)
+      Http()
+        .newServerAt(config.static.host, config.static.port)
+        .bind(
+          path("")(getFromResource("root.html")) ~
+            path("docs"./)(getFromResource("docs.html")) ~
+            PekkoHttpServerInterpreter().toRoute(
+              SwaggerUI[Future](
+                centerYaml,
+                SwaggerUIOptions.default.pathPrefix(List("docs", "center"))
+              ) ++
+                SwaggerUI[Future](
+                  edgeYaml,
+                  SwaggerUIOptions.default.pathPrefix(List("docs", "edge"))
+                )
+            )
+        )
 
-    try
+    case None =>
+      val config = EdgeConfig.loadOrThrow()
+      val rawConfig = EdgeConfig.loadRawOrThrow()
+
+      LoggerConfigurator.init(config.static.logLevel, config.static.logLevelColor)
+      Kamon.init(rawConfig)
+
+      given actorSystem: ActorSystem[SpawnProtocol.Command] = ActorSystem(
+        Behaviors.setup[SpawnProtocol.Command](_ => SpawnProtocol()),
+        BuildInfo.name,
+        rawConfig
+      )
+      given ExecutionContextExecutor = actorSystem.executionContext
+      given Scheduler = actorSystem.scheduler
+      given Timeout = config.static.actorTimeout
+
+      scribe.info(BuildInfo.toString)
+      scribe.info(config.toString)
+      scribe.debug(rawConfig.toString)
+
+      val grpcSettings = GrpcClientSettings.fromConfig("arktwin")
+      val adminClient = AdminClient(grpcSettings)
+      val registerClient = RegisterClient(grpcSettings)
+
       val CreateEdgeResponse(edgeId, runId) =
         Await.result(
           registerClient.createEdge(CreateEdgeRequest(config.static.edgeIdPrefix)),
@@ -152,51 +180,58 @@ object Edge:
         registerConnector.subscribe(register)
         chartConnector.subscribe(chart)
 
-        Http()
-          .newServerAt(config.static.host, config.static.port)
-          .bind(
-            path("")(getFromResource("root.html")) ~
-              path("docs"./)(getFromResource("docs.html")) ~
-              path("viewer"./)(getFromResource("viewer/index.html")) ~
-              pathPrefix("viewer")(getFromResourceDirectory("viewer/")) ~
-              PekkoHttpServerInterpreter().toRoute(
-                SwaggerUI[Future](
-                  centerYaml,
-                  SwaggerUIOptions.default.pathPrefix(List("docs", "center"))
-                ) ++
+        val runServer = (port: Int) =>
+          Http()
+            .newServerAt(config.static.host, port)
+            .bind(
+              path("")(getFromResource("root.html")) ~
+                path("docs"./)(getFromResource("docs.html")) ~
+                path("viewer"./)(getFromResource("viewer/index.html")) ~
+                pathPrefix("viewer")(getFromResourceDirectory("viewer/")) ~
+                PekkoHttpServerInterpreter().toRoute(
                   SwaggerUI[Future](
-                    edgeYaml,
-                    SwaggerUIOptions.default.pathPrefix(List("docs", "edge"))
-                  )
-              ) ~
-              CenterAgentsDelete.route(adminClient, kamon) ~
-              CenterClockSpeedPut.route(adminClient, kamon) ~
-              EdgeAgentsPost.route(registerClient, kamon) ~
-              EdgeAgentsPut.route(edgeAgentsTransformAdapter, config.static, kamon) ~
-              EdgeConfigCoordinatePut.route(configurator, kamon) ~
-              EdgeConfigCullingPut.route(configurator, kamon) ~
-              EdgeConfigGet.route(configurator, config.static, kamon) ~
-              EdgeNeighborsQuery.route(edgeNeighborsAdapter, config.static, kamon) ~
-              path("metrics")(complete(PrometheusReporter.latestScrapeData())) ~
-              path("health")(complete("OK\n"))
-          )
-          .foreach(server => scribe.info(server.localAddress.toString))
-    catch
-      case e: StatusRuntimeException =>
-        Http()
-          .newServerAt(config.static.host, config.static.port)
-          .bind(
-            path("")(getFromResource("root.html")) ~
-              path("docs"./)(getFromResource("docs.html")) ~
-              PekkoHttpServerInterpreter().toRoute(
-                SwaggerUI[Future](
-                  centerYaml,
-                  SwaggerUIOptions.default.pathPrefix(List("docs", "center"))
-                ) ++
-                  SwaggerUI[Future](
-                    edgeYaml,
-                    SwaggerUIOptions.default.pathPrefix(List("docs", "edge"))
-                  )
+                    centerYaml,
+                    SwaggerUIOptions.default.pathPrefix(List("docs", "center"))
+                  ) ++
+                    SwaggerUI[Future](
+                      edgeYaml,
+                      SwaggerUIOptions.default.pathPrefix(List("docs", "edge"))
+                    )
+                ) ~
+                CenterAgentsDelete.route(adminClient, kamon) ~
+                CenterClockSpeedPut.route(adminClient, kamon) ~
+                EdgeAgentsPost.route(registerClient, kamon) ~
+                EdgeAgentsPut.route(edgeAgentsTransformAdapter, config.static, kamon) ~
+                EdgeConfigCoordinatePut.route(configurator, kamon) ~
+                EdgeConfigCullingPut.route(configurator, kamon) ~
+                EdgeConfigGet.route(configurator, config.static, kamon) ~
+                EdgeNeighborsQuery.route(edgeNeighborsAdapter, config.static, kamon) ~
+                path("metrics")(complete(PrometheusReporter.latestScrapeData())) ~
+                path("health")(complete("OK\n"))
+            )
+
+        def runServerRecursively(port: Int): Future[ServerBinding] =
+          if config.static.portAutoIncrement
+          then
+            if port <= (config.static.port + config.static.portAutoIncrementMax)
+            then
+              runServer(port).recoverWith:
+                case e: BindFailedException =>
+                  runServerRecursively(port + 1)
+            else
+              Future(
+                throw new BindFailedException:
+                  override def getMessage: String =
+                    s"Bind failed on ${config.static.host} with port ${config.static.port}-${config.static.port + config.static.portAutoIncrementMax}"
               )
-          )
-        throw e
+          else runServer(port)
+
+        runServerRecursively(config.static.port).onComplete:
+          case Success(server) =>
+            scribe.info(s"running on ${server.localAddress.toString}")
+          case Failure(e) =>
+            scribe.error(e.getMessage)
+            sys.exit(1)
+
+    case _ =>
+      scribe.error("invalid arguments")

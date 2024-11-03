@@ -35,6 +35,26 @@ However, each agent-based software can connect to ArkTwin via local REST API pro
 
 ## Running
 
+### Docker
+
+- `docker run [--network host | -p 2236:2236] [-v $(pwd)/center.conf:/etc/opt/arktwin/center.conf] arktwin-center  [arg]...`
+- `docker run [--network host | -p 2237:2237] [-v $(pwd)/edge.conf:/etc/opt/arktwin/edge.conf] -e ARKTWIN_CENTER_STATIC_HOST=<CENTER_HOST> arktwin-edge`
+
+### JAR
+
+- `java [-Dconfig.file=center.conf] -XX:+UseZGC -XX:+ZGenerational -jar arktwin-center.jar`
+- `ARKTWIN_CENTER_STATIC_HOST=<CENTER_HOST> java [-Dconfig.file=edge.conf] -XX:+UseZGC -XX:+ZGenerational -jar arktwin-edge.jar [arg]...`
+
+### Edge Optional Command Arguments
+
+ArkTwin Edge runs with auxiliary functions when the following optional command arguments are specified.
+
+- docs: serve only `/docs/`
+- generate-openapi-center: generate the OpenAPI yaml for `/api/center/` to stdout
+- generate-openapi-center <file>: generate the OpenAPI yaml file for `/api/center/`
+- generate-openapi-edge: generate the OpenAPI yaml for `/api/edge/` to stdout
+- generate-openapi-edge <file>: generate the OpenAPI yaml file for `/api/edge/`
+
 ### Endpoints
 
 The default endpoints for ArkTwin is as follows:
@@ -51,16 +71,6 @@ The default endpoints for ArkTwin is as follows:
 | ArkTwin Edge | Neighbors Viewer | [localhost:2237/viewer/](http://localhost:2237/viewer/) |
 
 If you want to change the host and port settings, see [# Environment Variables](#environment-variables).
-
-### Docker
-
-- `docker run [--network host | -p 2236:2236] [-v $(pwd)/center.conf:/etc/opt/arktwin/center.conf] arktwin-center`
-- `docker run [--network host | -p 2237:2237] [-v $(pwd)/edge.conf:/etc/opt/arktwin/edge.conf] -e ARKTWIN_CENTER_STATIC_HOST=<CENTER_HOST> arktwin-edge`
-
-### JAR
-
-- `java [-Dconfig.file=center.conf] -XX:+UseZGC -XX:+ZGenerational -jar arktwin-center.jar`
-- `ARKTWIN_CENTER_STATIC_HOST=<CENTER_HOST> java [-Dconfig.file=edge.conf] -XX:+UseZGC -XX:+ZGenerational -jar arktwin-edge.jar`
 
 ## Integrating
 
@@ -142,6 +152,8 @@ Some configuration can be overridden using environment variables.
 | ARKTWIN_CENTER_STATIC_LOG_LEVEL | arktwin.center.static.log-level | info |
 | ARKTWIN_CENTER_STATIC_LOG_LEVEL_COLOR | arktwin.center.static.log-level-color | true |
 | ARKTWIN_CENTER_STATIC_PORT | arktwin.center.static.port | 2236 |
+| ARKTWIN_CENTER_STATIC_PORT_AUTO_INCREMENT | arktwin.center.static.port-auto-increment | false |
+| ARKTWIN_CENTER_STATIC_PORT_AUTO_INCREMENT_MAX | arktwin.center.static.port-auto-increment-max | 100 |
 | ARKTWIN_CENTER_STATIC_RUN_ID_PREFIX | arktwin.center.static.run-id-prefix | run |
 
 #### Edge
@@ -157,6 +169,8 @@ Some configuration can be overridden using environment variables.
 | ARKTWIN_EDGE_STATIC_LOG_LEVEL | arktwin.edge.static.log-level | info |
 | ARKTWIN_EDGE_STATIC_LOG_LEVEL_COLOR | arktwin.edge.static.log-level-color | true |
 | ARKTWIN_EDGE_STATIC_PORT | arktwin.edge.static.port | 2237 |
+| ARKTWIN_EDGE_STATIC_PORT_AUTO_INCREMENT | arktwin.edge.static.port-auto-increment | true |
+| ARKTWIN_EDGE_STATIC_PORT_AUTO_INCREMENT_MAX | arktwin.edge.static.port-auto-increment-max | 100 |
 
 ## REST API
 

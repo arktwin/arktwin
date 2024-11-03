@@ -39,6 +39,8 @@ object EdgeConfigGet:
       edgeIdPrefix = "edge",
       host = "0.0.0.0",
       port = 2237,
+      portAutoIncrement = true,
+      portAutoIncrementMax = 100,
       logLevel = LogLevel.Info,
       logLevelColor = true,
       actorTimeout = 90.milliseconds,

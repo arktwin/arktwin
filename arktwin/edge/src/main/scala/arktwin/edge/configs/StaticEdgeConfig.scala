@@ -10,6 +10,8 @@ case class StaticEdgeConfig(
     edgeIdPrefix: String,
     host: String,
     port: Int,
+    portAutoIncrement: Boolean,
+    portAutoIncrementMax: Int,
     logLevel: LogLevel,
     logLevelColor: Boolean,
     actorTimeout: FiniteDuration,
