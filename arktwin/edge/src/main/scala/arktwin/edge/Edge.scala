@@ -58,7 +58,7 @@ object Edge:
     .toYaml
 
   def main(args: Array[String]): Unit = args.headOption match
-    case Some("generate-openapi-center") =>
+    case Some("generate-openapi-center") | Some("openapi-center" /* TODO remove after v0.5.4 */ ) =>
       args.tail.headOption match
         case Some(pathname) =>
           val file = File(pathname)
@@ -68,7 +68,7 @@ object Edge:
           println(centerYaml)
       sys.exit()
 
-    case Some("generate-openapi-edge") =>
+    case Some("generate-openapi-edge") | Some("openapi-edge" /* TODO remove after v0.5.4 */ ) =>
       args.tail.headOption match
         case Some(pathname) =>
           val file = File(pathname)
