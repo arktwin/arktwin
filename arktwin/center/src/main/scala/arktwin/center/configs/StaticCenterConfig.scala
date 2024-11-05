@@ -11,8 +11,11 @@ case class StaticCenterConfig(
     runIdPrefix: String,
     host: String,
     port: Int,
+    portAutoIncrement: Boolean,
+    portAutoIncrementMax: Int,
     logLevel: LogLevel,
     logLevelColor: Boolean,
+    actorTimeout: FiniteDuration,
     subscribeBatchSize: Int,
     subscribeBatchInterval: FiniteDuration,
     subscribeBufferSize: Int

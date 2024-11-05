@@ -95,7 +95,7 @@ jobs:
       - name: Generate OpenAPI YAML files
         working-directory: arktwin
         run: |
-          sbt "edge/run openapi-center ../temp/arktwin-center-head.yaml" "edge/run openapi-edge ../temp/arktwin-edge-head.yaml"
+          sbt "edge/run generate-openapi-center ../temp/arktwin-center-head.yaml" "edge/run generate-openapi-edge ../temp/arktwin-edge-head.yaml"
           git switch main
           sbt clean "edge/run openapi-center ../temp/arktwin-center-main.yaml" "edge/run openapi-edge ../temp/arktwin-edge-main.yaml"
           git checkout $(git tag -l "v*" --sort=-v:refname | head -n 1)
