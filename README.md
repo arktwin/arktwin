@@ -49,11 +49,11 @@ However, each agent-based software can connect to ArkTwin via local REST API pro
 
 ArkTwin Edge runs with auxiliary functions when the following optional command arguments are specified.
 
-- docs: serve only `/docs/`
-- generate-openapi-center: generate the OpenAPI yaml for `/api/center/` to stdout
-- generate-openapi-center <file>: generate the OpenAPI yaml file for `/api/center/`
-- generate-openapi-edge: generate the OpenAPI yaml for `/api/edge/` to stdout
-- generate-openapi-edge <file>: generate the OpenAPI yaml file for `/api/edge/`
+- `docs`: serve only `/docs/`
+- `generate-openapi-center`: generate the OpenAPI yaml for `/api/center/` to stdout
+- `generate-openapi-center <file>`: generate the OpenAPI yaml file for `/api/center/`
+- `generate-openapi-edge`: generate the OpenAPI yaml for `/api/edge/` to stdout
+- `generate-openapi-edge <file>`: generate the OpenAPI yaml file for `/api/edge/`
 
 ### Endpoints
 
