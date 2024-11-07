@@ -237,7 +237,7 @@ For more details on mailboxes, see [Pekko Mailboxes documentation](https://pekko
 ## Contributing
 
 Pull requests for bug fixes and feature development are very welcome.
-Your contributions are more acceptable if you start a conversation in [Discussion](https://github.com/arktwin/arktwin/discussions) or [Issues](https://github.com/arktwin/arktwin/issues).
+Your contributions are more acceptable if you start a conversation in [Discussions](https://github.com/arktwin/arktwin/discussions) or [Issues](https://github.com/arktwin/arktwin/issues).
 
 We are especially interested in your ideas and examples for using ArkTwin.
 Please feel free to share them in [Show and tell](https://github.com/arktwin/arktwin/discussions/categories/show-and-tell).
