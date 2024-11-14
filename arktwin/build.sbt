@@ -5,7 +5,7 @@ import scala.sys.process.Process
 // avoid conflict with io.gatling.sbt.GatlingPlugin.autoImport.assembly
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
-val gatlingVersion = "3.12.0"
+val gatlingVersion = "3.13.1"
 val jsoniterScalaVersion = "2.31.3"
 val kamonVersion = "2.7.5"
 val pekkoHttpVersion = "1.1.0"
@@ -14,7 +14,7 @@ val pureConfigVersion = "0.17.7"
 val scalaTestVersion = "3.2.19"
 val scribeVersion = "3.15.2"
 val tapirSpecVersion = "0.11.3"
-val tapirVersion = "1.11.8"
+val tapirVersion = "1.11.9"
 
 val apacheLicenseV2 = Some(
   HeaderLicense.Custom(
