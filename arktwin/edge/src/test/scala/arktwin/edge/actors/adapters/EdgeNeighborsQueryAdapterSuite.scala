@@ -159,7 +159,8 @@ class EdgeNeighborsQueryAdapterSuite extends ActorTestBase:
     Vector3Enu(1, 1, 1),
     QuaternionEnu(1, 0, 0, 0),
     Vector3Enu(0, 0, 0),
-    Vector3Enu(0, 0, 0)
+    Vector3Enu(0, 0, 0),
+    Map()
   )
 
   private def transform() = Transform(
@@ -167,5 +168,6 @@ class EdgeNeighborsQueryAdapterSuite extends ActorTestBase:
     Vector3(1, 1, 1),
     EulerAngles(180, 0, 0),
     Vector3(0, 0, 0),
-    Some(Vector3(0, 0, 0))
+    Some(Vector3(0, 0, 0)),
+    None
   )

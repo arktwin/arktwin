@@ -53,7 +53,8 @@ object EdgeNeighborsQuery:
             Vector3(1, 1, 1),
             EulerAngles(10, 20, 30),
             Vector3(4, 5, 6),
-            Some(Vector3(0, 0, 0))
+            Some(Vector3(0, 0, 0)),
+            Some(Map("heart_rate" -> "80"))
           )
         ),
         Some(1.23),

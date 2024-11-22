@@ -109,6 +109,7 @@ class ChartSuite extends ActorTestBase:
         Vector3Enu(0, 0, 0),
         QuaternionEnu(0, 0, 0, 0),
         translation,
-        Vector3Enu(0, 0, 0)
+        Vector3Enu(0, 0, 0),
+        Map()
       )
     )

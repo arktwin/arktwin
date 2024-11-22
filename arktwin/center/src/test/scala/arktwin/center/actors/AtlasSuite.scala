@@ -172,6 +172,7 @@ class AtlasSuite extends ActorTestBase:
         Vector3Enu(1, 1, 1),
         QuaternionEnu(1, 0, 0, 0),
         localTranslation,
-        Vector3Enu(0, 0, 0)
+        Vector3Enu(0, 0, 0),
+        Map()
       )
     )

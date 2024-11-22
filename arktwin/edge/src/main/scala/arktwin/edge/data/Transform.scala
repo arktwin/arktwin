@@ -15,7 +15,7 @@ import scala.math.Ordered.orderingToOrdered
   "Transformation of position vectors is applied in the order: Scale > Rotate > Translate"
 )
 case class Transform(
-    @description("If it is omitted, this transform follows global coordinates.")
+    @description("It is a reserved field. Currently, it is not used in ArkTwin.")
     parentAgentId: Option[String],
     globalScale: Vector3,
     localRotation: Rotation,
@@ -23,7 +23,9 @@ case class Transform(
     @description(
       "If it is omitted, the edge calculates speed as a difference from a previous localTranslation."
     )
-    localTranslationSpeed: Option[Vector3]
+    localTranslationSpeed: Option[Vector3],
+    @description("It should be updated each time.")
+    extra: Option[Map[String, String]]
 ):
   def toEnu(
       timestamp: Timestamp,
@@ -47,7 +49,8 @@ case class Transform(
       globalScale.toEnu(config.vector3),
       localRotation.toQuaternionEnu(config.rotation),
       localTranslationEnu,
-      localTranslationSpeedEnu
+      localTranslationSpeedEnu,
+      extra.getOrElse(Map())
     )
 
 object Transform:
@@ -57,5 +60,6 @@ object Transform:
       Vector3.fromEnu(a.globalScale, config.vector3),
       Rotation.fromQuaternionEnu(a.localRotation, config.rotation),
       Vector3.fromEnu(a.localTranslationMeter, config.vector3),
-      Some(Vector3.fromEnu(a.localTranslationSpeedMps, config.vector3))
+      Some(Vector3.fromEnu(a.localTranslationSpeedMps, config.vector3)),
+      if a.extra.nonEmpty then Some(a.extra) else None
     )
