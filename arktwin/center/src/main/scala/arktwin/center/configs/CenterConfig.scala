@@ -7,7 +7,6 @@ import arktwin.common.data.{Duration, Timestamp, Vector3Enu}
 import com.typesafe.config.Config
 import pureconfig.*
 import pureconfig.error.ConfigReaderFailures
-import pureconfig.generic.derivation.default.*
 
 import scala.concurrent.duration.FiniteDuration
 
