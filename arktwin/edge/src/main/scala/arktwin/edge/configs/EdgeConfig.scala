@@ -7,7 +7,6 @@ import arktwin.common.LoggerConfigurator.LogLevel
 import com.typesafe.config.Config
 import pureconfig.*
 import pureconfig.error.ConfigReaderFailures
-import pureconfig.generic.derivation.default.*
 import scalapb.validate.{Failure, Validator}
 
 import scala.concurrent.duration.FiniteDuration
