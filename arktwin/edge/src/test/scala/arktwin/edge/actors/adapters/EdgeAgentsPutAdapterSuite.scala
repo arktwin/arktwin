@@ -110,7 +110,8 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
       Vector3(1, 1, 1),
       Quaternion(1, 0, 0, 0),
       localTranslation,
-      localTranslationSpeed
+      localTranslationSpeed,
+      None
     )
 
   private def transformEnu(
@@ -124,5 +125,6 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
       Vector3Enu(1, 1, 1),
       QuaternionEnu(1, 0, 0, 0),
       localTranslation,
-      localTranslationSpeed
+      localTranslationSpeed,
+      Map()
     )

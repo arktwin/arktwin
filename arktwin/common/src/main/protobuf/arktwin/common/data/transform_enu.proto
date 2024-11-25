@@ -22,4 +22,6 @@ message TransformEnu {
   Vector3Enu local_translation_meter = 5 [(validate.rules).message.required = true];
 
   Vector3Enu local_translation_speed_mps = 6 [(validate.rules).message.required = true];
+
+  map<string, string> extra = 7;
 }

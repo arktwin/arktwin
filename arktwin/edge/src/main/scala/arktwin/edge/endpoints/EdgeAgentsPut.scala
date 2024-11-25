@@ -49,7 +49,8 @@ object EdgeAgentsPut:
             Vector3(1, 1, 1),
             EulerAngles(10, 20, 30),
             Vector3(4, 5, 6),
-            Some(Vector3(0, 0, 0))
+            Some(Vector3(0, 0, 0)),
+            Some(Map("heart_rate" -> "80"))
           )
         ),
         Some(Map("emotion" -> "joyful"))
@@ -61,7 +62,8 @@ object EdgeAgentsPut:
             Vector3(1, 1, 1),
             EulerAngles(10, 20, 30),
             Vector3(4, 5, 6),
-            Some(Vector3(0, 0, 0))
+            None,
+            None
           )
         ),
         None
@@ -125,7 +127,7 @@ case class EdgeAgentsPutRequest(
 
 case class EdgeAgentsPutRequestAgent(
     transform: Option[Transform],
-    @description("It is not expected to be updated at high frequency. Partial update is possible.")
+    @description("It should not be updated at high frequency. Partial update is possible.")
     status: Option[Map[String, String]]
 )
 

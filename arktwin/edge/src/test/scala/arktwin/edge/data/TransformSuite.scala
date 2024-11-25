@@ -60,6 +60,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
         Vector3(1, 1, 1),
         EulerAngles(10, 20, 30),
         Vector3(1, 2, 3),
+        None,
         None
       )
       Transform.fromEnu(t.toEnu(Timestamp(0, 0), None, setting), setting) shouldEqual t
@@ -83,6 +84,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
         Vector3(1, 1, 1),
         EulerAngles(0.1, 0.2, 0.3),
         Vector3(1, 2, 3),
+        None,
         None
       )
       Transform.fromEnu(t.toEnu(Timestamp(0, 0), None, setting), setting) shouldEqual t
@@ -100,6 +102,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
       Vector3(1, 1, 1),
       Quaternion(0, 0, 0, 1),
       Vector3(1, 2, 3),
+      None,
       None
     )
     Transform
