@@ -42,6 +42,13 @@ inThisBuild(
     scalafmtOnCompile := true,
     headerEmptyLine := false,
     versionScheme := Some("semver-spec"),
+    licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.txt")),
+    licenseCheckAllow := Seq(
+      LicenseCategory.Apache,
+      LicenseCategory.BSD,
+      LicenseCategory.MIT,
+      LicenseCategory.Mozilla,
+    ),
     publish / skip := true,
     run / fork := true,
     Test / fork := true,
