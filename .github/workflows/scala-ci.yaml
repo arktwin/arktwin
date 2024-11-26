@@ -76,6 +76,28 @@ jobs:
         working-directory: arktwin
         run: sbt e2e/Gatling/test
 
+  license-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: sbt
+          cache-dependency-path: arktwin/build.sbt
+
+      - uses: sbt/setup-sbt@v1
+
+      - name: sbt center/licenseCheck
+        working-directory: arktwin
+        run: sbt center/licenseCheck
+
+      - name: sbt edge/licenseCheck
+        working-directory: arktwin
+        run: sbt edge/licenseCheck
+
   changelogs:
     runs-on: ubuntu-latest
     steps:

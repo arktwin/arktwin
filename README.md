@@ -244,6 +244,13 @@ Please feel free to share them in [Show and tell](https://github.com/arktwin/ark
 
 ## License
 
-ArkTwin is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+ArkTwin source code is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0), Copyright 2024 TOYOTA MOTOR CORPORATION.
 
-Copyright 2024 TOYOTA MOTOR CORPORATION
+If you need license lists for libraries that ArkTwin Center or Edge depends on, follow these steps:
+
+- ArkTwin Center
+  1. `sbt center/dumpLicenseReport`
+  1. Check generated lists in `center/target/license-reports`
+- ArkTwin Edge
+  1. `sbt edge/dumpLicenseReport`
+  1. Check generated lists in `edge/target/license-reports`
