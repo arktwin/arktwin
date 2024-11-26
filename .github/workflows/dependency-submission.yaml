@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  Dependency-Submission:
+  dependency-submission:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

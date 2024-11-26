@@ -1,12 +1,14 @@
 {
   "name": "arktwin-viewer",
   "version": "0.0.0",
+  "license": "Apache-2.0",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "npm run format && tsc --build && vite build",
     "dev": "npm run format && vite",
-    "format": "biome check --write"
+    "format": "biome check --write",
+    "license-check": "license-checker --production --excludePrivatePackages --onlyAllow 'Apache-2.0; BSD-3-Clause; ISC; MIT'"
   },
   "engines": {
     "node": "22.x"
@@ -17,6 +19,7 @@
     "@types/react-dom": "18.3.1",
     "@types/three": "0.169.0",
     "@vitejs/plugin-react-swc": "3.7.1",
+    "license-checker": "25.0.1",
     "typescript": "5.6.3",
     "vite": "5.4.10"
   },

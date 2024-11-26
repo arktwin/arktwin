@@ -17,7 +17,7 @@ permissions:
   statuses: write
 
 jobs:
-  CLA-Assistant:
+  cla-assistant:
     runs-on: ubuntu-latest
     steps:
       - uses: contributor-assistant/github-action@v2.6.1
