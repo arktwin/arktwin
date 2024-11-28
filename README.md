@@ -162,6 +162,7 @@ Some configuration can be overridden using environment variables.
 | --- | --- | --- |
 | ARKTWIN_CENTER_STATIC_HOST | pekko.grpc.client.arktwin.host | 127.0.0.1 |
 | ARKTWIN_CENTER_STATIC_PORT | pekko.grpc.client.arktwin.port  | 2236 |
+| ARKTWIN_CENTER_TLS | pekko.grpc.client.arktwin.use-tls | false |
 | ARKTWIN_EDGE_PROMETHEUS_PUSHGATEWAY_API_URL | kamon.prometheus.pushgateway.api-url | http://localhost:9091/metrics/job/arktwin-edge |
 | ARKTWIN_EDGE_PROMETHEUS_PUSHGATEWAY_ENABLED | kamon.modules.pushgateway-reporter.enabled | false |
 | ARKTWIN_EDGE_STATIC_EDGE_ID_PREFIX | arktwin.edge.static.edgeIdPrefix | edge |
