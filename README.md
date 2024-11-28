@@ -146,8 +146,8 @@ Some configuration can be overridden using environment variables.
 
 | Environment Variable | Configuration Path | Default Value |
 | --- | --- | --- |
+| ARKTWIN_CENTER_PROMETHEUS_PUSHGATEWAY | kamon.modules.pushgateway-reporter.enabled | false |
 | ARKTWIN_CENTER_PROMETHEUS_PUSHGATEWAY_API_URL | kamon.prometheus.pushgateway.api-url | http://localhost:9091/metrics/job/arktwin-center |
-| ARKTWIN_CENTER_PROMETHEUS_PUSHGATEWAY_ENABLED | kamon.modules.pushgateway-reporter.enabled | false |
 | ARKTWIN_CENTER_STATIC_HOST | arktwin.center.static.host | 0.0.0.0 |
 | ARKTWIN_CENTER_STATIC_LOG_LEVEL | arktwin.center.static.log-level | info |
 | ARKTWIN_CENTER_STATIC_LOG_LEVEL_COLOR | arktwin.center.static.log-level-color | true |
@@ -163,8 +163,8 @@ Some configuration can be overridden using environment variables.
 | ARKTWIN_CENTER_STATIC_HOST | pekko.grpc.client.arktwin.host | 127.0.0.1 |
 | ARKTWIN_CENTER_STATIC_PORT | pekko.grpc.client.arktwin.port  | 2236 |
 | ARKTWIN_CENTER_TLS | pekko.grpc.client.arktwin.use-tls | false |
+| ARKTWIN_EDGE_PROMETHEUS_PUSHGATEWAY | kamon.modules.pushgateway-reporter.enabled | false |
 | ARKTWIN_EDGE_PROMETHEUS_PUSHGATEWAY_API_URL | kamon.prometheus.pushgateway.api-url | http://localhost:9091/metrics/job/arktwin-edge |
-| ARKTWIN_EDGE_PROMETHEUS_PUSHGATEWAY_ENABLED | kamon.modules.pushgateway-reporter.enabled | false |
 | ARKTWIN_EDGE_STATIC_EDGE_ID_PREFIX | arktwin.edge.static.edgeIdPrefix | edge |
 | ARKTWIN_EDGE_STATIC_HOST | arktwin.edge.static.host | 0.0.0.0 |
 | ARKTWIN_EDGE_STATIC_LOG_LEVEL | arktwin.edge.static.log-level | info |
