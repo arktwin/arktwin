@@ -126,10 +126,6 @@ lazy val edge = (project in file("edge"))
   .enablePlugins(BuildInfoPlugin, AutomateHeaderPlugin)
   .settings(
     name := "arktwin-edge",
-    assembly := {
-      (viewer / Keys.`package`).value
-      assembly.value
-    },
     assemblyJarName := "arktwin-edge.jar",
     assemblyMergeStrategy := {
       case a if a.endsWith(".proto") =>

@@ -7,13 +7,13 @@ RUN $JAVA_HOME/bin/jlink \
         --compress=zip-9 \
         --output /javaruntime
 
-FROM sbtscala/scala-sbt:eclipse-temurin-jammy-21.0.2_13_1.10.4_3.5.2 AS jar-build
+FROM sbtscala/scala-sbt:eclipse-temurin-21.0.5_11_1.10.5_3.5.2 AS jar-build
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh && \
     bash nodesource_setup.sh && \
     apt-get install -y nodejs
 WORKDIR /arktwin/
 COPY arktwin/ /arktwin/
-RUN sbt assembly
+RUN sbt center/assembly
 
 FROM debian:bookworm-slim
 ENV JAVA_HOME=/opt/java/openjdk
