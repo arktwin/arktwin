@@ -29,8 +29,9 @@ However, each agent-based software can connect to ArkTwin via local REST API pro
 1. install [Node.js](https://nodejs.org/en/download/package-manager) (recommended: v22)
 1. `git checkout <release tag>`
 1. `cd arktwin`
-1. `sbt assembly`
+1. `sbt center/assembly`
 1. pick up `arktwin-center.jar` from `center/target/scala-*.*.*/`
+1. `sbt viewer/package edge/assembly`
 1. pick up `arktwin-edge.jar` from `edge/target/scala-*.*.*/`
 
 ## Running
