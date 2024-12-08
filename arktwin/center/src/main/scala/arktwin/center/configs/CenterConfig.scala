@@ -3,7 +3,7 @@
 package arktwin.center.configs
 
 import arktwin.common.LoggerConfigurator.LogLevel
-import arktwin.common.data.{Duration, Timestamp, Vector3Enu}
+import arktwin.common.data.{TaggedTimestamp, Vector3Enu}
 import com.typesafe.config.Config
 import pureconfig.*
 import pureconfig.error.ConfigReaderFailures

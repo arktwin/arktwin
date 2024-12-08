@@ -4,9 +4,9 @@ package arktwin.edge.actors.sinks
 
 import arktwin.center.services.ChartAgent
 import arktwin.common.MailboxConfig
-import arktwin.common.data.TimestampEx
-import arktwin.common.data.TimestampEx.given
+import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.Vector3EnuEx.*
+import arktwin.common.data.{TaggedTimestamp, VirtualTag}
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.CullingConfig
 import arktwin.edge.util.CommonMessages.Nop
@@ -54,9 +54,9 @@ object Chart:
       case Catch(agent) =>
         val oldDistance = distances.get(agent.agentId)
         val oldTimestamp = oldDistance
-          .map(orderedAgents(_, agent.agentId).transform.timestamp)
-          .getOrElse(TimestampEx.minValue)
-        if agent.transform.timestamp >= oldTimestamp then
+          .map(orderedAgents(_, agent.agentId).transform.virtualTimestamp.tagVirtual)
+          .getOrElse(TaggedTimestamp.minValue[VirtualTag])
+        if agent.transform.virtualTimestamp.tagVirtual >= oldTimestamp then
           for od <- oldDistance do orderedAgents -= ((od, agent.agentId))
 
           // TODO consider relative coordinates

@@ -2,15 +2,14 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.common.data
 
-import arktwin.common.data.DurationEx.*
 import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.Vector3EnuEx.*
 
 object TransformEnuEx:
   extension (a: TransformEnu)
-    def extrapolate(targetTimestamp: Timestamp): TransformEnu =
+    def extrapolate(targetVirtualTimestamp: VirtualTimestamp): TransformEnu =
       a.copy(
-        timestamp = targetTimestamp,
+        virtualTimestamp = targetVirtualTimestamp.untag,
         localTranslationMeter = a.localTranslationMeter +
-          (a.localTranslationSpeedMps * (targetTimestamp - a.timestamp).secondsDouble)
+          (a.localTranslationSpeedMps * (targetVirtualTimestamp - a.virtualTimestamp.tagVirtual).secondsDouble)
       )

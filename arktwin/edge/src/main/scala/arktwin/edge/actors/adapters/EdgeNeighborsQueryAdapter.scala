@@ -4,10 +4,9 @@ package arktwin.edge.actors.adapters
 
 import arktwin.center.services.ClockBaseEx.*
 import arktwin.center.services.{ClockBase, RegisterAgent}
-import arktwin.common.MailboxConfig
-import arktwin.common.data.DurationEx.*
 import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.TransformEnuEx.*
+import arktwin.common.{MailboxConfig, VirtualDurationHistogram}
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.sinks.Chart.CullingAgent
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
@@ -17,7 +16,6 @@ import arktwin.edge.endpoints.EdgeNeighborsQuery.{Request, Response, ResponseAge
 import arktwin.edge.endpoints.{EdgeNeighborsQuery, NeighborChange}
 import arktwin.edge.util.CommonMessages.Timeout
 import arktwin.edge.util.{EdgeKamon, ErrorStatus, ServiceUnavailable}
-import kamon.metric.Histogram
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.Receptionist
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
@@ -64,8 +62,8 @@ object EdgeNeighborsQueryAdapter:
 
     var coordinateConfig = initCoordinateConfig
     var optionalPreviousAgents: Option[Set[String]] = Some(Set())
-    val simulationLatencyHistogram =
-      kamon.restSimulationLatencyHistogram(EdgeNeighborsQuery.endpoint.showShort)
+    val virtualLatencyHistogram =
+      kamon.restVirtualLatencyHistogram(EdgeNeighborsQuery.endpoint.showShort)
 
     Behaviors.receiveMessage:
       case Query(request, replyTo) =>
@@ -80,7 +78,7 @@ object EdgeNeighborsQueryAdapter:
                 chart,
                 clock,
                 register,
-                simulationLatencyHistogram,
+                virtualLatencyHistogram,
                 staticConfig.actorTimeout,
                 coordinateConfig
               )
@@ -97,7 +95,7 @@ object EdgeNeighborsQueryAdapter:
                 chart,
                 clock,
                 register,
-                simulationLatencyHistogram,
+                virtualLatencyHistogram,
                 staticConfig.actorTimeout,
                 coordinateConfig
               )
@@ -127,7 +125,7 @@ object EdgeNeighborsQueryAdapter:
       chart: ActorRef[Chart.Get],
       clock: ActorRef[Clock.Get],
       register: ActorRef[Register.Get],
-      simulationLatencyHistogram: Histogram,
+      virtualLatencyHistogram: VirtualDurationHistogram,
       timeout: FiniteDuration,
       coordinateConfig: CoordinateConfig
   ): Behavior[ChildMessage] = Behaviors.setup: context =>
@@ -144,19 +142,19 @@ object EdgeNeighborsQueryAdapter:
 
     def next(): Behavior[ChildMessage] = (chartWait, clockWait, registerWait) match
       case (Some(chartReply), Some(clockBase), Some(registerReply)) =>
-        val requestTimestamp = request.timestamp.getOrElse(clockBase.now())
+        val requestTime = request.virtualTimestamp.getOrElse(clockBase.now())
         val recognizedAgents = chartReply.view
           .flatMap: agent =>
             registerReply
               .get(agent.agent.agentId)
               .map: registerAgent =>
-                simulationLatencyHistogram.record(
-                  Math.max(0, (requestTimestamp - agent.agent.transform.timestamp).millisLong)
+                virtualLatencyHistogram.record(
+                  requestTime - agent.agent.transform.virtualTimestamp.tagVirtual
                 )
                 agent.agent.agentId -> ResponseAgent(
                   Some(
                     Transform.fromEnu(
-                      agent.agent.transform.extrapolate(requestTimestamp),
+                      agent.agent.transform.extrapolate(requestTime),
                       coordinateConfig
                     )
                   ),
@@ -186,7 +184,9 @@ object EdgeNeighborsQueryAdapter:
             )
           .getOrElse(Set())
 
-        replyTo ! Right(Response(requestTimestamp, (recognizedAgents ++ unrecognizedAgents).toMap))
+        replyTo ! Right(
+          Response(requestTime, (recognizedAgents ++ unrecognizedAgents).toMap)
+        )
         context.cancelReceiveTimeout()
         Behaviors.stopped
 

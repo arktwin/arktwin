@@ -2,8 +2,9 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.center.util
 
+import arktwin.common.MachineDurationHistogram
 import kamon.Kamon
-import kamon.metric.{Counter, Histogram}
+import kamon.metric.Counter
 import kamon.tag.TagSet
 
 object CenterKamon:
@@ -37,9 +38,8 @@ class CenterKamon(runId: String):
     .counter(chartPublishBatchNumName)
     .withTags(commonTags.withTag(edgeIdKey, edgeId))
 
-  def chartPublishMachineLatencyHistogram(edgeId: String): Histogram = Kamon
-    .histogram(chartPublishMachineLatencyName, kamon.metric.MeasurementUnit.time.milliseconds)
-    .withTags(commonTags.withTag(edgeIdKey, edgeId))
+  def chartPublishMachineLatencyHistogram(edgeId: String): MachineDurationHistogram =
+    MachineDurationHistogram(chartPublishMachineLatencyName, commonTags.withTag(edgeIdKey, edgeId))
 
   def chartRouteAgentNumCounter(edgeId: String): Counter = Kamon
     .counter(chartRouteAgentNumName)
@@ -49,9 +49,11 @@ class CenterKamon(runId: String):
     .counter(chartRouteBatchNumName)
     .withTags(commonTags.withTag(edgeIdKey, edgeId))
 
-  def chartRouteMachineLatencyHistogram(edgeId: String): Histogram = Kamon
-    .histogram(chartRouteMachineLatencyName, kamon.metric.MeasurementUnit.time.milliseconds)
-    .withTags(commonTags.withTag(edgeIdKey, edgeId))
+  def chartRouteMachineLatencyHistogram(edgeId: String): MachineDurationHistogram =
+    MachineDurationHistogram(
+      chartRouteMachineLatencyName,
+      commonTags.withTag(edgeIdKey, edgeId)
+    )
 
   def chartSubscribeAgentNumCounter(edgeId: String): Counter = Kamon
     .counter(chartSubscribeAgentNumName)
@@ -61,9 +63,11 @@ class CenterKamon(runId: String):
     .counter(chartSubscribeBatchNumName)
     .withTags(commonTags.withTag(edgeIdKey, edgeId))
 
-  def chartSubscribeMachineLatencyHistogram(edgeId: String): Histogram = Kamon
-    .histogram(chartSubscribeMachineLatencyName, kamon.metric.MeasurementUnit.time.milliseconds)
-    .withTags(commonTags.withTag(edgeIdKey, edgeId))
+  def chartSubscribeMachineLatencyHistogram(edgeId: String): MachineDurationHistogram =
+    MachineDurationHistogram(
+      chartSubscribeMachineLatencyName,
+      commonTags.withTag(edgeIdKey, edgeId)
+    )
 
   def deadLetterNumCounter(): Counter = Kamon
     .counter(deadLetterNumName)

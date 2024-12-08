@@ -4,9 +4,8 @@ package arktwin.edge.connectors
 
 import arktwin.center.services.{ChartAgent, ChartClient, ChartPublishBatch}
 import arktwin.common.GrpcHeaderKey
-import arktwin.common.data.DurationEx.*
-import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
+import arktwin.common.data.{MachineTimestamp, TaggedTimestamp}
 import arktwin.edge.actors.sinks.Chart
 import arktwin.edge.configs.StaticEdgeConfig
 import arktwin.edge.util.CommonMessages.Nop
@@ -17,7 +16,7 @@ import org.apache.pekko.stream.typed.scaladsl.{ActorSink, ActorSource}
 import org.apache.pekko.stream.{Materializer, OverflowStrategy}
 
 object ChartConnector:
-  case class Publish(agents: Seq[ChartAgent], putReceptionMachineTimestamp: Timestamp)
+  case class Publish(agents: Seq[ChartAgent], putReceptionMachineTimestamp: MachineTimestamp)
 
 // TODO retry connection in actor?
 case class ChartConnector(
@@ -44,15 +43,15 @@ case class ChartConnector(
         OverflowStrategy.dropHead
       )
       .mapConcat: a =>
-        val currentMachineTimestamp = Timestamp.machineNow()
+        val currentMachineTimestamp = TaggedTimestamp.machineNow()
         val batches = a.agents
           .grouped(staticConfig.publishBatchSize)
-          .map(agents => ChartPublishBatch(agents, currentMachineTimestamp))
+          .map(agents => ChartPublishBatch(agents, currentMachineTimestamp.untag))
           .toSeq
         publishAgentNumCounter.increment(a.agents.size)
         publishBatchNumCounter.increment(batches.size)
         publishMachineLatencyHistogram.record(
-          Math.max(0, (currentMachineTimestamp - a.putReceptionMachineTimestamp).millisLong),
+          currentMachineTimestamp - a.putReceptionMachineTimestamp,
           a.agents.size
         )
         batches
@@ -75,10 +74,10 @@ case class ChartConnector(
       .invoke(Empty())
       .log(getClass.getSimpleName + ".subscribe")
       .mapConcat: a =>
-        val currentMachineTimestamp = Timestamp.machineNow()
+        val currentMachineTimestamp = TaggedTimestamp.machineNow()
         subscribeAgentNumCounter.increment(a.agents.size)
         subscribeMachineLatencyHistogram.record(
-          Math.max(0, (currentMachineTimestamp - a.transmissionMachineTimestamp).millisLong),
+          currentMachineTimestamp - a.transmissionMachineTimestamp.tagMachine,
           a.agents.size
         )
         a.agents.map(Chart.Catch.apply)

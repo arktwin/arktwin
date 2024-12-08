@@ -2,8 +2,9 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge.util
 
+import arktwin.common.{MachineDurationHistogram, VirtualDurationHistogram}
 import kamon.Kamon
-import kamon.metric.{Counter, Histogram}
+import kamon.metric.Counter
 import kamon.tag.TagSet
 
 object EdgeKamon:
@@ -23,7 +24,7 @@ object EdgeKamon:
   val restRequestNumName: String = "arktwin_edge_rest_request_num"
   val restAgentNumName: String = "arktwin_edge_rest_agent_num"
   val restProcessMachineTimeName: String = "arktwin_edge_rest_process_machine_time"
-  val restSimulationLatencyName: String = "arktwin_edge_rest_simulation_latency"
+  val restVirtualLatencyName: String = "arktwin_edge_rest_virtual_latency"
 
 class EdgeKamon(runId: String, edgeId: String):
   import EdgeKamon.*
@@ -37,17 +38,15 @@ class EdgeKamon(runId: String, edgeId: String):
     .counter(chartPublishBatchNumName)
     .withTags(commonTags)
 
-  def chartPublishMachineLatencyHistogram(): Histogram = Kamon
-    .histogram(chartPublishMachineLatencyName, kamon.metric.MeasurementUnit.time.milliseconds)
-    .withTags(commonTags)
+  def chartPublishMachineLatencyHistogram(): MachineDurationHistogram =
+    MachineDurationHistogram(chartPublishMachineLatencyName, commonTags)
 
   def chartSubscribeAgentNumCounter(): Counter = Kamon
     .counter(chartSubscribeAgentNumName)
     .withTags(commonTags)
 
-  def chartSubscribeMachineLatencyHistogram(): Histogram = Kamon
-    .histogram(chartSubscribeMachineLatencyName, kamon.metric.MeasurementUnit.time.milliseconds)
-    .withTags(commonTags)
+  def chartSubscribeMachineLatencyHistogram(): MachineDurationHistogram =
+    MachineDurationHistogram(chartSubscribeMachineLatencyName, commonTags)
 
   def deadLetterNumCounter(): Counter = Kamon
     .counter(deadLetterNumName)
@@ -61,11 +60,9 @@ class EdgeKamon(runId: String, edgeId: String):
     .counter(restAgentNumName)
     .withTags(commonTags.withTag(endpointKey, endpoint))
 
-  def restProcessMachineTimeHistogram(endpoint: String): Histogram = Kamon
-    .histogram(restProcessMachineTimeName, kamon.metric.MeasurementUnit.time.milliseconds)
-    .withTags(commonTags.withTag(endpointKey, endpoint))
+  def restProcessMachineTimeHistogram(endpoint: String): MachineDurationHistogram =
+    MachineDurationHistogram(restProcessMachineTimeName, commonTags.withTag(endpointKey, endpoint))
 
   // TODO how to handle negative numbers?
-  def restSimulationLatencyHistogram(endpoint: String): Histogram = Kamon
-    .histogram(restSimulationLatencyName, kamon.metric.MeasurementUnit.time.milliseconds)
-    .withTags(commonTags.withTag(endpointKey, endpoint))
+  def restVirtualLatencyHistogram(endpoint: String): VirtualDurationHistogram =
+    VirtualDurationHistogram(restVirtualLatencyName, commonTags.withTag(endpointKey, endpoint))

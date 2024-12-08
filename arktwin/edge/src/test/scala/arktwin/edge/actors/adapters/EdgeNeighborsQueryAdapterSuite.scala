@@ -2,8 +2,9 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge.actors.adapters
 
+import arktwin.center.services.ClockBaseEx.*
 import arktwin.center.services.{ChartAgent, ClockBase, RegisterAgent}
-import arktwin.common.data.{QuaternionEnu, Timestamp, TransformEnu, Vector3Enu}
+import arktwin.common.data.*
 import arktwin.edge.actors.adapters.EdgeNeighborsQueryAdapter.*
 import arktwin.edge.actors.sinks.Chart.CullingAgent
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
@@ -69,7 +70,7 @@ class EdgeNeighborsQueryAdapterSuite extends ActorTestBase:
       CullingAgent(ChartAgent("a3", transformEnu()), Some(4)),
       CullingAgent(ChartAgent("a4", transformEnu()), Some(5))
     )
-    clockReadQueue += ClockBase(Timestamp(0, 0), Timestamp(0, 0), 1)
+    clockReadQueue += ClockBase(MachineTimestamp(0, 0), VirtualTimestamp(0, 0), 1)
     registerReadQueue += Map(
       "a0" -> RegisterAgent("a0", "k0", Map("i" -> "0"), Map("x" -> "x0")),
       "a1" -> RegisterAgent("a1", "k1", Map("i" -> "1"), Map("x" -> "x1")),
@@ -78,11 +79,11 @@ class EdgeNeighborsQueryAdapterSuite extends ActorTestBase:
       "a5" -> RegisterAgent("a5", "k5", Map("i" -> "5"), Map("x" -> "x5"))
     )
     adapter ! Query(
-      Request(Some(Timestamp(1, 0)), Some(3), changeDetection = true),
+      Request(Some(VirtualTimestamp(1, 0)), Some(3), changeDetection = true),
       endpoint.ref
     )
     endpoint.receiveMessage().toOption.get shouldEqual Response(
-      Timestamp(1, 0),
+      VirtualTimestamp(1, 0),
       Map(
         "a0" -> ResponseAgent(
           Some(transform()),
@@ -126,11 +127,11 @@ class EdgeNeighborsQueryAdapterSuite extends ActorTestBase:
       "a3" -> RegisterAgent("a3", "k3", Map("i" -> "3"), Map("x" -> "x3"))
     )
     adapter ! Query(
-      Request(Some(Timestamp(2, 0)), None, changeDetection = true),
+      Request(Some(VirtualTimestamp(2, 0)), None, changeDetection = true),
       endpoint.ref
     )
     endpoint.receiveMessage().toOption.get shouldEqual Response(
-      Timestamp(2, 0),
+      VirtualTimestamp(2, 0),
       Map(
         "a0" -> ResponseAgent(
           Some(transform()),

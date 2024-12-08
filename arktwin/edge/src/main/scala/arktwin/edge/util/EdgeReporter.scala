@@ -46,7 +46,7 @@ class EdgeReporter() extends MetricReporter:
           chartPublishMachineLatencyName,
           chartSubscribeMachineLatencyName,
           restProcessMachineTimeName,
-          restSimulationLatencyName
+          restVirtualLatencyName
         ).contains(metric.name)
       .sortBy(_.name)
       .flatMap: metric =>

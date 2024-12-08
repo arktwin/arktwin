@@ -7,8 +7,7 @@ import arktwin.center.configs.StaticCenterConfig
 import arktwin.center.util.CenterKamon
 import arktwin.center.util.CommonMessages.Terminate
 import arktwin.common.GrpcHeaderKey
-import arktwin.common.data.DurationEx.*
-import arktwin.common.data.Timestamp
+import arktwin.common.data.TaggedTimestamp
 import arktwin.common.data.TimestampEx.*
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.NotUsed
@@ -60,15 +59,12 @@ class ChartService(
           )
         )
         .map: publishBatch =>
-          val currentMachineTimestamp = Timestamp.machineNow()
+          val currentMachineTimestamp = TaggedTimestamp.machineNow()
 
           publishAgentNumCounter.increment(publishBatch.agents.size)
           publishBatchNumCounter.increment()
           publishMachineLatencyHistogram.record(
-            Math.max(
-              0,
-              (currentMachineTimestamp - publishBatch.transmissionMachineTimestamp).millisLong
-            ),
+            currentMachineTimestamp - publishBatch.transmissionMachineTimestamp.tagMachine,
             publishBatch.agents.size
           )
 
@@ -106,20 +102,17 @@ class ChartService(
         _.agents.size
       )
       .map: subscribeBatch =>
-        val currentMachineTimestamp = Timestamp.machineNow()
+        val currentMachineTimestamp = TaggedTimestamp.machineNow()
 
         for subscribe <- subscribeBatch do
           subscribeAgentNumCounter.increment(subscribe.agents.size)
           subscribeMachineLatencyHistogram.record(
-            Math.max(
-              0,
-              (currentMachineTimestamp - subscribe.routeReceptionMachineTimestamp).millisLong
-            ),
+            currentMachineTimestamp - subscribe.routeReceptionMachineTimestamp,
             subscribe.agents.size
           )
         subscribeBatchNumCounter.increment()
 
-        ChartSubscribeBatch(subscribeBatch.flatMap(_.agents), currentMachineTimestamp)
+        ChartSubscribeBatch(subscribeBatch.flatMap(_.agents), currentMachineTimestamp.untag)
       .preMaterialize()
     atlas ! Atlas.AddChartSubscriber(edgeId, chartSubscriber)
     scribe.info(s"spawned a chart subscriber for $edgeId: ${chartSubscriber.path}")

@@ -2,8 +2,7 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge.endpoints
 
-import arktwin.common.data.DurationEx.*
-import arktwin.common.data.Timestamp
+import arktwin.common.data.TaggedTimestamp
 import arktwin.common.data.TimestampEx.*
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.{CoordinateConfig, EulerAnglesConfig, Vector3Config}
@@ -60,10 +59,10 @@ object EdgeConfigCoordinatePut:
 
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogic: request =>
-        val requestTime = Timestamp.machineNow()
+        val requestTime = TaggedTimestamp.machineNow()
         configurator ! request
         Future
           .successful(Right(()): Either[ErrorStatus, Response])
           .andThen: _ =>
             requestNumCounter.increment()
-            processMachineTimeHistogram.record((Timestamp.machineNow() - requestTime).millisLong)
+            processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)
