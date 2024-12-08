@@ -19,7 +19,7 @@ import scala.concurrent.duration.DurationInt
 class AtlasSuite extends ActorTestBase:
   given Scheduler = testKit.system.scheduler
   given Ordering[ChartAgent] =
-    Ordering.by(a => (a.agentId, a.transform.virtualTimestamp.tagVirtual))
+    Ordering.by(a => (a.agentId, a.transform.timestamp.tagVirtual))
 
   test(AtlasConfig.Broadcast.getClass.getSimpleName):
     val atlasConfig = AtlasConfig(AtlasConfig.Broadcast(), 100.millis)

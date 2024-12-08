@@ -122,7 +122,7 @@ object EdgeAgentsPutAdapter:
     def next(): Behavior[ChildMessage] = clockWait match
       case Some(clockBase) =>
         val now = clockBase.now()
-        val requestTime = putMessage.request.virtualTimestamp.getOrElse(now)
+        val requestTime = putMessage.request.timestamp.getOrElse(now)
         putMessage.replyTo ! Right(Response(now))
         virtualLatencyHistogram.record(now - requestTime)
 

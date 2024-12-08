@@ -102,8 +102,8 @@ object EdgeNeighborsQuery:
             processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)
 
 case class EdgeNeighborsQueryRequest(
-    @description("If it is omitted, a current virtualTimestamp of the edge virtual clock is used.")
-    virtualTimestamp: Option[VirtualTimestamp],
+    @description("If it is omitted, a current timestamp of the edge virtual clock is used.")
+    timestamp: Option[VirtualTimestamp],
     @description("If it is omitted, this API returns all neighbors.")
     neighborsNumber: Option[Int],
     @description("If it is true, this API is locked for a moment to update previous neighbors.")
@@ -123,7 +123,7 @@ object NeighborChange:
     )
 
 case class EdgeNeighborsQueryResponse(
-    virtualTimestamp: VirtualTimestamp,
+    timestamp: VirtualTimestamp,
     neighbors: Map[String, EdgeNeighborsQueryResponseAgent]
 )
 

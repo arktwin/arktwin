@@ -120,7 +120,7 @@ object EdgeAgentsPut:
 
 case class EdgeAgentsPutRequest(
     @description("If it is omitted, a current timestamp of the edge virtual clock is used.")
-    virtualTimestamp: Option[VirtualTimestamp],
+    timestamp: Option[VirtualTimestamp],
     agents: Map[String, EdgeAgentsPutRequestAgent]
 )
 
@@ -131,5 +131,5 @@ case class EdgeAgentsPutRequestAgent(
 )
 
 case class EdgeAgentsPutResponse(
-    edgeReceiptVirtualTimestamp: VirtualTimestamp
+    edgeReceiptTimestamp: VirtualTimestamp
 )

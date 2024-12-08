@@ -54,9 +54,9 @@ object Chart:
       case Catch(agent) =>
         val oldDistance = distances.get(agent.agentId)
         val oldTimestamp = oldDistance
-          .map(orderedAgents(_, agent.agentId).transform.virtualTimestamp.tagVirtual)
+          .map(orderedAgents(_, agent.agentId).transform.timestamp.tagVirtual)
           .getOrElse(TaggedTimestamp.minValue[VirtualTag])
-        if agent.transform.virtualTimestamp.tagVirtual >= oldTimestamp then
+        if agent.transform.timestamp.tagVirtual >= oldTimestamp then
           for od <- oldDistance do orderedAgents -= ((od, agent.agentId))
 
           // TODO consider relative coordinates

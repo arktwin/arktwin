@@ -9,7 +9,7 @@ object TransformEnuEx:
   extension (a: TransformEnu)
     def extrapolate(targetVirtualTimestamp: VirtualTimestamp): TransformEnu =
       a.copy(
-        virtualTimestamp = targetVirtualTimestamp.untag,
+        timestamp = targetVirtualTimestamp.untag,
         localTranslationMeter = a.localTranslationMeter +
-          (a.localTranslationSpeedMps * (targetVirtualTimestamp - a.virtualTimestamp.tagVirtual).secondsDouble)
+          (a.localTranslationSpeedMps * (targetVirtualTimestamp - a.timestamp.tagVirtual).secondsDouble)
       )

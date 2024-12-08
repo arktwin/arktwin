@@ -36,8 +36,8 @@ case class Transform(
       .map(_.toEnu(config.vector3))
       .getOrElse(
         previousEnu match
-          case Some(pEnu) if timestamp > pEnu.virtualTimestamp.tagVirtual =>
-            (localTranslationEnu - pEnu.localTranslationMeter) / (timestamp - pEnu.virtualTimestamp.tagVirtual).secondsDouble
+          case Some(pEnu) if timestamp > pEnu.timestamp.tagVirtual =>
+            (localTranslationEnu - pEnu.localTranslationMeter) / (timestamp - pEnu.timestamp.tagVirtual).secondsDouble
           case _ =>
             Vector3Enu(0, 0, 0)
       )

@@ -11,7 +11,7 @@ import "validate/validate.proto";
 // cf. https://docs.unity3d.com/Manual/class-Transform.html
 // cf. https://docs.unrealengine.com/4.27/en-US/API/Runtime/Core/Math/FTransform/
 message TransformEnu {
-  Timestamp virtual_timestamp = 1 [(validate.rules).message.required = true];
+  Timestamp timestamp = 1 [(validate.rules).message.required = true];
 
   google.protobuf.StringValue parent_agent = 2;
 

@@ -142,14 +142,14 @@ object EdgeNeighborsQueryAdapter:
 
     def next(): Behavior[ChildMessage] = (chartWait, clockWait, registerWait) match
       case (Some(chartReply), Some(clockBase), Some(registerReply)) =>
-        val requestTime = request.virtualTimestamp.getOrElse(clockBase.now())
+        val requestTime = request.timestamp.getOrElse(clockBase.now())
         val recognizedAgents = chartReply.view
           .flatMap: agent =>
             registerReply
               .get(agent.agent.agentId)
               .map: registerAgent =>
                 virtualLatencyHistogram.record(
-                  requestTime - agent.agent.transform.virtualTimestamp.tagVirtual
+                  requestTime - agent.agent.transform.timestamp.tagVirtual
                 )
                 agent.agent.agentId -> ResponseAgent(
                   Some(
