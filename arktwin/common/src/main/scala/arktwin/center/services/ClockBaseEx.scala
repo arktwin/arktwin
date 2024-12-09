@@ -9,7 +9,7 @@ import arktwin.common.data.TimestampEx.*
 object ClockBaseEx:
   extension (a: ClockBase)
     def fromMachine(machineTimestamp: MachineTimestamp): VirtualTimestamp =
-      a.baseVirtualTimestamp.tagVirtual +
+      a.baseTimestamp.tagVirtual +
         ((machineTimestamp - a.baseMachineTimestamp.tagMachine) * a.clockSpeed).untag.tagVirtual
 
     def now(): VirtualTimestamp =
