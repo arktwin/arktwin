@@ -3,8 +3,7 @@
 package arktwin.edge.endpoints
 
 import arktwin.common.LoggerConfigurator.LogLevel
-import arktwin.common.data.DurationEx.*
-import arktwin.common.data.Timestamp
+import arktwin.common.data.TaggedTimestamp
 import arktwin.common.data.TimestampEx.*
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.{DynamicEdgeConfig, EdgeConfig, StaticEdgeConfig}
@@ -75,10 +74,10 @@ object EdgeConfigGet:
     given Timeout = staticConfig.endpointTimeout
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogic: _ =>
-        val requestTime = Timestamp.machineNow()
+        val requestTime = TaggedTimestamp.machineNow()
         (configurator ? EdgeConfigurator.Get.apply)
           .map(Right[ErrorStatus, EdgeConfig].apply)
           .recover(ErrorStatus.handleFailure)
           .andThen: _ =>
             requestNumCounter.increment()
-            processMachineTimeHistogram.record((Timestamp.machineNow() - requestTime).millisLong)
+            processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)

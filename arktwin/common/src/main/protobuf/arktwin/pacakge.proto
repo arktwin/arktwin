@@ -16,5 +16,6 @@ option (scalapb.options) = {
   ],
   import: "sttp.tapir.Schema.annotations.description",
   no_default_values_in_constructor: true,
-  preserve_unknown_fields: false
+  preserve_unknown_fields: false,
+  scala3_sources: true
 };

@@ -2,7 +2,7 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge.data
 
-import arktwin.common.data.Timestamp
+import arktwin.common.data.VirtualTimestamp
 import arktwin.edge.configs.EulerAnglesConfig.Order.*
 import arktwin.edge.configs.{CoordinateConfig, EulerAnglesConfig, QuaternionConfig, Vector3Config}
 import org.scalactic.{Equality, TolerantNumerics}
@@ -63,7 +63,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
         None,
         None
       )
-      Transform.fromEnu(t.toEnu(Timestamp(0, 0), None, setting), setting) shouldEqual t
+      Transform.fromEnu(t.toEnu(VirtualTimestamp(0, 0), None, setting), setting) shouldEqual t
 
     for
       transformSetting <-
@@ -87,7 +87,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
         None,
         None
       )
-      Transform.fromEnu(t.toEnu(Timestamp(0, 0), None, setting), setting) shouldEqual t
+      Transform.fromEnu(t.toEnu(VirtualTimestamp(0, 0), None, setting), setting) shouldEqual t
 
   test("permutation"):
     import Vector3Config.Direction.*
@@ -106,5 +106,5 @@ class TransformSuite extends AnyFunSuite with Matchers:
       None
     )
     Transform
-      .fromEnu(t.toEnu(Timestamp(0, 0), None, sourceSetting), targetSetting)
+      .fromEnu(t.toEnu(VirtualTimestamp(0, 0), None, sourceSetting), targetSetting)
       .localTranslation shouldEqual Vector3(2, 1, -3)

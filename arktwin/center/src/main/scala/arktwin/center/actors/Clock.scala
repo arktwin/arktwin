@@ -7,9 +7,8 @@ import arktwin.center.configs.ClockConfig.Start.{Absolute, Relative, Schedule}
 import arktwin.center.services.ClockBase
 import arktwin.center.services.ClockBaseEx.*
 import arktwin.common.MailboxConfig
-import arktwin.common.data.DurationEx.{*, given}
 import arktwin.common.data.TimestampEx.*
-import arktwin.common.data.{Duration, Timestamp}
+import arktwin.common.data.{MachineTag, TaggedDuration, TaggedTimestamp}
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
@@ -32,20 +31,20 @@ object Clock:
 
   private def apply(config: ClockConfig): Behavior[Message] = Behaviors.setup: context =>
     Behaviors.withTimers: initialUpdateSpeedTimer =>
-      val baseMachineTimestamp = Timestamp.machineNow()
-      val baseTimestamp = config.start.initialTime match
+      val baseMachineTimestamp = TaggedTimestamp.machineNow()
+      val baseVirtualTimestamp = config.start.initialTime match
         case Absolute(timestamp) => timestamp
-        case Relative(duration)  => baseMachineTimestamp + duration
+        case Relative(duration)  => baseMachineTimestamp.untag.tagVirtual + duration
       val initialClockBase = config.start.condition match
-        case Schedule(schedule) if schedule <= Duration(0, 0) =>
-          ClockBase(baseMachineTimestamp, baseTimestamp, config.start.clockSpeed)
+        case Schedule(schedule) if schedule <= TaggedDuration[MachineTag](0, 0) =>
+          ClockBase(baseMachineTimestamp, baseVirtualTimestamp, config.start.clockSpeed)
 
         case Schedule(schedule) =>
           initialUpdateSpeedTimer.startSingleTimer(
             UpdateSpeed(config.start.clockSpeed),
             schedule.secondsDouble.seconds
           )
-          ClockBase(baseMachineTimestamp, baseTimestamp, 0)
+          ClockBase(baseMachineTimestamp, baseVirtualTimestamp, 0)
       context.log.info(initialClockBase.toString)
 
       var clockBase = initialClockBase
@@ -57,9 +56,12 @@ object Clock:
           if initialUpdateSpeedTimerFlag then
             initialUpdateSpeedTimer.cancelAll()
             initialUpdateSpeedTimerFlag = false
-          val baseMachineTimestamp = Timestamp.machineNow()
-          clockBase =
-            ClockBase(baseMachineTimestamp, clockBase.fromMachine(baseMachineTimestamp), clockSpeed)
+          val baseMachineTimestamp = TaggedTimestamp.machineNow()
+          clockBase = ClockBase(
+            baseMachineTimestamp,
+            clockBase.fromMachine(baseMachineTimestamp),
+            clockSpeed
+          )
           for subscriber <- subscribers.values do subscriber ! clockBase
           context.log.info(clockBase.toString)
           Behaviors.same

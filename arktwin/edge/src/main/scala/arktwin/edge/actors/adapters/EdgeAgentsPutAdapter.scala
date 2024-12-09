@@ -4,10 +4,9 @@ package arktwin.edge.actors.adapters
 
 import arktwin.center.services.ClockBaseEx.*
 import arktwin.center.services.{ChartAgent, ClockBase, RegisterAgentUpdated}
-import arktwin.common.MailboxConfig
-import arktwin.common.data.DurationEx.*
 import arktwin.common.data.TimestampEx.*
-import arktwin.common.data.{Timestamp, TransformEnu}
+import arktwin.common.data.{MachineTimestamp, TransformEnu}
+import arktwin.common.{MailboxConfig, VirtualDurationHistogram}
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.sinks.{Chart, Clock}
 import arktwin.edge.configs.{CoordinateConfig, StaticEdgeConfig}
@@ -16,7 +15,6 @@ import arktwin.edge.endpoints.EdgeAgentsPut
 import arktwin.edge.endpoints.EdgeAgentsPut.{Request, Response}
 import arktwin.edge.util.CommonMessages.Timeout
 import arktwin.edge.util.{EdgeKamon, ErrorStatus, ServiceUnavailable}
-import kamon.metric.Histogram
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.Receptionist
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
@@ -26,7 +24,7 @@ object EdgeAgentsPutAdapter:
   type Message = Put | CoordinateConfig | Report
   case class Put(
       request: Request,
-      restReceptionMachineTimestamp: Timestamp,
+      restReceptionMachineTimestamp: MachineTimestamp,
       replyTo: ActorRef[Either[ErrorStatus, Response]]
   )
   case class Report(previousAgents: Map[String, TransformEnu])
@@ -63,8 +61,8 @@ object EdgeAgentsPutAdapter:
 
     var coordinateConfig = initCoordinateConfig
     var optionalPreviousAgents: Option[Map[String, TransformEnu]] = Some(Map())
-    val simulationLatencyHistogram =
-      kamon.restSimulationLatencyHistogram(EdgeAgentsPut.endpoint.showShort)
+    val virtualLatencyHistogram =
+      kamon.restVirtualLatencyHistogram(EdgeAgentsPut.endpoint.showShort)
 
     Behaviors.receiveMessage:
       // TODO filter registered agents
@@ -80,7 +78,7 @@ object EdgeAgentsPutAdapter:
                 chartPublish,
                 registerPublish,
                 clock,
-                simulationLatencyHistogram,
+                virtualLatencyHistogram,
                 staticConfig,
                 coordinateConfig
               )
@@ -112,7 +110,7 @@ object EdgeAgentsPutAdapter:
       chartPublish: ActorRef[ChartConnector.Publish],
       registerPublish: ActorRef[RegisterConnector.Publish],
       clock: ActorRef[Clock.Get],
-      simulationLatencyHistogram: Histogram,
+      virtualLatencyHistogram: VirtualDurationHistogram,
       staticConfig: StaticEdgeConfig,
       coordinateConfig: CoordinateConfig
   ): Behavior[ChildMessage] = Behaviors.setup: context =>
@@ -124,9 +122,9 @@ object EdgeAgentsPutAdapter:
     def next(): Behavior[ChildMessage] = clockWait match
       case Some(clockBase) =>
         val now = clockBase.now()
-        val requestTimestamp = putMessage.request.timestamp.getOrElse(now)
+        val requestTime = putMessage.request.timestamp.getOrElse(now)
         putMessage.replyTo ! Right(Response(now))
-        simulationLatencyHistogram.record(Math.max(0, (now - requestTimestamp).millisLong))
+        virtualLatencyHistogram.record(now - requestTime)
 
         registerPublish ! RegisterConnector.Publish(
           putMessage.request.agents
@@ -140,7 +138,7 @@ object EdgeAgentsPutAdapter:
           info.transform.map: transform =>
             agentId -> ChartAgent(
               agentId,
-              transform.toEnu(requestTimestamp, previousAgents.get(agentId), coordinateConfig)
+              transform.toEnu(requestTime, previousAgents.get(agentId), coordinateConfig)
             )
         parent ! Report(agents.view.mapValues(_.transform).toMap)
         chart ! Chart.UpdateFirstAgents(agents.values.toSeq)

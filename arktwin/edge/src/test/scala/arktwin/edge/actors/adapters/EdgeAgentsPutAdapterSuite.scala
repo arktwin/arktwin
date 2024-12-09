@@ -3,7 +3,7 @@
 package arktwin.edge.actors.adapters
 
 import arktwin.center.services.{ChartAgent, ClockBase}
-import arktwin.common.data.{QuaternionEnu, Timestamp, TransformEnu, Vector3Enu}
+import arktwin.common.data.*
 import arktwin.edge.actors.adapters.EdgeAgentsPutAdapter.*
 import arktwin.edge.actors.sinks.{Chart, Clock}
 import arktwin.edge.configs.Vector3Config.Direction.{East, North, Up}
@@ -50,7 +50,7 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
     clockReadQueue += ClockBase(Timestamp(0, 0), Timestamp(0, 0), 1)
     adapter ! Put(
       Request(
-        Some(Timestamp(1, 0)),
+        Some(VirtualTimestamp(1, 0)),
         Map(
           "a" -> EdgeAgentsPutRequestAgent(
             Some(transform(Vector3(1, 2, 3), Some(Vector3(1, 1, 1)))),
@@ -59,7 +59,7 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
           "b" -> EdgeAgentsPutRequestAgent(Some(transform(Vector3(1, 2, 3), None)), None)
         )
       ),
-      Timestamp(0, 0),
+      MachineTimestamp(0, 0),
       endpoint.ref
     )
     chart.receiveMessage().agents shouldEqual Seq(
@@ -74,13 +74,13 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
     clockReadQueue += ClockBase(Timestamp(0, 0), Timestamp(0, 0), 1)
     adapter ! Put(
       Request(
-        Some(Timestamp(1, 500_000_000)),
+        Some(VirtualTimestamp(1, 500_000_000)),
         Map(
           "a" -> EdgeAgentsPutRequestAgent(Some(transform(Vector3(4, 4, 4), None)), None),
           "b" -> EdgeAgentsPutRequestAgent(Some(transform(Vector3(1, 2, 3), None)), None)
         )
       ),
-      Timestamp(0, 0),
+      MachineTimestamp(0, 0),
       endpoint.ref
     )
     chart.receiveMessage().agents shouldEqual Seq(

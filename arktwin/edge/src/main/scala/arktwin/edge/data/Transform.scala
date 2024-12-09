@@ -3,8 +3,7 @@
 package arktwin.edge.data
 
 import arktwin.common.data.*
-import arktwin.common.data.DurationEx.*
-import arktwin.common.data.TimestampEx.{*, given}
+import arktwin.common.data.TimestampEx.*
 import arktwin.common.data.Vector3EnuEx.*
 import arktwin.edge.configs.CoordinateConfig
 import sttp.tapir.Schema.annotations.description
@@ -28,7 +27,7 @@ case class Transform(
     extra: Option[Map[String, String]]
 ):
   def toEnu(
-      timestamp: Timestamp,
+      timestamp: VirtualTimestamp,
       previousEnu: Option[TransformEnu],
       config: CoordinateConfig
   ): TransformEnu =
@@ -37,14 +36,14 @@ case class Transform(
       .map(_.toEnu(config.vector3))
       .getOrElse(
         previousEnu match
-          case Some(pEnu) if timestamp > pEnu.timestamp =>
-            (localTranslationEnu - pEnu.localTranslationMeter) / (timestamp - pEnu.timestamp).secondsDouble
+          case Some(pEnu) if timestamp > pEnu.timestamp.tagVirtual =>
+            (localTranslationEnu - pEnu.localTranslationMeter) / (timestamp - pEnu.timestamp.tagVirtual).secondsDouble
           case _ =>
             Vector3Enu(0, 0, 0)
       )
 
     TransformEnu(
-      timestamp,
+      timestamp.untag,
       parentAgentId,
       globalScale.toEnu(config.vector3),
       localRotation.toQuaternionEnu(config.rotation),

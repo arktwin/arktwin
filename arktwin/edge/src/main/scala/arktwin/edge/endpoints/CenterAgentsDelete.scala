@@ -3,8 +3,7 @@
 package arktwin.edge.endpoints
 
 import arktwin.center.services.*
-import arktwin.common.data.DurationEx.*
-import arktwin.common.data.Timestamp
+import arktwin.common.data.TaggedTimestamp
 import arktwin.common.data.TimestampEx.*
 import arktwin.edge.util.JsonDerivation.given
 import arktwin.edge.util.{EdgeKamon, ErrorStatus, JsonDerivation, JsonValidator, RequestValidator}
@@ -53,11 +52,11 @@ object CenterAgentsDelete:
 
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogic: request =>
-        val requestTime = Timestamp.machineNow()
+        val requestTime = TaggedTimestamp.machineNow()
         RequestValidator(request.asMessage)
           .map(client.deleteAgents(_).map(_ => {}))
           .sequence
           .recover(ErrorStatus.handleFailure)
           .andThen: _ =>
             requestNumCounter.increment()
-            processMachineTimeHistogram.record((Timestamp.machineNow() - requestTime).millisLong)
+            processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)

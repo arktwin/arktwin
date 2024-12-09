@@ -2,9 +2,8 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge.endpoints
 
-import arktwin.common.data.DurationEx.*
-import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
+import arktwin.common.data.{TaggedTimestamp, VirtualTimestamp}
 import arktwin.edge.actors.adapters.EdgeNeighborsQueryAdapter
 import arktwin.edge.configs.StaticEdgeConfig
 import arktwin.edge.data.*
@@ -41,10 +40,10 @@ object EdgeNeighborsQuery:
   )
 
   val inExample: Request =
-    Request(Some(Timestamp(234, 100_000_000)), Some(100), changeDetection = false)
+    Request(Some(VirtualTimestamp(234, 100_000_000)), Some(100), changeDetection = false)
 
   val outExample: Response = Response(
-    Timestamp(234, 100_000_000),
+    VirtualTimestamp(234, 100_000_000),
     Map(
       "alice" -> ResponseAgent(
         Some(
@@ -94,17 +93,17 @@ object EdgeNeighborsQuery:
     given Timeout = staticConfig.endpointTimeout
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogic: request =>
-        val requestTime = Timestamp.machineNow()
+        val requestTime = TaggedTimestamp.machineNow()
         adapter
           .?[Either[ErrorStatus, Response]](EdgeNeighborsQueryAdapter.Query(request, _))
           .recover(ErrorStatus.handleFailure)
           .andThen: _ =>
             requestNumCounter.increment()
-            processMachineTimeHistogram.record((Timestamp.machineNow() - requestTime).millisLong)
+            processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)
 
 case class EdgeNeighborsQueryRequest(
-    @description("If it is omitted, a current timestamp of the edge simulation clock is used.")
-    timestamp: Option[Timestamp],
+    @description("If it is omitted, a current timestamp of the edge virtual clock is used.")
+    timestamp: Option[VirtualTimestamp],
     @description("If it is omitted, this API returns all neighbors.")
     neighborsNumber: Option[Int],
     @description("If it is true, this API is locked for a moment to update previous neighbors.")
@@ -124,7 +123,7 @@ object NeighborChange:
     )
 
 case class EdgeNeighborsQueryResponse(
-    timestamp: Timestamp,
+    timestamp: VirtualTimestamp,
     neighbors: Map[String, EdgeNeighborsQueryResponseAgent]
 )
 

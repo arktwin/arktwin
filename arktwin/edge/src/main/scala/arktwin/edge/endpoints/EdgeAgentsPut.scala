@@ -2,9 +2,8 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge.endpoints
 
-import arktwin.common.data.DurationEx.*
-import arktwin.common.data.Timestamp
 import arktwin.common.data.TimestampEx.*
+import arktwin.common.data.{TaggedTimestamp, VirtualTimestamp}
 import arktwin.edge.actors.adapters.EdgeAgentsPutAdapter
 import arktwin.edge.configs.StaticEdgeConfig
 import arktwin.edge.data.*
@@ -40,7 +39,7 @@ object EdgeAgentsPut:
   given codecResponse: JsonValueCodec[Response] = JsonCodecMaker.makeWithoutDiscriminator
 
   val inExample: Request = Request(
-    Some(Timestamp(123, 100_000_000)),
+    Some(VirtualTimestamp(123, 100_000_000)),
     Map(
       "alice" -> EdgeAgentsPutRequestAgent(
         Some(
@@ -71,7 +70,7 @@ object EdgeAgentsPut:
     )
   )
 
-  val outExample: Response = Response(Timestamp(123, 0))
+  val outExample: Response = Response(VirtualTimestamp(123, 0))
 
   val endpoint: PublicEndpoint[Request, ErrorStatus, Response, Any] =
     tapir.endpoint.put
@@ -108,20 +107,20 @@ object EdgeAgentsPut:
     given Timeout = staticConfig.endpointTimeout
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogic: request =>
-        val requestTime = Timestamp.machineNow()
+        val requestTime = TaggedTimestamp.machineNow()
         adapter
           .?[Either[ErrorStatus, Response]](
-            EdgeAgentsPutAdapter.Put(request, Timestamp.machineNow(), _)
+            EdgeAgentsPutAdapter.Put(request, TaggedTimestamp.machineNow(), _)
           )
           .recover(ErrorStatus.handleFailure)
           .andThen: _ =>
             requestNumCounter.increment()
             agentNumCounter.increment(request.agents.size)
-            processMachineTimeHistogram.record((Timestamp.machineNow() - requestTime).millisLong)
+            processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)
 
 case class EdgeAgentsPutRequest(
-    @description("If it is omitted, a current timestamp of the edge simulation clock is used.")
-    timestamp: Option[Timestamp],
+    @description("If it is omitted, a current timestamp of the edge virtual clock is used.")
+    timestamp: Option[VirtualTimestamp],
     agents: Map[String, EdgeAgentsPutRequestAgent]
 )
 
@@ -132,5 +131,5 @@ case class EdgeAgentsPutRequestAgent(
 )
 
 case class EdgeAgentsPutResponse(
-    edgeReceiptTimestamp: Timestamp
+    edgeReceiptTimestamp: VirtualTimestamp
 )

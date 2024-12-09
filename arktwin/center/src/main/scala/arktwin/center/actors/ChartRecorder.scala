@@ -6,7 +6,7 @@ import arktwin.center.actors.Atlas.PartitionIndex
 import arktwin.center.configs.AtlasConfig
 import arktwin.center.services.ChartAgent
 import arktwin.center.util.CommonMessages.Terminate
-import arktwin.common.data.TimestampEx.given
+import arktwin.common.data.TimestampEx.*
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
@@ -33,7 +33,9 @@ object ChartRecorder:
           newAgent <- publishBatch.agents
           if agents
             .get(newAgent.agentId)
-            .forall(_.transform.timestamp <= newAgent.transform.timestamp)
+            .forall(
+              _.transform.timestamp.tagVirtual <= newAgent.transform.timestamp.tagVirtual
+            )
         do agents(newAgent.agentId) = newAgent
         Behaviors.same
 
