@@ -124,28 +124,28 @@ jobs:
           sbt clean "edge/run generate-openapi-center ../temp/arktwin-center-release.yaml" "edge/run generate-openapi-edge ../temp/arktwin-edge-release.yaml"
 
       - name: Generate /api/center changelog from main
-        uses: oasdiff/oasdiff-action/changelog@v0.0.19
+        uses: oasdiff/oasdiff-action/changelog@v0.0.21
         with:
           base: arktwin/temp/arktwin-center-main.yaml
           revision: arktwin/temp/arktwin-center-head.yaml
           output-to-file: arktwin/temp/arktwin-center-changelog-from-main.txt
 
       - name: Generate /api/edge changelog from main
-        uses: oasdiff/oasdiff-action/changelog@v0.0.19
+        uses: oasdiff/oasdiff-action/changelog@v0.0.21
         with:
           base: arktwin/temp/arktwin-edge-main.yaml
           revision: arktwin/temp/arktwin-edge-head.yaml
           output-to-file: arktwin/temp/arktwin-edge-changelog-from-main.txt
 
       - name: Generate /api/center changelog from latest relase
-        uses: oasdiff/oasdiff-action/changelog@v0.0.19
+        uses: oasdiff/oasdiff-action/changelog@v0.0.21
         with:
           base: arktwin/temp/arktwin-center-release.yaml
           revision: arktwin/temp/arktwin-center-head.yaml
           output-to-file: arktwin/temp/arktwin-center-changelog-from-release.txt
 
       - name: Generate /api/edge changelog from latest relase
-        uses: oasdiff/oasdiff-action/changelog@v0.0.19
+        uses: oasdiff/oasdiff-action/changelog@v0.0.21
         with:
           base: arktwin/temp/arktwin-edge-release.yaml
           revision: arktwin/temp/arktwin-edge-head.yaml
