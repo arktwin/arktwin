@@ -26,6 +26,6 @@ RUN mkdir /opt/arktwin/ && \
     mkdir /etc/opt/arktwin/ && \
     touch /etc/opt/arktwin/edge.conf
 COPY --from=jre-build /javaruntime $JAVA_HOME
-COPY --from=jar-build /arktwin/edge/target/scala-3.5.2/arktwin-edge.jar /opt/arktwin/arktwin-edge.jar
+COPY --from=jar-build /arktwin/edge/target/scala-3.6.2/arktwin-edge.jar /opt/arktwin/arktwin-edge.jar
 COPY docker/edge.sh /opt/arktwin/entrypoint.sh
 ENTRYPOINT ["/opt/arktwin/entrypoint.sh"]
