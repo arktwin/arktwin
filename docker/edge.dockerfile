@@ -7,7 +7,7 @@ RUN $JAVA_HOME/bin/jlink \
         --compress=zip-9 \
         --output /javaruntime
 
-FROM sbtscala/scala-sbt:eclipse-temurin-21.0.5_11_1.10.6_3.5.2 AS jar-build
+FROM sbtscala/scala-sbt:eclipse-temurin-21.0.5_11_1.10.6_3.6.2 AS jar-build
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh && \
     bash nodesource_setup.sh && \
     apt-get install -y nodejs
@@ -26,6 +26,6 @@ RUN mkdir /opt/arktwin/ && \
     mkdir /etc/opt/arktwin/ && \
     touch /etc/opt/arktwin/edge.conf
 COPY --from=jre-build /javaruntime $JAVA_HOME
-COPY --from=jar-build /arktwin/edge/target/scala-3.5.2/arktwin-edge.jar /opt/arktwin/arktwin-edge.jar
+COPY --from=jar-build /arktwin/edge/target/scala-3.6.2/arktwin-edge.jar /opt/arktwin/arktwin-edge.jar
 COPY docker/edge.sh /opt/arktwin/entrypoint.sh
 ENTRYPOINT ["/opt/arktwin/entrypoint.sh"]
