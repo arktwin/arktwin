@@ -14,6 +14,10 @@ ArkTwin consists of two modules: Center and Edge.
 The communication protocol between ArkTwin Center and Edge is gRPC.
 However, each agent-based software can connect to ArkTwin via local REST API provided by ArkTwin Edge, without managing stream control directly.
 
+## Demo
+
+![](docs/demo.png)
+
 ## Building
 
 ### Docker
