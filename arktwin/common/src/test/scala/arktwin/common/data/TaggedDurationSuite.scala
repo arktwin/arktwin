@@ -28,3 +28,6 @@ class TaggedDurationSuite extends AnyFunSuite with Matchers:
       1,
       0
     )
+
+    VirtualDuration(1, 2) < VirtualDuration(3, 4) shouldEqual true
+    MachineDuration(11, 2) > MachineDuration(33, 4) shouldEqual false

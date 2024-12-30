@@ -2,19 +2,25 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge.configs
 
-import arktwin.center.services.CreateEdgeRequest
 import arktwin.common.LoggerConfigurator.LogLevel
+import cats.data.Validated.{Invalid, Valid}
+import cats.data.ValidatedNec
 import com.typesafe.config.Config
 import pureconfig.*
 import pureconfig.error.ConfigReaderFailures
-import scalapb.validate.{Failure, Validator}
 
 import scala.concurrent.duration.FiniteDuration
 
 case class EdgeConfig(
     dynamic: DynamicEdgeConfig,
     static: StaticEdgeConfig
-) derives ConfigReader
+) derives ConfigReader:
+  def validated(path: String): ValidatedNec[String, EdgeConfig] =
+    import cats.syntax.apply.*
+    (
+      dynamic.validated(s"$path.dynamic"),
+      static.validated(s"$path.static")
+    ).mapN(EdgeConfig.apply)
 
 object EdgeConfig:
   private val configSource = ConfigSource.defaultOverrides
@@ -29,16 +35,14 @@ object EdgeConfig:
     case Right(value) =>
       value.resolve()
     case Left(ConfigReaderFailures(head, tail*)) =>
-      throw RuntimeException((head +: tail).map(_.toString).mkString(", "))
+      throw RuntimeException(
+        (head +: tail).map(_.toString).mkString("config load error: ", ", ", "")
+      )
 
   def loadOrThrow(): EdgeConfig =
-    val config = configSource.at("arktwin.edge").loadOrThrow[EdgeConfig]
-    Validator[CreateEdgeRequest].validate(CreateEdgeRequest(config.static.edgeIdPrefix)) match
-      case Failure(violations) =>
-        throw RuntimeException(
-          "edge id prefix (arktwin.edge.static.edgeIdPrefix or ARKTWIN_EDGE_STATIC_EDGE_ID_PREFIX) " + violations
-            .map(_.reason)
-            .mkString(", ")
-        )
-      case _ =>
-    config
+    val path = "arktwin.edge"
+    configSource.at(path).loadOrThrow[EdgeConfig].validated(path) match
+      case Invalid(errors) =>
+        throw RuntimeException(errors.toChain.toVector.mkString("config load error: ", ", ", ""))
+      case Valid(config) =>
+        config

@@ -11,7 +11,6 @@ import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
 import scala.collection.mutable
-import scala.math.Ordered.orderingToOrdered
 
 object ChartRecorder:
   type Message = Chart.PublishBatch | Get | Terminate.type

@@ -7,7 +7,8 @@ import arktwin.common.data.TimestampEx.*
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.CullingConfig
 import arktwin.edge.util.JsonDerivation.given
-import arktwin.edge.util.{EdgeKamon, ErrorStatus}
+import arktwin.edge.util.{BadRequest, EdgeKamon, ErrorStatus}
+import cats.data.Validated.{Invalid, Valid}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import org.apache.pekko.actor.typed.ActorRef
@@ -35,6 +36,7 @@ object EdgeConfigCullingPut:
       .out(statusCode(Accepted))
       .errorOut(
         oneOf[ErrorStatus](
+          ErrorStatus.badRequest,
           ErrorStatus.internalServerError
         )
       )
@@ -48,9 +50,12 @@ object EdgeConfigCullingPut:
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogic: request =>
         val requestTime = TaggedTimestamp.machineNow()
-        configurator ! request
-        Future
-          .successful(Right(()): Either[ErrorStatus, Response])
-          .andThen: _ =>
-            requestNumCounter.increment()
-            processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)
+        (request.validated("") match
+          case Invalid(errors) =>
+            Future.successful(Left(BadRequest(errors.toChain.toVector)))
+          case Valid(request) =>
+            configurator ! request
+            Future.successful(Right(()): Either[ErrorStatus, Response])
+        ).andThen: _ =>
+          requestNumCounter.increment()
+          processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)
