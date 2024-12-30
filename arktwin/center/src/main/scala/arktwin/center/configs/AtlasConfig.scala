@@ -28,11 +28,11 @@ object AtlasConfig:
     def validated(path: String): ValidatedNec[String, Culling]
 
   case class Broadcast() extends Culling:
-    def validated(path: String): ValidatedNec[String, Broadcast] =
+    override def validated(path: String): ValidatedNec[String, Broadcast] =
       valid(this)
 
   case class GridCulling(gridCellSize: Vector3Enu) extends Culling:
-    def validated(path: String): ValidatedNec[String, GridCulling] =
+    override def validated(path: String): ValidatedNec[String, GridCulling] =
       condNec(
         gridCellSize.x > 0 && gridCellSize.y > 0 && gridCellSize.z > 0,
         gridCellSize,

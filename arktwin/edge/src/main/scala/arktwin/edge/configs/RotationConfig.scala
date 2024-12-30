@@ -18,14 +18,14 @@ object RotationConfig:
     JsonDerivation.fixCoproductSchemaWithoutDiscriminator(Schema.derived)
 
 case object QuaternionConfig extends RotationConfig:
-  def validated(path: String): ValidatedNec[String, QuaternionConfig.type] =
+  override def validated(path: String): ValidatedNec[String, QuaternionConfig.type] =
     valid(this)
 
 case class EulerAnglesConfig(
     angleUnit: EulerAnglesConfig.AngleUnit,
     order: EulerAnglesConfig.Order
 ) extends RotationConfig:
-  def validated(path: String): ValidatedNec[String, EulerAnglesConfig] =
+  override def validated(path: String): ValidatedNec[String, EulerAnglesConfig] =
     valid(this)
 
 object EulerAnglesConfig:
