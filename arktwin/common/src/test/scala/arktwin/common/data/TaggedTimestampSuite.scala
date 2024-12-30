@@ -25,3 +25,6 @@ class TaggedTimestampSuite extends AnyFunSuite with Matchers:
     val t2: VirtualTimestamp = TaggedTimestamp.parse[VirtualTag]("9999-12-31T23:59:59.999999999Z")
     t2 - t1 shouldEqual VirtualDuration(315537897599L, 999999999)
     t1 - t2 shouldEqual VirtualDuration(-315537897599L, -999999999)
+
+    VirtualTimestamp(1, 2) < VirtualTimestamp(3, 4) shouldEqual true
+    MachineTimestamp(11, 2) > MachineTimestamp(33, 4) shouldEqual false

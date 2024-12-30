@@ -7,15 +7,21 @@ import scala.concurrent.duration.Duration as ScalaDuration
 type MachineDuration = TaggedDuration[MachineTag]
 object MachineDuration:
   inline def apply(seconds: Long, nanos: Int): MachineDuration =
-    TaggedDuration[MachineTag](seconds, nanos)
+    TaggedDuration.normalize[MachineTag](seconds, nanos)
 
 type VirtualDuration = TaggedDuration[VirtualTag]
 object VirtualDuration:
   inline def apply(seconds: Long, nanos: Int): VirtualDuration =
-    TaggedDuration[VirtualTag](seconds, nanos)
+    TaggedDuration.normalize[VirtualTag](seconds, nanos)
 
-case class TaggedDuration[T <: TimeTag](seconds: Long, nanos: Int):
+case class TaggedDuration[T <: TimeTag](seconds: Long, nanos: Int)
+    extends Ordered[TaggedDuration[T]]:
   import TaggedDuration.*
+
+  def compare(that: TaggedDuration[T]): Int =
+    val a = normalize(this)
+    val b = normalize(that)
+    summon[Ordering[(Long, Int)]].compare((a.seconds, a.nanos), (b.seconds, b.nanos))
 
   def untag: Duration =
     Duration(seconds, nanos)
@@ -82,8 +88,3 @@ object TaggedDuration:
   inline val nanosPerMicrosecond = 1000L
   inline val millisPerSecond = 1000L
   inline val microsPerSeconds = 1000000L
-
-  given [T <: TimeTag]: Ordering[TaggedDuration[T]] = Ordering.by((a: TaggedDuration[T]) =>
-    val d = TaggedDuration.normalize(a)
-    (d.seconds, d.nanos)
-  )

@@ -7,8 +7,6 @@ import kamon.Kamon
 import kamon.metric.MeasurementUnit
 import kamon.tag.TagSet
 
-import scala.math.Ordered.orderingToOrdered
-
 type MachineDurationHistogram = TaggedDurationHistogram[MachineTag]
 object MachineDurationHistogram:
   inline def apply(name: String, tagSet: TagSet): MachineDurationHistogram =

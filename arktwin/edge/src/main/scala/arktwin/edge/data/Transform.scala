@@ -8,8 +8,6 @@ import arktwin.common.data.Vector3EnuEx.*
 import arktwin.edge.configs.CoordinateConfig
 import sttp.tapir.Schema.annotations.description
 
-import scala.math.Ordered.orderingToOrdered
-
 @description(
   "Transformation of position vectors is applied in the order: Scale > Rotate > Translate"
 )

@@ -8,15 +8,21 @@ import java.time.{LocalDateTime, ZoneOffset, ZonedDateTime}
 type MachineTimestamp = TaggedTimestamp[MachineTag]
 object MachineTimestamp:
   inline def apply(seconds: Long, nanos: Int): MachineTimestamp =
-    TaggedTimestamp(seconds, nanos)
+    TaggedTimestamp.normalize(seconds, nanos)
 
 type VirtualTimestamp = TaggedTimestamp[VirtualTag]
 object VirtualTimestamp:
   inline def apply(seconds: Long, nanos: Int): VirtualTimestamp =
-    TaggedTimestamp(seconds, nanos)
+    TaggedTimestamp.normalize(seconds, nanos)
 
-case class TaggedTimestamp[T <: TimeTag](seconds: Long, nanos: Int):
+case class TaggedTimestamp[T <: TimeTag](seconds: Long, nanos: Int)
+    extends Ordered[TaggedTimestamp[T]]:
   import TaggedTimestamp.*
+
+  def compare(that: TaggedTimestamp[T]): Int =
+    val a = normalize(this)
+    val b = normalize(that)
+    summon[Ordering[(Long, Int)]].compare((a.seconds, a.nanos), (b.seconds, b.nanos))
 
   def untag: Timestamp =
     Timestamp(seconds, nanos)
@@ -74,8 +80,3 @@ object TaggedTimestamp:
     normalize(timestamp.seconds, timestamp.nanos)
 
   def minValue[T <: TimeTag]: TaggedTimestamp[T] = TaggedTimestamp(Long.MinValue, 0)
-
-  given [T <: TimeTag]: Ordering[TaggedTimestamp[T]] = Ordering.by((a: TaggedTimestamp[T]) =>
-    val n = TaggedTimestamp.normalize(a)
-    (n.seconds, n.nanos)
-  )

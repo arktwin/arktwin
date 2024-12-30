@@ -17,7 +17,6 @@ import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import org.apache.pekko.dispatch.ControlMessage
 
 import scala.collection.mutable
-import scala.math.Ordered.orderingToOrdered
 
 object Chart:
   type Message = Catch | Get | UpdateFirstAgents | CullingConfig | Nop.type

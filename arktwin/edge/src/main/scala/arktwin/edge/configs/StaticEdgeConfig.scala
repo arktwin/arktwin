@@ -2,9 +2,13 @@
 // Copyright 2024 TOYOTA MOTOR CORPORATION
 package arktwin.edge.configs
 
+import arktwin.center.services.CreateEdgeRequest
 import arktwin.common.LoggerConfigurator.LogLevel
+import cats.data.Validated.{condNec, invalidNec, valid}
+import cats.data.ValidatedNec
+import scalapb.validate.{Failure, Success, Validator}
 
-import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
 case class StaticEdgeConfig(
     edgeIdPrefix: String,
@@ -19,4 +23,59 @@ case class StaticEdgeConfig(
     clockInitialStashSize: Int,
     publishBatchSize: Int,
     publishBufferSize: Int
-)
+):
+  def validated(path: String): ValidatedNec[String, StaticEdgeConfig] =
+    import cats.syntax.apply.*
+    (
+      Validator[CreateEdgeRequest].validate(CreateEdgeRequest(edgeIdPrefix)) match
+        case Success => valid(edgeIdPrefix)
+        case Failure(violations) =>
+          invalidNec(
+            s"$path.edgeIdPrefix: " + violations
+              .map(_.reason)
+              .mkString(", ")
+          ),
+      condNec(
+        host.nonEmpty,
+        host,
+        s"$path.host must not be empty"
+      ),
+      condNec(
+        port > 0,
+        port,
+        s"$path.port must be > 0"
+      ),
+      valid(portAutoIncrement),
+      condNec(
+        portAutoIncrementMax >= 0,
+        portAutoIncrementMax,
+        s"$path.portAutoIncrementMax must be >= 0"
+      ),
+      valid(logLevel),
+      valid(logLevelColor),
+      condNec(
+        actorTimeout > 0.second,
+        actorTimeout,
+        s"$path.actorTimeout must be > 0"
+      ),
+      condNec(
+        endpointTimeout > 0.second,
+        endpointTimeout,
+        s"$path.endpointTimeout must be > 0"
+      ),
+      condNec(
+        clockInitialStashSize > 0,
+        clockInitialStashSize,
+        s"$path.clockInitialStashSize must be > 0"
+      ),
+      condNec(
+        publishBatchSize > 0,
+        publishBatchSize,
+        s"$path.publishBatchSize must be > 0"
+      ),
+      condNec(
+        publishBufferSize > 0,
+        publishBufferSize,
+        s"$path.publishBufferSize must be > 0"
+      )
+    ).mapN(StaticEdgeConfig.apply)

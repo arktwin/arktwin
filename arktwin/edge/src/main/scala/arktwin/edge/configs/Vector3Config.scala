@@ -3,6 +3,8 @@
 package arktwin.edge.configs
 
 import arktwin.common.data.Vector3Enu
+import cats.data.Validated.condNec
+import cats.data.ValidatedNec
 import pureconfig.ConfigReader
 import pureconfig.generic.derivation.EnumConfigReader
 
@@ -15,17 +17,18 @@ case class Vector3Config(
     y: Vector3Config.Direction,
     z: Vector3Config.Direction
 ):
-  import Vector3Config.Direction.*
+  def validated(path: String): ValidatedNec[String, Vector3Config] =
+    import Vector3Config.Direction.*
+    val sourceXyz = Seq(x, y, z)
+    condNec(
+      (sourceXyz.contains(East) || sourceXyz.contains(West)) &&
+        (sourceXyz.contains(North) || sourceXyz.contains(South)) &&
+        (sourceXyz.contains(Up) || sourceXyz.contains(Down)),
+      this,
+      s"$path.{x, y, z} must contain (East or West) and (North or South) and (Up or Down)"
+    )
 
   def toDirections: Seq[Vector3Config.Direction] = Seq(x, y, z)
-
-  // TODO validate
-  def assertXyz(): Unit =
-    val sourceXyz = Seq(x, y, z)
-
-    assert(sourceXyz.contains(Up) || sourceXyz.contains(Down))
-    assert(sourceXyz.contains(North) || sourceXyz.contains(South))
-    assert(sourceXyz.contains(East) || sourceXyz.contains(West))
 
 object Vector3Config:
   // TODO scale
