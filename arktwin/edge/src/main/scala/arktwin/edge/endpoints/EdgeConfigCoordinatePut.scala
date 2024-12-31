@@ -5,7 +5,11 @@ package arktwin.edge.endpoints
 import arktwin.common.data.TaggedTimestamp
 import arktwin.common.data.TimestampEx.*
 import arktwin.edge.actors.EdgeConfigurator
-import arktwin.edge.configs.{CoordinateConfig, EulerAnglesConfig, Vector3Config}
+import arktwin.edge.configs.AxisConfig.Direction
+import arktwin.edge.configs.CoordinateConfig.{LengthUnit, TimeUnit}
+import arktwin.edge.configs.EulerAnglesConfig.{AngleUnit, RotationOrder}
+import arktwin.edge.configs.{AxisConfig, CoordinateConfig, EulerAnglesConfig}
+import arktwin.edge.data.Vector3
 import arktwin.edge.util.JsonDerivation.given
 import arktwin.edge.util.{BadRequest, EdgeKamon, ErrorStatus}
 import cats.data.Validated.{Invalid, Valid}
@@ -28,17 +32,18 @@ object EdgeConfigCoordinatePut:
   given JsonValueCodec[Request] = JsonCodecMaker.makeWithoutDiscriminator
 
   val inExample: Request = Request(
-    Vector3Config(
-      Vector3Config.LengthUnit.Meter,
-      Vector3Config.TimeUnit.Second,
-      Vector3Config.Direction.East,
-      Vector3Config.Direction.North,
-      Vector3Config.Direction.Up
+    Vector3(0, 0, 0),
+    AxisConfig(
+      Direction.East,
+      Direction.North,
+      Direction.Up
     ),
     EulerAnglesConfig(
-      EulerAnglesConfig.AngleUnit.Degree,
-      EulerAnglesConfig.Order.XYZ
-    )
+      AngleUnit.Degree,
+      RotationOrder.XYZ
+    ),
+    LengthUnit.Meter,
+    TimeUnit.Second
   )
 
   val endpoint: PublicEndpoint[Request, ErrorStatus, Response, Any] =

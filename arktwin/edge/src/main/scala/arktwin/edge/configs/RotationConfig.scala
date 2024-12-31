@@ -9,6 +9,7 @@ import cats.data.ValidatedNec
 import pureconfig.ConfigReader
 import pureconfig.generic.derivation.EnumConfigReader
 import sttp.tapir.*
+import sttp.tapir.Schema.annotations.description
 
 sealed trait RotationConfig:
   def validated(path: String): ValidatedNec[String, RotationConfig]
@@ -22,8 +23,10 @@ case object QuaternionConfig extends RotationConfig:
     valid(this)
 
 case class EulerAnglesConfig(
+    @description("angle unit")
     angleUnit: EulerAnglesConfig.AngleUnit,
-    order: EulerAnglesConfig.Order
+    @description("rotation order")
+    rotationOrder: EulerAnglesConfig.RotationOrder
 ) extends RotationConfig:
   override def validated(path: String): ValidatedNec[String, EulerAnglesConfig] =
     valid(this)
@@ -34,7 +37,8 @@ object EulerAnglesConfig:
   object AngleUnit:
     given Schema[AngleUnit] = Schema.derivedEnumeration[AngleUnit](encode = Some(_.toString))
 
-  enum Order derives EnumConfigReader:
+  enum RotationOrder derives EnumConfigReader:
     case XYZ, XZY, YXZ, YZX, ZXY, ZYX
-  object Order:
-    given Schema[Order] = Schema.derivedEnumeration[Order](encode = Some(_.toString))
+  object RotationOrder:
+    given Schema[RotationOrder] =
+      Schema.derivedEnumeration[RotationOrder](encode = Some(_.toString))

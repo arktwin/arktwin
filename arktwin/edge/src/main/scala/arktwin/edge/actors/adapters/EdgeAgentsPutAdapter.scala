@@ -138,7 +138,7 @@ object EdgeAgentsPutAdapter:
           info.transform.map: transform =>
             agentId -> ChartAgent(
               agentId,
-              transform.toEnu(requestTime, previousAgents.get(agentId), coordinateConfig)
+              transform.normalize(requestTime, previousAgents.get(agentId), coordinateConfig)
             )
         parent ! Report(agents.view.mapValues(_.transform).toMap)
         chart ! Chart.UpdateFirstAgents(agents.values.toSeq)

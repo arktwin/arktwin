@@ -24,18 +24,19 @@ case class Transform(
     @description("It should be updated each time.")
     extra: Option[Map[String, String]]
 ):
-  def toEnu(
+  def normalize(
       timestamp: VirtualTimestamp,
       previousEnu: Option[TransformEnu],
       config: CoordinateConfig
   ): TransformEnu =
-    val localTranslationEnu = localTranslation.toEnu(config.vector3)
-    val localTranslationSpeedEnu = localTranslationSpeed
-      .map(_.toEnu(config.vector3))
+    val localTranslationEnuMeter =
+      (localTranslation - config.globalOrigin).normalize(config.axis) * config.lengthUnit.scale
+    val localTranslationSpeedEnuMps = localTranslationSpeed
+      .map(_.normalize(config.axis) * config.lengthUnit.scale / config.timeUnit.scale)
       .getOrElse(
         previousEnu match
           case Some(pEnu) if timestamp > pEnu.timestamp.tagVirtual =>
-            (localTranslationEnu - pEnu.localTranslationMeter) / (timestamp - pEnu.timestamp.tagVirtual).secondsDouble
+            (localTranslationEnuMeter - pEnu.localTranslationMeter) / (timestamp - pEnu.timestamp.tagVirtual).secondsDouble
           case _ =>
             Vector3Enu(0, 0, 0)
       )
@@ -43,20 +44,28 @@ case class Transform(
     TransformEnu(
       timestamp.untag,
       parentAgentId,
-      globalScale.toEnu(config.vector3),
-      localRotation.toQuaternionEnu(config.rotation),
-      localTranslationEnu,
-      localTranslationSpeedEnu,
+      globalScale.normalize(config.axis),
+      localRotation.normalize(config.rotation, config.axis),
+      localTranslationEnuMeter,
+      localTranslationSpeedEnuMps,
       extra.getOrElse(Map())
     )
 
 object Transform:
-  def fromEnu(a: TransformEnu, config: CoordinateConfig): Transform =
+  def apply(a: TransformEnu, config: CoordinateConfig): Transform =
     Transform(
       a.parentAgent,
-      Vector3.fromEnu(a.globalScale, config.vector3),
-      Rotation.fromQuaternionEnu(a.localRotation, config.rotation),
-      Vector3.fromEnu(a.localTranslationMeter, config.vector3),
-      Some(Vector3.fromEnu(a.localTranslationSpeedMps, config.vector3)),
+      Vector3(a.globalScale, config.axis),
+      Rotation(a.localRotation, config.rotation, config.axis),
+      (Vector3(
+        a.localTranslationMeter,
+        config.axis
+      ) / config.lengthUnit.scale) + config.globalOrigin,
+      Some(
+        Vector3(
+          a.localTranslationSpeedMps,
+          config.axis
+        ) / config.lengthUnit.scale * config.timeUnit.scale
+      ),
       if a.extra.nonEmpty then Some(a.extra) else None
     )

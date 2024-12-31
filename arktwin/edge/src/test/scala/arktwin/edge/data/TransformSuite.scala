@@ -3,8 +3,12 @@
 package arktwin.edge.data
 
 import arktwin.common.data.VirtualTimestamp
-import arktwin.edge.configs.EulerAnglesConfig.Order.*
-import arktwin.edge.configs.{CoordinateConfig, EulerAnglesConfig, QuaternionConfig, Vector3Config}
+import arktwin.edge.configs.AxisConfig.Direction.*
+import arktwin.edge.configs.CoordinateConfig.LengthUnit.*
+import arktwin.edge.configs.CoordinateConfig.TimeUnit.*
+import arktwin.edge.configs.EulerAnglesConfig.AngleUnit.*
+import arktwin.edge.configs.EulerAnglesConfig.RotationOrder.*
+import arktwin.edge.configs.{AxisConfig, CoordinateConfig, EulerAnglesConfig, QuaternionConfig}
 import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
@@ -14,7 +18,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
 
   given vector3Equality: Equality[Vector3] =
     case (a: Vector3, b: Vector3) =>
-      a.toDoubles.zip(b.toDoubles).forall(doubleEquality.areEqual.tupled)
+      Seq(a.x, a.y, a.z).zip(Seq(b.x, b.y, b.z)).forall(doubleEquality.areEqual.tupled)
     case _ =>
       false
 
@@ -28,75 +32,108 @@ class TransformSuite extends AnyFunSuite with Matchers:
     case _ =>
       false
 
+  given translationSpeedEquality: Equality[Option[Vector3]] =
+    case (Some(a), Some(b)) =>
+      vector3Equality.areEqual(a, b)
+    case (None, None) =>
+      true
+    case _ =>
+      false
+
   given transformEquality: Equality[Transform] =
     case (a: Transform, b: Transform) =>
       a.parentAgentId == b.parentAgentId &&
       vector3Equality.areEqual(a.globalScale, b.globalScale) &&
       rotationEquality.areEqual(a.localRotation, b.localRotation) &&
-      vector3Equality.areEqual(a.localTranslation, b.localTranslation)
-    // && vector3Equality.areEqual(a.localTranslationSpeed, b.localTranslationSpeed)
+      vector3Equality.areEqual(a.localTranslation, b.localTranslation) &&
+      translationSpeedEquality.areEqual(a.localTranslationSpeed, b.localTranslationSpeed)
     case _ =>
       false
 
-  // TODO test rotation matrix
-  // TODO test cases referring scipy.spatial.transform?
-  test("rotation"):
+  test("denormalizing value equals to the original value with the same config"):
     for
-      vector3Setting <-
-        import Vector3Config.Direction.*
-        import Vector3Config.LengthUnit.*
-        import Vector3Config.TimeUnit.*
-        // TODO all patterns (1*6*8)
+      axisConfig <-
         Seq(
-          Vector3Config(Meter, Second, East, North, Up),
-          Vector3Config(Meter, Second, North, East, Down)
+          AxisConfig(East, North, Up),
+          AxisConfig(North, East, Down),
+          AxisConfig(South, Up, West)
         )
-      order <- Seq(XYZ, XZY, YXZ, YZX, ZXY, ZYX)
+      angleUnit <- Seq(Degree, Radian)
+      order <- Seq(XYZ, YZX, ZYX)
+      lengthUnit <- Seq(Meter, Kilometer)
+      timeUnit <- Seq(Second, Minute)
     do
-      import EulerAnglesConfig.AngleUnit.*
-      val setting = CoordinateConfig(vector3Setting, EulerAnglesConfig(Degree, order))
-      val t = Transform(
-        None,
-        Vector3(1, 1, 1),
-        EulerAngles(10, 20, 30),
-        Vector3(1, 2, 3),
-        None,
-        None
+      val config = CoordinateConfig(
+        Vector3(1.1, 2.2, 3.3),
+        axisConfig,
+        EulerAnglesConfig(angleUnit, order),
+        lengthUnit,
+        timeUnit
       )
-      Transform.fromEnu(t.toEnu(VirtualTimestamp(0, 0), None, setting), setting) shouldEqual t
-
-    for
-      transformSetting <-
-        import Vector3Config.Direction.*
-        import Vector3Config.LengthUnit.*
-        import Vector3Config.TimeUnit.*
-        // TODO all patterns (1*6*8)
-        Seq(
-          Vector3Config(Meter, Second, East, North, Up),
-          Vector3Config(Meter, Second, North, East, Down)
-        )
-      order <- Seq(XYZ, XZY, YXZ, YZX, ZXY, ZYX)
-    do
-      import EulerAnglesConfig.AngleUnit.*
-      val setting = CoordinateConfig(transformSetting, EulerAnglesConfig(Radian, order))
       val t = Transform(
         None,
         Vector3(1, 1, 1),
         EulerAngles(0.1, 0.2, 0.3),
-        Vector3(1, 2, 3),
-        None,
+        Vector3(1.2, 3.4, 5.6),
+        Some(Vector3(9.8, 7.6, 5.4)),
         None
       )
-      Transform.fromEnu(t.toEnu(VirtualTimestamp(0, 0), None, setting), setting) shouldEqual t
+      withClue(
+        s"axisConfig: $axisConfig, angleUnit: $angleUnit, order: $order, lengthUnit: $lengthUnit, timeUnit: $timeUnit"
+      ) {
+        Transform(t.normalize(VirtualTimestamp(0, 0), None, config), config) shouldEqual t
+      }
 
-  test("permutation"):
-    import Vector3Config.Direction.*
-    import Vector3Config.LengthUnit.*
-    import Vector3Config.TimeUnit.*
+    for
+      axisConfig <-
+        Seq(
+          AxisConfig(East, North, Up),
+          AxisConfig(North, East, Down),
+          AxisConfig(South, Up, West)
+        )
+      angleUnit <- Seq(Degree, Radian)
+      order <- Seq(XYZ, YZX, ZYX)
+      lengthUnit <- Seq(Meter, Kilometer)
+      timeUnit <- Seq(Second, Minute)
+    do
+      val config = CoordinateConfig(
+        Vector3(1.1, 2.2, 3.3),
+        axisConfig,
+        QuaternionConfig,
+        lengthUnit,
+        timeUnit
+      )
+      val t = Transform(
+        None,
+        Vector3(1, 1, 1),
+        Quaternion(0.1, 0.2, 0.3, 0.4),
+        Vector3(1.2, 3.4, 5.6),
+        Some(Vector3(9.8, 7.6, 5.4)),
+        None
+      )
+      withClue(
+        s"axisConfig: $axisConfig, angleUnit: $angleUnit, order: $order, lengthUnit: $lengthUnit, timeUnit: $timeUnit"
+      ) {
+        Transform(t.normalize(VirtualTimestamp(0, 0), None, config), config) shouldEqual t
+      }
+
+  test("axis permutation"):
     val sourceSetting =
-      CoordinateConfig(Vector3Config(Meter, Second, East, North, Up), QuaternionConfig)
+      CoordinateConfig(
+        Vector3(0, 0, 0),
+        AxisConfig(East, North, Up),
+        QuaternionConfig,
+        Meter,
+        Second
+      )
     val targetSetting =
-      CoordinateConfig(Vector3Config(Meter, Second, North, East, Down), QuaternionConfig)
+      CoordinateConfig(
+        Vector3(0, 0, 0),
+        AxisConfig(North, East, Down),
+        QuaternionConfig,
+        Meter,
+        Second
+      )
     val t = Transform(
       None,
       Vector3(1, 1, 1),
@@ -105,6 +142,9 @@ class TransformSuite extends AnyFunSuite with Matchers:
       None,
       None
     )
-    Transform
-      .fromEnu(t.toEnu(VirtualTimestamp(0, 0), None, sourceSetting), targetSetting)
-      .localTranslation shouldEqual Vector3(2, 1, -3)
+    Transform(
+      t.normalize(VirtualTimestamp(0, 0), None, sourceSetting),
+      targetSetting
+    ).localTranslation shouldEqual Vector3(2, 1, -3)
+
+  // TODO test cases referring scipy.spatial.transform?
