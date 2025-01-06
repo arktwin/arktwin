@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2024 TOYOTA MOTOR CORPORATION
+// Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.util
 
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
