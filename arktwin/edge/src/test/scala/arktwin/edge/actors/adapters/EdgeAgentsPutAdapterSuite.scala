@@ -30,8 +30,7 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
     val clock = testKit.spawn[Clock.Get](Behaviors.receiveMessage:
       case Clock.Get(replyTo) =>
         replyTo ! clockReadQueue.dequeue()
-        Behaviors.same
-    )
+        Behaviors.same)
     val adapter =
       testKit.spawn(
         EdgeAgentsPutAdapter(

@@ -23,8 +23,7 @@ object LoggerConfigurator:
         case LogLevel.Error   => Level.Error
         case LogLevel.Warning => Level.Warn
         case LogLevel.Info    => Level.Info
-        case LogLevel.Debug   => Level.Debug
-      )
+        case LogLevel.Debug   => Level.Debug)
       .clearHandlers()
       .withHandler(
         handle = SynchronousLogHandle,
