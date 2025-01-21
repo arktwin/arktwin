@@ -29,7 +29,7 @@ object EdgeConfigCoordinatePutScenario:
       |    }
       |  },
       |  "lengthUnit": "Millimeter",
-      |  "timeUnit": "Minute"
+      |  "speedUnit": "KilometerPerHour"
       |}""".stripMargin.filterNot(_.isWhitespace)
 
     scenario(getClass.getSimpleName)

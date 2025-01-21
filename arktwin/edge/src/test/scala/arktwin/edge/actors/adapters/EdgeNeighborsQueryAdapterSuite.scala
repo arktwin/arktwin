@@ -10,7 +10,7 @@ import arktwin.edge.actors.sinks.Chart.CullingAgent
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
 import arktwin.edge.configs.AxisConfig.Direction.{East, North, Up}
 import arktwin.edge.configs.CoordinateConfig.LengthUnit.Meter
-import arktwin.edge.configs.CoordinateConfig.TimeUnit.Second
+import arktwin.edge.configs.CoordinateConfig.SpeedUnit.MeterPerSecond
 import arktwin.edge.configs.EulerAnglesConfig.AngleUnit.Degree
 import arktwin.edge.configs.EulerAnglesConfig.RotationOrder.XYZ
 import arktwin.edge.configs.{AxisConfig, CoordinateConfig, EulerAnglesConfig}
@@ -60,7 +60,7 @@ class EdgeNeighborsQueryAdapterSuite extends ActorTestBase:
       AxisConfig(East, North, Up),
       EulerAnglesConfig(Degree, XYZ),
       Meter,
-      Second
+      MeterPerSecond
     )
 
     chartReadQueue += Seq(

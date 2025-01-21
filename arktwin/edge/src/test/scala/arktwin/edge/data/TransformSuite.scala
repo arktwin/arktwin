@@ -5,7 +5,7 @@ package arktwin.edge.data
 import arktwin.common.data.VirtualTimestamp
 import arktwin.edge.configs.AxisConfig.Direction.*
 import arktwin.edge.configs.CoordinateConfig.LengthUnit.*
-import arktwin.edge.configs.CoordinateConfig.TimeUnit.*
+import arktwin.edge.configs.CoordinateConfig.SpeedUnit.*
 import arktwin.edge.configs.EulerAnglesConfig.AngleUnit.*
 import arktwin.edge.configs.EulerAnglesConfig.RotationOrder.*
 import arktwin.edge.configs.{AxisConfig, CoordinateConfig, EulerAnglesConfig, QuaternionConfig}
@@ -61,14 +61,14 @@ class TransformSuite extends AnyFunSuite with Matchers:
       angleUnit <- Seq(Degree, Radian)
       order <- Seq(XYZ, YZX, ZYX)
       lengthUnit <- Seq(Meter, Kilometer)
-      timeUnit <- Seq(Second, Minute)
+      speedUnit <- Seq(MeterPerSecond, MillimeterPerMinute, KilometerPerHour)
     do
       val config = CoordinateConfig(
         Vector3(1.1, 2.2, 3.3),
         axisConfig,
         EulerAnglesConfig(angleUnit, order),
         lengthUnit,
-        timeUnit
+        speedUnit
       )
       val t = Transform(
         None,
@@ -79,7 +79,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
         None
       )
       withClue(
-        s"axisConfig: $axisConfig, angleUnit: $angleUnit, order: $order, lengthUnit: $lengthUnit, timeUnit: $timeUnit"
+        s"axisConfig: $axisConfig, angleUnit: $angleUnit, order: $order, lengthUnit: $lengthUnit, speedUnit: $speedUnit"
       ) {
         Transform(t.normalize(VirtualTimestamp(0, 0), None, config), config) shouldEqual t
       }
@@ -94,14 +94,14 @@ class TransformSuite extends AnyFunSuite with Matchers:
       angleUnit <- Seq(Degree, Radian)
       order <- Seq(XYZ, YZX, ZYX)
       lengthUnit <- Seq(Meter, Kilometer)
-      timeUnit <- Seq(Second, Minute)
+      speedUnit <- Seq(MeterPerSecond, MillimeterPerMinute, KilometerPerHour)
     do
       val config = CoordinateConfig(
         Vector3(1.1, 2.2, 3.3),
         axisConfig,
         QuaternionConfig,
         lengthUnit,
-        timeUnit
+        speedUnit
       )
       val t = Transform(
         None,
@@ -112,7 +112,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
         None
       )
       withClue(
-        s"axisConfig: $axisConfig, angleUnit: $angleUnit, order: $order, lengthUnit: $lengthUnit, timeUnit: $timeUnit"
+        s"axisConfig: $axisConfig, angleUnit: $angleUnit, order: $order, lengthUnit: $lengthUnit, speedUnit: $speedUnit"
       ) {
         Transform(t.normalize(VirtualTimestamp(0, 0), None, config), config) shouldEqual t
       }
@@ -124,7 +124,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
         AxisConfig(East, North, Up),
         QuaternionConfig,
         Meter,
-        Second
+        MeterPerSecond
       )
     val targetSetting =
       CoordinateConfig(
@@ -132,7 +132,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
         AxisConfig(North, East, Down),
         QuaternionConfig,
         Meter,
-        Second
+        MeterPerSecond
       )
     val t = Transform(
       None,

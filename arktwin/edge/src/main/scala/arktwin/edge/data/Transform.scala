@@ -32,7 +32,7 @@ case class Transform(
     val localTranslationEnuMeter =
       (localTranslation - config.globalOrigin).normalize(config.axis) * config.lengthUnit.scale
     val localTranslationSpeedEnuMps = localTranslationSpeed
-      .map(_.normalize(config.axis) * config.lengthUnit.scale / config.timeUnit.scale)
+      .map(_.normalize(config.axis) * config.speedUnit.scale)
       .getOrElse(
         previousEnu match
           case Some(pEnu) if timestamp > pEnu.timestamp.tagVirtual =>
@@ -65,7 +65,7 @@ object Transform:
         Vector3(
           a.localTranslationSpeedMps,
           config.axis
-        ) / config.lengthUnit.scale * config.timeUnit.scale
+        ) / config.speedUnit.scale
       ),
       if a.extra.nonEmpty then Some(a.extra) else None
     )

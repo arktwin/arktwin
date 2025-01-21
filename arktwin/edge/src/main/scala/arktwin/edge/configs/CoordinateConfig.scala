@@ -17,8 +17,8 @@ case class CoordinateConfig(
     rotation: RotationConfig,
     @description("length unit")
     lengthUnit: CoordinateConfig.LengthUnit,
-    @description("time unit")
-    timeUnit: CoordinateConfig.TimeUnit
+    @description("speed unit")
+    speedUnit: CoordinateConfig.SpeedUnit
 ):
   def validated(path: String): ValidatedNec[String, CoordinateConfig] =
     import cats.syntax.apply.*
@@ -27,7 +27,7 @@ case class CoordinateConfig(
       axis.validated(s"$path.axis"),
       rotation.validated(s"$path.rotation"),
       valid(lengthUnit),
-      valid(timeUnit)
+      valid(speedUnit)
     ).mapN(CoordinateConfig.apply)
 
 object CoordinateConfig:
@@ -37,7 +37,18 @@ object CoordinateConfig:
     case Meter extends LengthUnit(1)
     case Kilometer extends LengthUnit(1e3)
 
-  enum TimeUnit(val scale: Double) derives EnumConfigReader:
-    case Second extends TimeUnit(1)
-    case Minute extends TimeUnit(60)
-    case Hour extends TimeUnit(3600)
+  enum SpeedUnit(val scale: Double) derives EnumConfigReader:
+    case MillimeterPerSecond extends SpeedUnit(1e-3)
+    case CentimeterPerSecond extends SpeedUnit(1e-2)
+    case MeterPerSecond extends SpeedUnit(1)
+    case KilometerPerSecond extends SpeedUnit(1e3)
+
+    case MillimeterPerMinute extends SpeedUnit(1e-3 / 60.0)
+    case CentimeterPerMinute extends SpeedUnit(1e-2 / 60.0)
+    case MeterPerMinute extends SpeedUnit(1 / 60.0)
+    case KilometerPerMinute extends SpeedUnit(1e3 / 60.0)
+
+    case MillimeterPerHour extends SpeedUnit(1e-3 / 3600.0)
+    case CentimeterPerHour extends SpeedUnit(1e-2 / 3600.0)
+    case MeterPerHour extends SpeedUnit(1 / 3600.0)
+    case KilometerPerHour extends SpeedUnit(1e3 / 3600.0)

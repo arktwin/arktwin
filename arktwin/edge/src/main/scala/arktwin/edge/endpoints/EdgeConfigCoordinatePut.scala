@@ -6,7 +6,7 @@ import arktwin.common.data.TaggedTimestamp
 import arktwin.common.data.TimestampEx.*
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.AxisConfig.Direction
-import arktwin.edge.configs.CoordinateConfig.{LengthUnit, TimeUnit}
+import arktwin.edge.configs.CoordinateConfig.{LengthUnit, SpeedUnit}
 import arktwin.edge.configs.EulerAnglesConfig.{AngleUnit, RotationOrder}
 import arktwin.edge.configs.{AxisConfig, CoordinateConfig, EulerAnglesConfig}
 import arktwin.edge.data.Vector3
@@ -43,7 +43,7 @@ object EdgeConfigCoordinatePut:
       RotationOrder.XYZ
     ),
     LengthUnit.Meter,
-    TimeUnit.Second
+    SpeedUnit.MeterPerSecond
   )
 
   val endpoint: PublicEndpoint[Request, ErrorStatus, Response, Any] =

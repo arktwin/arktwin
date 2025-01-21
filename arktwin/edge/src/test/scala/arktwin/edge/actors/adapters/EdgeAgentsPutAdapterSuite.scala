@@ -8,7 +8,7 @@ import arktwin.edge.actors.adapters.EdgeAgentsPutAdapter.*
 import arktwin.edge.actors.sinks.{Chart, Clock}
 import arktwin.edge.configs.AxisConfig.Direction.{East, North, Up}
 import arktwin.edge.configs.CoordinateConfig.LengthUnit.Meter
-import arktwin.edge.configs.CoordinateConfig.TimeUnit.Second
+import arktwin.edge.configs.CoordinateConfig.SpeedUnit.MeterPerSecond
 import arktwin.edge.configs.{AxisConfig, CoordinateConfig, QuaternionConfig}
 import arktwin.edge.connectors.{ChartConnector, RegisterConnector}
 import arktwin.edge.data.*
@@ -50,7 +50,7 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
       AxisConfig(East, North, Up),
       QuaternionConfig,
       Meter,
-      Second
+      MeterPerSecond
     )
     clockReadQueue += ClockBase(Timestamp(0, 0), Timestamp(0, 0), 1)
     adapter ! Put(
