@@ -31,20 +31,17 @@ class EdgeNeighborsQueryAdapterSuite extends ActorTestBase:
     val chart = testKit.spawn[Chart.Get](Behaviors.receiveMessage:
       case Chart.Get(replyTo) =>
         replyTo ! Chart.ReadReply(chartReadQueue.dequeue())
-        Behaviors.same
-    )
+        Behaviors.same)
     val clockReadQueue = mutable.Queue[ClockBase]()
     val clock = testKit.spawn[Clock.Get](Behaviors.receiveMessage:
       case Clock.Get(replyTo) =>
         replyTo ! clockReadQueue.dequeue()
-        Behaviors.same
-    )
+        Behaviors.same)
     val registerReadQueue = mutable.Queue[Map[String, RegisterAgent]]()
     val register = testKit.spawn[Register.Get](Behaviors.receiveMessage:
       case Register.Get(replyTo) =>
         replyTo ! Register.ReadReply(registerReadQueue.dequeue())
-        Behaviors.same
-    )
+        Behaviors.same)
     val adapter =
       testKit.spawn(
         EdgeNeighborsQueryAdapter(

@@ -169,8 +169,7 @@ object EdgeNeighborsQueryAdapter:
                 )
           .pipe(request.neighborsNumber match
             case Some(n) => _.take(n)
-            case None    => identity
-          )
+            case None    => identity)
           .toSeq
 
         val agents = recognizedAgents.map(_._1).toSet
