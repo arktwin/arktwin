@@ -26,17 +26,23 @@ jobs:
       # check before automatic execution at compile time
       - name: sbt scalafixAll --check
         working-directory: arktwin
-        run: sbt "scalafixAll --check"
+        run: |
+          sbt reset .
+          sbt "scalafixAll --check"
 
       # check before automatic execution at compile time
       - name: sbt scalafmtCheckAll
         working-directory: arktwin
-        run: sbt scalafmtCheckAll
+        run: |
+          sbt reset .
+          sbt scalafmtCheckAll
 
       # check before automatic execution at compile time
       - name: sbt headerCheck
         working-directory: arktwin
-        run: sbt center/headerCheck center/Test/headerCheck common/headerCheck common/Test/headerCheck e2e/Test/headerCheck edge/headerCheck edge/Test/headerCheck
+        run: |
+          sbt reset .
+          sbt center/headerCheck center/Test/headerCheck common/headerCheck common/Test/headerCheck e2e/Test/headerCheck edge/headerCheck edge/Test/headerCheck
 
       - name: sbt test
         working-directory: arktwin
