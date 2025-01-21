@@ -73,8 +73,7 @@ object Chart:
       case Get(actorRef) =>
         actorRef ! ReadReply(orderedAgents.toSeq.map:
           case ((dist, _), agent) =>
-            CullingAgent(agent, Some(dist).filter(_.isFinite))
-        )
+            CullingAgent(agent, Some(dist).filter(_.isFinite)))
         Behaviors.same
 
       case UpdateFirstAgents(newFirstAgents) =>
