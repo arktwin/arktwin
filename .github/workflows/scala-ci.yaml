@@ -119,8 +119,10 @@ jobs:
         run: |
           sbt "edge/run generate-openapi-center ../temp/arktwin-center-head.yaml" "edge/run generate-openapi-edge ../temp/arktwin-edge-head.yaml"
           git switch main
+          git reset .
           sbt clean "edge/run generate-openapi-center ../temp/arktwin-center-main.yaml" "edge/run generate-openapi-edge ../temp/arktwin-edge-main.yaml"
-          git checkout $(git tag -l "v*" --sort=-v:refname | head -n 1)
+          git switch --detach $(git tag -l "v*" --sort=-v:refname | head -n 1)
+          git reset .
           sbt clean "edge/run generate-openapi-center ../temp/arktwin-center-release.yaml" "edge/run generate-openapi-edge ../temp/arktwin-edge-release.yaml"
 
       - name: Generate /api/center changelog from main
