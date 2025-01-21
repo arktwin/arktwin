@@ -8,6 +8,8 @@ import cats.data.ValidatedNec
 import com.typesafe.config.Config
 import pureconfig.*
 import pureconfig.error.ConfigReaderFailures
+import pureconfig.generic.semiauto.deriveReader
+import pureconfig.generic.{FieldCoproductHint, ProductHint}
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -40,6 +42,16 @@ object EdgeConfig:
       )
 
   def loadOrThrow(): EdgeConfig =
+    given [A]: ProductHint[A] = ProductHint[A](
+      ConfigFieldMapping(CamelCase, CamelCase),
+      useDefaultArgs = false,
+      allowUnknownKeys = true
+    )
+    given fieldCoproductHint[T]: FieldCoproductHint[T] =
+      new FieldCoproductHint[T]("type"):
+        override def fieldValue(name: String): String = name
+    given ConfigReader[EdgeConfig] = deriveReader
+
     val path = "arktwin.edge"
     configSource.at(path).loadOrThrow[EdgeConfig].validated(path) match
       case Invalid(errors) =>
