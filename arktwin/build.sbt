@@ -72,6 +72,7 @@ lazy val common = (project in file("common"))
     headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
       "com.github.pureconfig" %% "pureconfig-core" % pureConfigVersion,
+      "com.github.pureconfig" %% "pureconfig-generic-scala3" % pureConfigVersion,
       "com.outr" %% "scribe" % scribeVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-core" % tapirVersion,
       "com.thesamet.scalapb" %% "scalapb-validate-core" % scalapb.validate.compiler.BuildInfo.version % "protobuf",
@@ -106,6 +107,7 @@ lazy val center = (project in file("center"))
     headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
       "com.github.pureconfig" %% "pureconfig-core" % pureConfigVersion,
+      "com.github.pureconfig" %% "pureconfig-generic-scala3" % pureConfigVersion,
       "com.outr" %% "scribe" % scribeVersion,
       "com.outr" %% "scribe-slf4j2" % scribeVersion,
       // kamon-prometheus depends on okio with module name problems via okhttp
