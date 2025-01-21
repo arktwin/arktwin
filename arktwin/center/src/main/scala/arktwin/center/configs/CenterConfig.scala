@@ -9,6 +9,8 @@ import cats.data.ValidatedNec
 import com.typesafe.config.Config
 import pureconfig.*
 import pureconfig.error.ConfigReaderFailures
+import pureconfig.generic.semiauto.deriveReader
+import pureconfig.generic.{FieldCoproductHint, ProductHint}
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -41,6 +43,16 @@ object CenterConfig:
       )
 
   def loadOrThrow(): CenterConfig =
+    given [A]: ProductHint[A] = ProductHint[A](
+      ConfigFieldMapping(CamelCase, CamelCase),
+      useDefaultArgs = false,
+      allowUnknownKeys = true
+    )
+    given fieldCoproductHint[T]: FieldCoproductHint[T] =
+      new FieldCoproductHint[T]("type"):
+        override def fieldValue(name: String): String = name
+    given ConfigReader[CenterConfig] = deriveReader
+
     val path = "arktwin.center"
     configSource.at(path).loadOrThrow[CenterConfig].validated(path) match
       case Invalid(errors) =>
