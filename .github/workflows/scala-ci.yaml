@@ -27,21 +27,21 @@ jobs:
       - name: sbt scalafixAll --check
         working-directory: arktwin
         run: |
-          sbt reset .
+          git reset .
           sbt "scalafixAll --check"
 
       # check before automatic execution at compile time
       - name: sbt scalafmtCheckAll
         working-directory: arktwin
         run: |
-          sbt reset .
+          git reset .
           sbt scalafmtCheckAll
 
       # check before automatic execution at compile time
       - name: sbt headerCheck
         working-directory: arktwin
         run: |
-          sbt reset .
+          git reset .
           sbt center/headerCheck center/Test/headerCheck common/headerCheck common/Test/headerCheck e2e/Test/headerCheck edge/headerCheck edge/Test/headerCheck
 
       - name: sbt test
