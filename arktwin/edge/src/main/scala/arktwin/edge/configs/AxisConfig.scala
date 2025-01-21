@@ -2,11 +2,11 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.configs
 
+import arktwin.common.EnumConfigIdentityReader
 import arktwin.common.data.Vector3Enu
 import cats.data.Validated.condNec
 import cats.data.ValidatedNec
 import pureconfig.ConfigReader
-import pureconfig.generic.derivation.EnumConfigReader
 import sttp.tapir.Schema.annotations.description
 
 // cf. https://en.wikipedia.org/wiki/Local_tangent_plane_coordinates
@@ -44,7 +44,7 @@ case class AxisConfig(
     )
 
 object AxisConfig:
-  enum Direction(val enu: Vector3Enu) derives EnumConfigReader:
+  enum Direction(val enu: Vector3Enu) derives EnumConfigIdentityReader:
     case East extends Direction(Vector3Enu(1, 0, 0))
     case West extends Direction(Vector3Enu(-1, 0, 0))
     case North extends Direction(Vector3Enu(0, 1, 0))

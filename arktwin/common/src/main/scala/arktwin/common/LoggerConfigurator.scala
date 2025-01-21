@@ -11,6 +11,7 @@ import scribe.output.{Color, ColoredOutput, TextOutput}
 import scribe.{Level, Logger}
 
 object LoggerConfigurator:
+  // TODO derives arktwin.common.EnumConfigIdentityReader
   enum LogLevel derives EnumConfigReader:
     // Align with Pekko log levels
     // see org.apache.pekko.event.Logging.levelFor

@@ -2,12 +2,12 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.configs
 
+import arktwin.common.EnumConfigIdentityReader
 import arktwin.common.data.QuaternionEnuEx.*
 import arktwin.edge.util.JsonDerivation
 import cats.data.Validated.valid
 import cats.data.ValidatedNec
 import pureconfig.ConfigReader
-import pureconfig.generic.derivation.EnumConfigReader
 import sttp.tapir.*
 import sttp.tapir.Schema.annotations.description
 
@@ -32,12 +32,12 @@ case class EulerAnglesConfig(
     valid(this)
 
 object EulerAnglesConfig:
-  enum AngleUnit derives EnumConfigReader:
+  enum AngleUnit derives EnumConfigIdentityReader:
     case Degree, Radian
   object AngleUnit:
     given Schema[AngleUnit] = Schema.derivedEnumeration[AngleUnit](encode = Some(_.toString))
 
-  enum RotationOrder derives EnumConfigReader:
+  enum RotationOrder derives EnumConfigIdentityReader:
     case XYZ, XZY, YXZ, YZX, ZXY, ZYX
   object RotationOrder:
     given Schema[RotationOrder] =
