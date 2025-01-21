@@ -27,21 +27,21 @@ jobs:
       - name: sbt scalafixAll --check
         working-directory: arktwin
         run: |
-          git reset .
+          git restore .
           sbt "scalafixAll --check"
 
       # check before automatic execution at compile time
       - name: sbt scalafmtCheckAll
         working-directory: arktwin
         run: |
-          git reset .
+          git restore .
           sbt scalafmtCheckAll
 
       # check before automatic execution at compile time
       - name: sbt headerCheck
         working-directory: arktwin
         run: |
-          git reset .
+          git restore .
           sbt center/headerCheck center/Test/headerCheck common/headerCheck common/Test/headerCheck e2e/Test/headerCheck edge/headerCheck edge/Test/headerCheck
 
       - name: sbt test
@@ -125,10 +125,10 @@ jobs:
         run: |
           sbt "edge/run generate-openapi-center ../temp/arktwin-center-head.yaml" "edge/run generate-openapi-edge ../temp/arktwin-edge-head.yaml"
           git switch main
-          git reset .
+          git restore .
           sbt clean "edge/run generate-openapi-center ../temp/arktwin-center-main.yaml" "edge/run generate-openapi-edge ../temp/arktwin-edge-main.yaml"
           git switch --detach $(git tag -l "v*" --sort=-v:refname | head -n 1)
-          git reset .
+          git restore .
           sbt clean "edge/run generate-openapi-center ../temp/arktwin-center-release.yaml" "edge/run generate-openapi-edge ../temp/arktwin-edge-release.yaml"
 
       - name: Generate /api/center changelog from main
