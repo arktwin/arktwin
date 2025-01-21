@@ -124,11 +124,11 @@ jobs:
         working-directory: arktwin
         run: |
           sbt "edge/run generate-openapi-center ../temp/arktwin-center-head.yaml" "edge/run generate-openapi-edge ../temp/arktwin-edge-head.yaml"
+          git restore .
           git switch main
-          git restore .
           sbt clean "edge/run generate-openapi-center ../temp/arktwin-center-main.yaml" "edge/run generate-openapi-edge ../temp/arktwin-edge-main.yaml"
-          git switch --detach $(git tag -l "v*" --sort=-v:refname | head -n 1)
           git restore .
+          git switch --detach $(git tag -l "v*" --sort=-v:refname | head -n 1)
           sbt clean "edge/run generate-openapi-center ../temp/arktwin-center-release.yaml" "edge/run generate-openapi-edge ../temp/arktwin-edge-release.yaml"
 
       - name: Generate /api/center changelog from main
