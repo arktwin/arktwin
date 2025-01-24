@@ -14,11 +14,11 @@ object VirtualDuration:
   inline def apply(seconds: Long, nanos: Int): VirtualDuration =
     TaggedDuration.normalize[VirtualTag](seconds, nanos)
 
-case class TaggedDuration[T <: TimeTag](seconds: Long, nanos: Int)
-    extends Ordered[TaggedDuration[T]]:
+case class TaggedDuration[A <: TimeTag](seconds: Long, nanos: Int)
+    extends Ordered[TaggedDuration[A]]:
   import TaggedDuration.*
 
-  override def compare(that: TaggedDuration[T]): Int =
+  override def compare(that: TaggedDuration[A]): Int =
     val a = normalize(this)
     val b = normalize(that)
     summon[Ordering[(Long, Int)]].compare((a.seconds, a.nanos), (b.seconds, b.nanos))
@@ -35,35 +35,35 @@ case class TaggedDuration[T <: TimeTag](seconds: Long, nanos: Int)
   def millisLong: Long =
     seconds * millisPerSecond + (nanos / nanosPerMillisecond)
 
-  def +(that: TaggedDuration[T]): TaggedDuration[T] =
+  def +(that: TaggedDuration[A]): TaggedDuration[A] =
     normalize(
       math.addExact(seconds, that.seconds),
       nanos.toLong + that.nanos
     )
 
-  def -(that: TaggedDuration[T]): TaggedDuration[T] =
+  def -(that: TaggedDuration[A]): TaggedDuration[A] =
     normalize(
       math.subtractExact(seconds, that.seconds),
       nanos.toLong - that.nanos
     )
 
-  def /(that: TaggedDuration[T]): Double =
+  def /(that: TaggedDuration[A]): Double =
     secondsDouble / that.secondsDouble
 
-  def *(that: Double): TaggedDuration[T] =
+  def *(that: Double): TaggedDuration[A] =
     fromSecondsDouble(secondsDouble * that)
 
-  def /(that: Double): TaggedDuration[T] =
+  def /(that: Double): TaggedDuration[A] =
     fromSecondsDouble(secondsDouble / that)
 
 object TaggedDuration:
-  def from[T <: TimeTag](value: Duration): TaggedDuration[T] =
+  def from[A <: TimeTag](value: Duration): TaggedDuration[A] =
     normalize(value.seconds, value.nanos)
 
-  def from[T <: TimeTag](value: ScalaDuration): TaggedDuration[T] =
+  def from[A <: TimeTag](value: ScalaDuration): TaggedDuration[A] =
     normalize(0, value.toNanos)
 
-  def normalize[T <: TimeTag](seconds: Long, nanos: Long): TaggedDuration[T] =
+  def normalize[A <: TimeTag](seconds: Long, nanos: Long): TaggedDuration[A] =
     var s = seconds
     var n = nanos
     if n <= -nanosPerSecond || n >= nanosPerSecond then
@@ -77,10 +77,10 @@ object TaggedDuration:
       n = (n - nanosPerSecond).toInt // no overflow since positive nanos is subtracted
     TaggedDuration(s, n.toInt)
 
-  def normalize[T <: TimeTag](duration: TaggedDuration[T]): TaggedDuration[T] =
+  def normalize[A <: TimeTag](duration: TaggedDuration[A]): TaggedDuration[A] =
     normalize(duration.seconds, duration.nanos)
 
-  def fromSecondsDouble[T <: TimeTag](seconds: Double): TaggedDuration[T] =
+  def fromSecondsDouble[A <: TimeTag](seconds: Double): TaggedDuration[A] =
     normalize(seconds.toLong, math.round((seconds % 1) * nanosPerSecond).toInt)
 
   inline val nanosPerSecond = 1000000000L
