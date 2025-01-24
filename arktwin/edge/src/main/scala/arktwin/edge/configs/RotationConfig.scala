@@ -25,7 +25,9 @@ case object QuaternionConfig extends RotationConfig:
 case class EulerAnglesConfig(
     @description("angle unit")
     angleUnit: EulerAnglesConfig.AngleUnit,
-    @description("rotation order: For example, XYZ means rotate around X axis first, then Y axis, and finally Z axis")
+    @description(
+      "rotation order: For example, XYZ means rotate around X axis first, then Y axis, and finally Z axis"
+    )
     rotationOrder: EulerAnglesConfig.RotationOrder
 ) extends RotationConfig:
   override def validated(path: String): ValidatedNec[String, EulerAnglesConfig] =
