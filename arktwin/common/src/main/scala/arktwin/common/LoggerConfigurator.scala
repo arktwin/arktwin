@@ -9,6 +9,7 @@ import scribe.handler.SynchronousLogHandle
 import scribe.mdc.MDC
 import scribe.output.{Color, ColoredOutput, TextOutput}
 import scribe.{Level, Logger}
+import sttp.tapir.Schema
 
 object LoggerConfigurator:
   // TODO derives arktwin.common.EnumConfigIdentityReader
@@ -16,6 +17,8 @@ object LoggerConfigurator:
     // Align with Pekko log levels
     // see org.apache.pekko.event.Logging.levelFor
     case Error, Warning, Info, Debug
+  object LogLevel:
+    given Schema[LogLevel] = Schema.derivedEnumeration[LogLevel](encode = Some(_.toString))
 
   def init(minimumLevel: LogLevel, logLevelColor: Boolean): Unit =
     scribe.Logger.root

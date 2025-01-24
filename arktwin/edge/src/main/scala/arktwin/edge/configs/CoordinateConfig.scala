@@ -6,6 +6,7 @@ import arktwin.common.EnumConfigIdentityReader
 import arktwin.edge.data.Vector3
 import cats.data.Validated.valid
 import cats.data.ValidatedNec
+import sttp.tapir.Schema
 import sttp.tapir.Schema.annotations.description
 
 case class CoordinateConfig(
@@ -36,6 +37,8 @@ object CoordinateConfig:
     case Centimeter extends LengthUnit(1e-2)
     case Meter extends LengthUnit(1)
     case Kilometer extends LengthUnit(1e3)
+  object LengthUnit:
+    given Schema[LengthUnit] = Schema.derivedEnumeration[LengthUnit](encode = Some(_.toString))
 
   enum SpeedUnit(val scale: Double) derives EnumConfigIdentityReader:
     case MillimeterPerSecond extends SpeedUnit(1e-3)
@@ -52,3 +55,5 @@ object CoordinateConfig:
     case CentimeterPerHour extends SpeedUnit(1e-2 / 3600.0)
     case MeterPerHour extends SpeedUnit(1 / 3600.0)
     case KilometerPerHour extends SpeedUnit(1e3 / 3600.0)
+  object SpeedUnit:
+    given Schema[SpeedUnit] = Schema.derivedEnumeration[SpeedUnit](encode = Some(_.toString))

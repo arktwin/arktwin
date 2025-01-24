@@ -8,7 +8,7 @@ import arktwin.edge.util.JsonDerivation
 import cats.data.Validated.valid
 import cats.data.ValidatedNec
 import pureconfig.ConfigReader
-import sttp.tapir.*
+import sttp.tapir.Schema
 import sttp.tapir.Schema.annotations.description
 
 sealed trait RotationConfig:

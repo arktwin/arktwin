@@ -7,6 +7,7 @@ import arktwin.common.data.Vector3Enu
 import cats.data.Validated.condNec
 import cats.data.ValidatedNec
 import pureconfig.ConfigReader
+import sttp.tapir.Schema
 import sttp.tapir.Schema.annotations.description
 
 // cf. https://en.wikipedia.org/wiki/Local_tangent_plane_coordinates
@@ -51,3 +52,5 @@ object AxisConfig:
     case South extends Direction(Vector3Enu(0, -1, 0))
     case Up extends Direction(Vector3Enu(0, 0, 1))
     case Down extends Direction(Vector3Enu(0, 0, -1))
+  object Direction:
+    given Schema[Direction] = Schema.derivedEnumeration[Direction](encode = Some(_.toString))
