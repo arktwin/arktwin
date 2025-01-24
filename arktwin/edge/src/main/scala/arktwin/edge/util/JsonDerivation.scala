@@ -55,11 +55,11 @@ object JsonDerivation extends SchemaDerivation:
   given schemaFiniteDuration: Schema[FiniteDuration] = Schema.string
 
   given codecFiniteDuration: JsonValueCodec[FiniteDuration] = new JsonValueCodec[FiniteDuration]:
-    val nullValue: FiniteDuration = null
+    override val nullValue: FiniteDuration = null
 
-    def encodeValue(x: FiniteDuration, out: JsonWriter): Unit = out.writeVal(x.toString())
+    override def encodeValue(x: FiniteDuration, out: JsonWriter): Unit = out.writeVal(x.toString())
 
-    def decodeValue(in: JsonReader, default: FiniteDuration): FiniteDuration =
+    override def decodeValue(in: JsonReader, default: FiniteDuration): FiniteDuration =
       val s = in.readString(null)
       try
         Duration(s) match

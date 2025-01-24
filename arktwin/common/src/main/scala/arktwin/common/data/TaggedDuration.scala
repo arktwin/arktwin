@@ -18,7 +18,7 @@ case class TaggedDuration[T <: TimeTag](seconds: Long, nanos: Int)
     extends Ordered[TaggedDuration[T]]:
   import TaggedDuration.*
 
-  def compare(that: TaggedDuration[T]): Int =
+  override def compare(that: TaggedDuration[T]): Int =
     val a = normalize(this)
     val b = normalize(that)
     summon[Ordering[(Long, Int)]].compare((a.seconds, a.nanos), (b.seconds, b.nanos))

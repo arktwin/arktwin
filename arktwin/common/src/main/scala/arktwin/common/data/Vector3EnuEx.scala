@@ -17,5 +17,3 @@ object Vector3EnuEx:
       val dy = a.y - that.y
       val dz = a.z - that.z
       math.sqrt(dx * dx + dy * dy + dz * dz)
-
-    def toDoubles: Seq[Double] = Seq(a.x, a.y, a.z)

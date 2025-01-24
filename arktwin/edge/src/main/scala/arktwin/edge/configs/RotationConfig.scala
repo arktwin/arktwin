@@ -2,13 +2,14 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.configs
 
+import arktwin.common.EnumConfigIdentityReader
 import arktwin.common.data.QuaternionEnuEx.*
 import arktwin.edge.util.JsonDerivation
 import cats.data.Validated.valid
 import cats.data.ValidatedNec
 import pureconfig.ConfigReader
-import pureconfig.generic.derivation.EnumConfigReader
-import sttp.tapir.*
+import sttp.tapir.Schema
+import sttp.tapir.Schema.annotations.description
 
 sealed trait RotationConfig:
   def validated(path: String): ValidatedNec[String, RotationConfig]
@@ -18,23 +19,28 @@ object RotationConfig:
     JsonDerivation.fixCoproductSchemaWithoutDiscriminator(Schema.derived)
 
 case object QuaternionConfig extends RotationConfig:
-  def validated(path: String): ValidatedNec[String, QuaternionConfig.type] =
+  override def validated(path: String): ValidatedNec[String, QuaternionConfig.type] =
     valid(this)
 
 case class EulerAnglesConfig(
+    @description("angle unit")
     angleUnit: EulerAnglesConfig.AngleUnit,
-    order: EulerAnglesConfig.Order
+    @description(
+      "rotation order: For example, XYZ means rotate around X axis first, then Y axis, and finally Z axis"
+    )
+    rotationOrder: EulerAnglesConfig.RotationOrder
 ) extends RotationConfig:
-  def validated(path: String): ValidatedNec[String, EulerAnglesConfig] =
+  override def validated(path: String): ValidatedNec[String, EulerAnglesConfig] =
     valid(this)
 
 object EulerAnglesConfig:
-  enum AngleUnit derives EnumConfigReader:
+  enum AngleUnit derives EnumConfigIdentityReader:
     case Degree, Radian
   object AngleUnit:
     given Schema[AngleUnit] = Schema.derivedEnumeration[AngleUnit](encode = Some(_.toString))
 
-  enum Order derives EnumConfigReader:
+  enum RotationOrder derives EnumConfigIdentityReader:
     case XYZ, XZY, YXZ, YZX, ZXY, ZYX
-  object Order:
-    given Schema[Order] = Schema.derivedEnumeration[Order](encode = Some(_.toString))
+  object RotationOrder:
+    given Schema[RotationOrder] =
+      Schema.derivedEnumeration[RotationOrder](encode = Some(_.toString))

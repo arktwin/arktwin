@@ -43,13 +43,12 @@ object EdgeConfig:
 
   def loadOrThrow(): EdgeConfig =
     given [A]: ProductHint[A] = ProductHint[A](
-      ConfigFieldMapping(CamelCase, CamelCase),
+      ConfigFieldMapping(identity),
       useDefaultArgs = false,
       allowUnknownKeys = true
     )
-    given fieldCoproductHint[T]: FieldCoproductHint[T] =
-      new FieldCoproductHint[T]("type"):
-        override def fieldValue(name: String): String = name
+    given [A]: FieldCoproductHint[A] = new FieldCoproductHint[A]("type"):
+      override def fieldValue(name: String): String = name
     given ConfigReader[EdgeConfig] = deriveReader
 
     val path = "arktwin.edge"

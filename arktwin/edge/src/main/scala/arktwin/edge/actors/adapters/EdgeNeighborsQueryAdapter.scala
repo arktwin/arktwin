@@ -153,7 +153,7 @@ object EdgeNeighborsQueryAdapter:
                 )
                 agent.agent.agentId -> ResponseAgent(
                   Some(
-                    Transform.fromEnu(
+                    Transform(
                       agent.agent.transform.extrapolate(requestTime),
                       coordinateConfig
                     )

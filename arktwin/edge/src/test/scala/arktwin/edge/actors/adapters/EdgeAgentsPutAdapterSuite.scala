@@ -6,10 +6,10 @@ import arktwin.center.services.{ChartAgent, ClockBase}
 import arktwin.common.data.*
 import arktwin.edge.actors.adapters.EdgeAgentsPutAdapter.*
 import arktwin.edge.actors.sinks.{Chart, Clock}
-import arktwin.edge.configs.Vector3Config.Direction.{East, North, Up}
-import arktwin.edge.configs.Vector3Config.LengthUnit.Meter
-import arktwin.edge.configs.Vector3Config.TimeUnit.Second
-import arktwin.edge.configs.{CoordinateConfig, QuaternionConfig, Vector3Config}
+import arktwin.edge.configs.AxisConfig.Direction.{East, North, Up}
+import arktwin.edge.configs.CoordinateConfig.LengthUnit.Meter
+import arktwin.edge.configs.CoordinateConfig.SpeedUnit.MeterPerSecond
+import arktwin.edge.configs.{AxisConfig, CoordinateConfig, QuaternionConfig}
 import arktwin.edge.connectors.{ChartConnector, RegisterConnector}
 import arktwin.edge.data.*
 import arktwin.edge.endpoints.EdgeAgentsPut.{Request, Response}
@@ -45,7 +45,13 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
       )
     val endpoint = testKit.createTestProbe[Either[ErrorStatus, Response]]()
 
-    adapter ! CoordinateConfig(Vector3Config(Meter, Second, East, North, Up), QuaternionConfig)
+    adapter ! CoordinateConfig(
+      Vector3(0, 0, 0),
+      AxisConfig(East, North, Up),
+      QuaternionConfig,
+      Meter,
+      MeterPerSecond
+    )
     clockReadQueue += ClockBase(Timestamp(0, 0), Timestamp(0, 0), 1)
     adapter ! Put(
       Request(

@@ -35,18 +35,18 @@ object ClockConfig:
       def validated(path: String): ValidatedNec[String, InitialTime]
 
     case class Absolute(absolute: VirtualTimestamp) extends InitialTime:
-      def validated(path: String): ValidatedNec[String, Absolute] =
+      override def validated(path: String): ValidatedNec[String, Absolute] =
         valid(this)
 
     case class Relative(relative: VirtualDuration) extends InitialTime:
-      def validated(path: String): ValidatedNec[String, Relative] =
+      override def validated(path: String): ValidatedNec[String, Relative] =
         valid(this)
 
     sealed trait Condition:
       def validated(path: String): ValidatedNec[String, Condition]
 
     case class Schedule(schedule: MachineDuration) extends Condition:
-      def validated(path: String): ValidatedNec[String, Schedule] =
+      override def validated(path: String): ValidatedNec[String, Schedule] =
         condNec(
           schedule >= MachineDuration(0, 0),
           schedule,

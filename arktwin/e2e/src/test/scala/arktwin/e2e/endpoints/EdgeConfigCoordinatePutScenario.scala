@@ -12,19 +12,24 @@ object EdgeConfigCoordinatePutScenario:
   val builder: ScenarioBuilder =
     val coordinateConfig =
       """{
-      |  "vector3": {
-      |    "lengthUnit": "Meter",
-      |    "speedUnit": "Second",
-      |    "x": "East",
-      |    "y": "North",
-      |    "z": "Down"
+      |  "globalOrigin": {
+      |    "x": 1.1,
+      |    "y": 2.3,
+      |    "z": 4.5
+      |  },
+      |  "axis": {
+      |    "xDirection": "North",
+      |    "yDirection": "East",
+      |    "zDirection": "Down"
       |  },
       |  "rotation": {
       |    "EulerAnglesConfig": {
       |      "angleUnit": "Degree",
-      |      "order": "XYZ"
+      |      "rotationOrder": "ZXY"
       |    }
-      |  }
+      |  },
+      |  "lengthUnit": "Millimeter",
+      |  "speedUnit": "KilometerPerHour"
       |}""".stripMargin.filterNot(_.isWhitespace)
 
     scenario(getClass.getSimpleName)
