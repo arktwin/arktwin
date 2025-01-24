@@ -16,7 +16,7 @@ object JsonDerivation extends SchemaDerivation:
   private def shortNameFrom(sName: SName): String = sName.fullName.split('.').last
 
   // fix tapir coproduct schema to match jsoniter-scala codec without discriminator
-  def fixCoproductSchemaWithoutDiscriminator[T](originalSchema: Schema[T]): Schema[T] =
+  def fixCoproductSchemaWithoutDiscriminator[A](originalSchema: Schema[A]): Schema[A] =
     originalSchema.schemaType match
       case SCoproduct(childSchemas, _) =>
         var enumStrings = List[String]()
@@ -33,7 +33,7 @@ object JsonDerivation extends SchemaDerivation:
             val shortName = shortNameFrom(sName)
             Some(
               Schema(
-                SProduct[T](
+                SProduct[A](
                   List(SProductField(FieldName(shortName, shortName), childSchema, _ => None))
                 )
               )

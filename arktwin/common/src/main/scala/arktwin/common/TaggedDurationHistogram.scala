@@ -17,16 +17,16 @@ object VirtualDurationHistogram:
   inline def apply(name: String, tagSet: TagSet): VirtualDurationHistogram =
     TaggedDurationHistogram[VirtualTag](name, tagSet)
 
-class TaggedDurationHistogram[T <: TimeTag](name: String, tagSet: TagSet):
+class TaggedDurationHistogram[A <: TimeTag](name: String, tagSet: TagSet):
   private val histogram =
     Kamon.histogram(name, MeasurementUnit.time.milliseconds).withTags(tagSet)
 
-  def record(duration: TaggedDuration[T]): Unit =
-    if duration > TaggedDuration[T](0, 0)
+  def record(duration: TaggedDuration[A]): Unit =
+    if duration > TaggedDuration[A](0, 0)
     then histogram.record(duration.millisLong)
     else histogram.record(0)
 
-  def record(duration: TaggedDuration[T], num: Int): Unit =
-    if duration > TaggedDuration[T](0, 0)
+  def record(duration: TaggedDuration[A], num: Int): Unit =
+    if duration > TaggedDuration[A](0, 0)
     then histogram.record(duration.millisLong, num)
     else histogram.record(0, num)

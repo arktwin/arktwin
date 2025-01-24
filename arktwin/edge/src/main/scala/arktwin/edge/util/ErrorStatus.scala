@@ -32,7 +32,7 @@ object ErrorStatus:
     given JsonValueCodec[ServiceUnavailable] = JsonCodecMaker.makeWithoutDiscriminator
     oneOfVariant(StatusCode.ServiceUnavailable, jsonBody[ServiceUnavailable])
 
-  def handleFailure[T]: PartialFunction[Throwable, Either[ErrorStatus, T]] =
+  def handleFailure[A]: PartialFunction[Throwable, Either[ErrorStatus, A]] =
     case throwable =>
       logger.warn("Internal Server Error", throwable)
       Left(InternalServerError(recursiveCauses(List(throwable)).map(_.getMessage).reverse))
