@@ -5,6 +5,7 @@ package arktwin.edge.endpoints
 import arktwin.center.services.{AdminClient, UpdateClockSpeedRequest}
 import arktwin.common.data.TaggedTimestamp
 import arktwin.common.data.TimestampEx.*
+import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.JsonDerivation.given
 import arktwin.edge.util.{EdgeKamon, ErrorStatus, RequestValidator}
 import cats.implicits.toTraverseOps
@@ -46,7 +47,7 @@ object CenterClockSpeedPut:
     val processMachineTimeHistogram = kamon.restProcessMachineTimeHistogram(endpoint.showShort)
 
     PekkoHttpServerInterpreter().toRoute:
-      endpoint.serverLogic: request =>
+      endpoint.serverLogicWithLog: request =>
         val requestTime = TaggedTimestamp.machineNow()
         RequestValidator(request)
           .map(client.updateClockSpeed(_).map(_ => {}))

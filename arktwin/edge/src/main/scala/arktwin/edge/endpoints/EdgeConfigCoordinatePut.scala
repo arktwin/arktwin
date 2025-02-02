@@ -10,6 +10,7 @@ import arktwin.edge.configs.CoordinateConfig.{LengthUnit, SpeedUnit}
 import arktwin.edge.configs.EulerAnglesConfig.{AngleUnit, RotationOrder}
 import arktwin.edge.configs.{AxisConfig, CoordinateConfig, EulerAnglesConfig}
 import arktwin.edge.data.Vector3
+import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.JsonDerivation.given
 import arktwin.edge.util.{BadRequest, EdgeKamon, ErrorStatus}
 import cats.data.Validated.{Invalid, Valid}
@@ -65,14 +66,14 @@ object EdgeConfigCoordinatePut:
     val processMachineTimeHistogram = kamon.restProcessMachineTimeHistogram(endpoint.showShort)
 
     PekkoHttpServerInterpreter().toRoute:
-      endpoint.serverLogic: request =>
+      endpoint.serverLogicWithLog: request =>
         val requestTime = TaggedTimestamp.machineNow()
         (request.validated("") match
           case Invalid(errors) =>
             Future.successful(Left(BadRequest(errors.toChain.toVector)))
           case Valid(request) =>
             configurator ! request
-            Future.successful(Right(()): Either[ErrorStatus, Response])
+            Future.successful(Right[ErrorStatus, Response](()))
         ).andThen: _ =>
           requestNumCounter.increment()
           processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)

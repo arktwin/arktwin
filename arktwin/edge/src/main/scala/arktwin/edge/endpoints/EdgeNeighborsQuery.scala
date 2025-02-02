@@ -7,6 +7,7 @@ import arktwin.common.data.{TaggedTimestamp, VirtualTimestamp}
 import arktwin.edge.actors.adapters.EdgeNeighborsQueryAdapter
 import arktwin.edge.configs.StaticEdgeConfig
 import arktwin.edge.data.*
+import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.JsonDerivation.given
 import arktwin.edge.util.{EdgeKamon, ErrorStatus}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
@@ -92,7 +93,7 @@ object EdgeNeighborsQuery:
 
     given Timeout = staticConfig.endpointTimeout
     PekkoHttpServerInterpreter().toRoute:
-      endpoint.serverLogic: request =>
+      endpoint.serverLogicWithLog: request =>
         val requestTime = TaggedTimestamp.machineNow()
         adapter
           .?[Either[ErrorStatus, Response]](EdgeNeighborsQueryAdapter.Query(request, _))

@@ -7,6 +7,7 @@ import arktwin.common.data.TaggedTimestamp
 import arktwin.common.data.TimestampEx.*
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.{DynamicEdgeConfig, EdgeConfig, StaticEdgeConfig}
+import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.JsonDerivation.given
 import arktwin.edge.util.{EdgeKamon, ErrorStatus}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
@@ -73,7 +74,7 @@ object EdgeConfigGet:
 
     given Timeout = staticConfig.endpointTimeout
     PekkoHttpServerInterpreter().toRoute:
-      endpoint.serverLogic: _ =>
+      endpoint.serverLogicWithLog: _ =>
         val requestTime = TaggedTimestamp.machineNow()
         (configurator ? EdgeConfigurator.Get.apply)
           .map(Right[ErrorStatus, EdgeConfig].apply)

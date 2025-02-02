@@ -6,6 +6,7 @@ import arktwin.center.services
 import arktwin.center.services.{CreateAgentRequest, CreateAgentResponse, RegisterClient}
 import arktwin.common.data.TaggedTimestamp
 import arktwin.common.data.TimestampEx.*
+import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.JsonDerivation.given
 import arktwin.edge.util.{EdgeKamon, ErrorStatus, RequestValidator}
 import cats.implicits.toTraverseOps
@@ -65,7 +66,7 @@ object EdgeAgentsPost:
     val processMachineTimeHistogram = kamon.restProcessMachineTimeHistogram(endpoint.showShort)
 
     PekkoHttpServerInterpreter().toRoute:
-      endpoint.serverLogic: requests =>
+      endpoint.serverLogicWithLog: requests =>
         val requestTime = TaggedTimestamp.machineNow()
         RequestValidator(services.CreateAgentsRequest(requests))
           .map(client.createAgents)
