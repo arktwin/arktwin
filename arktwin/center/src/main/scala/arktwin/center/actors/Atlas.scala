@@ -6,7 +6,7 @@ import arktwin.center.actors.ChartRecorder.ChartRecord
 import arktwin.center.configs.AtlasConfig
 import arktwin.center.util.CenterKamon
 import arktwin.center.util.CommonMessages.Timeout
-import arktwin.common.MailboxConfig
+import arktwin.common.util.MailboxConfig
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}

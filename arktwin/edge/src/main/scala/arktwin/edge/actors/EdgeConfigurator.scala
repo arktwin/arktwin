@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.actors
 
-import arktwin.common.MailboxConfig
+import arktwin.common.util.MailboxConfig
 import arktwin.edge.configs.{CoordinateConfig, CullingConfig, EdgeConfig}
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.{Receptionist, ServiceKey}

@@ -3,10 +3,10 @@
 package arktwin.center.services
 
 import arktwin.common.data.*
-import arktwin.common.data.DurationEx.*
-import arktwin.common.data.TimestampEx.*
+import arktwin.common.data.DurationExtensions.*
+import arktwin.common.data.TimestampExtensions.*
 
-object ClockBaseEx:
+object ClockBaseExtensions:
   extension (a: ClockBase)
     def fromMachine(machineTimestamp: MachineTimestamp): VirtualTimestamp =
       a.baseTimestamp.tagVirtual +

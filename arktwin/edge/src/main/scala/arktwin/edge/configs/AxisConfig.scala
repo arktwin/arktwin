@@ -2,8 +2,8 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.configs
 
-import arktwin.common.EnumConfigIdentityReader
 import arktwin.common.data.Vector3Enu
+import arktwin.common.util.EnumConfigIdentityReader
 import cats.data.Validated.condNec
 import cats.data.ValidatedNec
 import pureconfig.ConfigReader

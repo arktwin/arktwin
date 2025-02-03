@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.endpoints
 
-import arktwin.common.data.TimestampEx.*
+import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.data.{TaggedTimestamp, VirtualTimestamp}
 import arktwin.edge.actors.adapters.EdgeNeighborsQueryAdapter
 import arktwin.edge.configs.StaticEdgeConfig

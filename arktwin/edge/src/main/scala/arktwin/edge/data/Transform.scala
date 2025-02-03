@@ -3,8 +3,8 @@
 package arktwin.edge.data
 
 import arktwin.common.data.*
-import arktwin.common.data.TimestampEx.*
-import arktwin.common.data.Vector3EnuEx.*
+import arktwin.common.data.TimestampExtensions.*
+import arktwin.common.data.Vector3EnuExtensions.*
 import arktwin.edge.configs.CoordinateConfig
 import sttp.tapir.Schema.annotations.description
 

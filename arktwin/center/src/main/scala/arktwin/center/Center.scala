@@ -6,7 +6,7 @@ import arktwin.center.actors.{Clock, Register, *}
 import arktwin.center.configs.CenterConfig
 import arktwin.center.services.*
 import arktwin.center.util.{CenterKamon, CenterReporter}
-import arktwin.common.LoggerConfigurator
+import arktwin.common.util.LoggerConfigurator
 import buildinfo.BuildInfo
 import kamon.Kamon
 import kamon.prometheus.PrometheusReporter

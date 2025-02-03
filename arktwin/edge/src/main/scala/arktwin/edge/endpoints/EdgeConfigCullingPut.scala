@@ -3,7 +3,7 @@
 package arktwin.edge.endpoints
 
 import arktwin.common.data.TaggedTimestamp
-import arktwin.common.data.TimestampEx.*
+import arktwin.common.data.TimestampExtensions.*
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.CullingConfig
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog

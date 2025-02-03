@@ -3,7 +3,7 @@
 package arktwin.edge.connectors
 
 import arktwin.center.services.{RegisterAgentUpdated, RegisterAgentsPublish, RegisterClient}
-import arktwin.common.GrpcHeaderKey
+import arktwin.common.util.GrpcHeaderKey
 import arktwin.edge.actors.sinks.Register
 import arktwin.edge.configs.StaticEdgeConfig
 import arktwin.edge.util.CommonMessages.Nop
