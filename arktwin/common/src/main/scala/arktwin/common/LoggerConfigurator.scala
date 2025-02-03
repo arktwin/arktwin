@@ -2,32 +2,29 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.common
 
-import pureconfig.generic.derivation.EnumConfigReader
+import arktwin.common.EnumConfigIdentityReader
 import scribe.format.FormatBlock
 import scribe.format.FormatBlock.Level.PaddedRight
 import scribe.handler.SynchronousLogHandle
-import scribe.mdc.MDC
 import scribe.output.{Color, ColoredOutput, TextOutput}
 import scribe.{Level, Logger}
 import sttp.tapir.Schema
 
 object LoggerConfigurator:
-  // TODO derives arktwin.common.EnumConfigIdentityReader
-  enum LogLevel derives EnumConfigReader:
-    // Align with Pekko log levels
-    // see org.apache.pekko.event.Logging.levelFor
-    case Error, Warning, Info, Debug
+  enum LogLevel derives EnumConfigIdentityReader:
+    case Error, Warning, Info, Debug, Trace
   object LogLevel:
     given Schema[LogLevel] = Schema.derivedEnumeration[LogLevel](encode = Some(_.toString))
 
-  def init(minimumLevel: LogLevel, logLevelColor: Boolean): Unit =
+  def init(minimumLevel: LogLevel, logLevelColor: Boolean, logSuppressionList: Seq[String]): Unit =
     scribe.Logger.root
       .clearModifiers()
       .withMinimumLevel(minimumLevel match
         case LogLevel.Error   => Level.Error
         case LogLevel.Warning => Level.Warn
         case LogLevel.Info    => Level.Info
-        case LogLevel.Debug   => Level.Debug)
+        case LogLevel.Debug   => Level.Debug
+        case LogLevel.Trace   => Level.Trace)
       .clearHandlers()
       .withHandler(
         handle = SynchronousLogHandle,
@@ -39,16 +36,25 @@ object LoggerConfigurator:
       )
       .replace()
 
-  def coloredLevelPaddedRight: FormatBlock = FormatBlock: logRecord =>
+    for logSuppressionClass <- logSuppressionList do
+      scribe
+        .Logger(logSuppressionClass)
+        .orphan()
+        .clearHandlers()
+        .clearModifiers()
+        .replace()
+
+  private def coloredLevelPaddedRight: FormatBlock = FormatBlock: logRecord =>
     val output = PaddedRight.format(logRecord)
     logRecord.level match
       case Level.Warn  => ColoredOutput(Color.Yellow, output)
       case Level.Error => ColoredOutput(Color.Red, output)
       case _           => output
 
-  def logSource: FormatBlock = FormatBlock: logRecord =>
-    MDC.get("pekkoSource") match
-      case Some(value) =>
-        TextOutput(value.toString)
-      case None =>
-        TextOutput(logRecord.className + logRecord.methodName.map("." + _).getOrElse(""))
+  private def logSource: FormatBlock = FormatBlock: logRecord =>
+    val fileLine = logRecord.fileName + logRecord.line.map(":" + _).getOrElse("")
+    TextOutput(
+      logRecord.className +
+        logRecord.methodName.map("." + _).getOrElse("") +
+        (if fileLine.isEmpty then "" else s" ($fileLine)")
+    )

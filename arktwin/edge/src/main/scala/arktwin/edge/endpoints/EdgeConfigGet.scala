@@ -43,6 +43,7 @@ object EdgeConfigGet:
       portAutoIncrementMax = 100,
       logLevel = LogLevel.Info,
       logLevelColor = true,
+      logSuppressionList = Seq(),
       actorTimeout = 90.milliseconds,
       endpointTimeout = 100.milliseconds,
       clockInitialStashSize = 100,

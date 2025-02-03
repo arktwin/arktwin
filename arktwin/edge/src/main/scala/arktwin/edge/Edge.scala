@@ -82,7 +82,11 @@ object Edge:
       val config = EdgeConfig.loadOrThrow()
       val rawConfig = EdgeConfig.loadRawOrThrow()
 
-      LoggerConfigurator.init(config.static.logLevel, config.static.logLevelColor)
+      LoggerConfigurator.init(
+        config.static.logLevel,
+        config.static.logLevelColor,
+        config.static.logSuppressionList
+      )
 
       given actorSystem: ActorSystem[SpawnProtocol.Command] = ActorSystem(
         Behaviors.setup[SpawnProtocol.Command](_ => SpawnProtocol()),
@@ -112,7 +116,11 @@ object Edge:
       val config = EdgeConfig.loadOrThrow()
       val rawConfig = EdgeConfig.loadRawOrThrow()
 
-      LoggerConfigurator.init(config.static.logLevel, config.static.logLevelColor)
+      LoggerConfigurator.init(
+        config.static.logLevel,
+        config.static.logLevelColor,
+        config.static.logSuppressionList
+      )
       Kamon.init(rawConfig)
 
       given actorSystem: ActorSystem[SpawnProtocol.Command] = ActorSystem(
