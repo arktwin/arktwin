@@ -4,7 +4,7 @@ package arktwin.center.actors
 
 import arktwin.center.services.*
 import arktwin.center.util.CommonMessages.Nop
-import arktwin.common.MailboxConfig
+import arktwin.common.util.MailboxConfig
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}

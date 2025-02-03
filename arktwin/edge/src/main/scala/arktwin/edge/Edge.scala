@@ -3,7 +3,7 @@
 package arktwin.edge
 
 import arktwin.center.services.*
-import arktwin.common.LoggerConfigurator
+import arktwin.common.util.LoggerConfigurator
 import arktwin.edge.actors.adapters.*
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
 import arktwin.edge.actors.{DeadLetterListener, EdgeConfigurator}

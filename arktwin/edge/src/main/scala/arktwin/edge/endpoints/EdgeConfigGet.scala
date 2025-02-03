@@ -2,9 +2,9 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.endpoints
 
-import arktwin.common.LoggerConfigurator.LogLevel
 import arktwin.common.data.TaggedTimestamp
 import arktwin.common.data.TimestampExtensions.*
+import arktwin.common.util.LoggerConfigurator.LogLevel
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.{DynamicEdgeConfig, EdgeConfig, StaticEdgeConfig}
 import arktwin.edge.util.JsonDerivation.given

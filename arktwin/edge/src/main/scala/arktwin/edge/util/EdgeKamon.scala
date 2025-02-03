@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.util
 
-import arktwin.common.{MachineDurationHistogram, VirtualDurationHistogram}
+import arktwin.common.util.{MachineDurationHistogram, VirtualDurationHistogram}
 import kamon.Kamon
 import kamon.metric.Counter
 import kamon.tag.TagSet

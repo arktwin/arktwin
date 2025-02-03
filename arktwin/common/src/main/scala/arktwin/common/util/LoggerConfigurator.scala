@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
-package arktwin.common
+package arktwin.common.util
 
 import pureconfig.generic.derivation.EnumConfigReader
 import scribe.format.FormatBlock
@@ -12,7 +12,7 @@ import scribe.{Level, Logger}
 import sttp.tapir.Schema
 
 object LoggerConfigurator:
-  // TODO derives arktwin.common.EnumConfigIdentityReader
+  // TODO derives arktwin.common.util.EnumConfigIdentityReader
   enum LogLevel derives EnumConfigReader:
     // Align with Pekko log levels
     // see org.apache.pekko.event.Logging.levelFor

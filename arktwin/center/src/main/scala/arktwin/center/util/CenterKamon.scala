@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.center.util
 
-import arktwin.common.MachineDurationHistogram
+import arktwin.common.util.MachineDurationHistogram
 import kamon.Kamon
 import kamon.metric.Counter
 import kamon.tag.TagSet

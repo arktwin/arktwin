@@ -6,7 +6,7 @@ import arktwin.center.services.ClockBaseExtensions.*
 import arktwin.center.services.{ChartAgent, ClockBase, RegisterAgentUpdated}
 import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.data.{MachineTimestamp, TransformEnu}
-import arktwin.common.{MailboxConfig, VirtualDurationHistogram}
+import arktwin.common.util.{MailboxConfig, VirtualDurationHistogram}
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.sinks.{Chart, Clock}
 import arktwin.edge.configs.{CoordinateConfig, StaticEdgeConfig}

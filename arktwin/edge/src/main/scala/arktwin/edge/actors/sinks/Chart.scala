@@ -3,10 +3,10 @@
 package arktwin.edge.actors.sinks
 
 import arktwin.center.services.ChartAgent
-import arktwin.common.MailboxConfig
 import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.data.Vector3EnuExtensions.*
 import arktwin.common.data.{TaggedTimestamp, VirtualTag}
+import arktwin.common.util.MailboxConfig
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.CullingConfig
 import arktwin.edge.util.CommonMessages.Nop
