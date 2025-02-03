@@ -3,7 +3,7 @@
 package arktwin.edge.configs
 
 import arktwin.common.EnumConfigIdentityReader
-import arktwin.common.data.QuaternionEnuEx.*
+import arktwin.common.data.QuaternionEnuExtensions.*
 import arktwin.edge.util.JsonDerivation
 import cats.data.Validated.valid
 import cats.data.ValidatedNec

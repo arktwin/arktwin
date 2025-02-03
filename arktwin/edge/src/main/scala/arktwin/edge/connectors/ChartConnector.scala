@@ -4,7 +4,7 @@ package arktwin.edge.connectors
 
 import arktwin.center.services.{ChartAgent, ChartClient, ChartPublishBatch}
 import arktwin.common.GrpcHeaderKey
-import arktwin.common.data.TimestampEx.*
+import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.data.{MachineTimestamp, TaggedTimestamp}
 import arktwin.edge.actors.sinks.Chart
 import arktwin.edge.configs.StaticEdgeConfig

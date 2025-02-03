@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.common.data
 
-object DurationEx:
+object DurationExtensions:
   extension (a: Duration)
     inline def tagMachine: MachineDuration =
       TaggedDuration.from[MachineTag](a)

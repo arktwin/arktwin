@@ -8,7 +8,7 @@ import arktwin.center.util.CenterKamon
 import arktwin.center.util.CommonMessages.Terminate
 import arktwin.common.GrpcHeaderKey
 import arktwin.common.data.TaggedTimestamp
-import arktwin.common.data.TimestampEx.*
+import arktwin.common.data.TimestampExtensions.*
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.NotUsed
 import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable

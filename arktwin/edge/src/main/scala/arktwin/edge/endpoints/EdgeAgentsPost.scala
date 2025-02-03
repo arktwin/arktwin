@@ -5,7 +5,7 @@ package arktwin.edge.endpoints
 import arktwin.center.services
 import arktwin.center.services.{CreateAgentRequest, CreateAgentResponse, RegisterClient}
 import arktwin.common.data.TaggedTimestamp
-import arktwin.common.data.TimestampEx.*
+import arktwin.common.data.TimestampExtensions.*
 import arktwin.edge.util.JsonDerivation.given
 import arktwin.edge.util.{EdgeKamon, ErrorStatus, RequestValidator}
 import cats.implicits.toTraverseOps

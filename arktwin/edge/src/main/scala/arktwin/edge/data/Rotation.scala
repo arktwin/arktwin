@@ -3,7 +3,7 @@
 package arktwin.edge.data
 
 import arktwin.common.data.QuaternionEnu
-import arktwin.common.data.QuaternionEnuEx.*
+import arktwin.common.data.QuaternionEnuExtensions.*
 import arktwin.edge.configs.EulerAnglesConfig.{AngleUnit, RotationOrder}
 import arktwin.edge.configs.{AxisConfig, EulerAnglesConfig, QuaternionConfig, RotationConfig}
 import arktwin.edge.util.JsonDerivation

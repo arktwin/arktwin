@@ -5,9 +5,9 @@ package arktwin.center.actors
 import arktwin.center.configs.ClockConfig
 import arktwin.center.configs.ClockConfig.Start.{Absolute, Relative, Schedule}
 import arktwin.center.services.ClockBase
-import arktwin.center.services.ClockBaseEx.*
+import arktwin.center.services.ClockBaseExtensions.*
 import arktwin.common.MailboxConfig
-import arktwin.common.data.TimestampEx.*
+import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.data.{MachineTag, TaggedDuration, TaggedTimestamp}
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.scaladsl.Behaviors

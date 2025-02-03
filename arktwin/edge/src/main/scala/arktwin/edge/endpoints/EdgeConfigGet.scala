@@ -4,7 +4,7 @@ package arktwin.edge.endpoints
 
 import arktwin.common.LoggerConfigurator.LogLevel
 import arktwin.common.data.TaggedTimestamp
-import arktwin.common.data.TimestampEx.*
+import arktwin.common.data.TimestampExtensions.*
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.{DynamicEdgeConfig, EdgeConfig, StaticEdgeConfig}
 import arktwin.edge.util.JsonDerivation.given
