@@ -7,7 +7,7 @@ import arktwin.center.services.ChartAgent
 import arktwin.center.test.ActorTestBase
 import arktwin.center.util.CenterKamon
 import arktwin.center.util.CommonMessages.Terminate
-import arktwin.common.data.TimestampEx.*
+import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.data.{MachineTimestamp, QuaternionEnu, Timestamp, TransformEnu, Vector3Enu}
 import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable
 import org.apache.pekko.actor.typed.scaladsl.Behaviors

@@ -3,7 +3,7 @@
 package arktwin.edge.configs
 
 import arktwin.center.services.CreateEdgeRequest
-import arktwin.common.LoggerConfigurator.LogLevel
+import arktwin.common.util.LoggerConfigurator.LogLevel
 import cats.data.Validated.{condNec, invalidNec, valid}
 import cats.data.ValidatedNec
 import scalapb.validate.{Failure, Success, Validator}

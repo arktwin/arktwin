@@ -3,7 +3,7 @@
 package arktwin.edge.connectors
 
 import arktwin.center.services.ClockClient
-import arktwin.common.GrpcHeaderKey
+import arktwin.common.util.GrpcHeaderKey
 import arktwin.edge.actors.sinks.Clock
 import arktwin.edge.util.CommonMessages.Nop
 import com.google.protobuf.empty.Empty

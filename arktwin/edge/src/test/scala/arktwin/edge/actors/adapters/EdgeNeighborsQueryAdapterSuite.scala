@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.actors.adapters
 
-import arktwin.center.services.ClockBaseEx.*
+import arktwin.center.services.ClockBaseExtensions.*
 import arktwin.center.services.{ChartAgent, ClockBase, RegisterAgent}
 import arktwin.common.data.*
 import arktwin.edge.actors.adapters.EdgeNeighborsQueryAdapter.*

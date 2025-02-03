@@ -3,7 +3,7 @@
 package arktwin.center.actors
 
 import arktwin.center.util.CenterKamon
-import arktwin.common.MailboxConfig
+import arktwin.common.util.MailboxConfig
 import org.apache.pekko.actor.DeadLetter
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.eventstream.EventStream.Subscribe

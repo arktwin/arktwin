@@ -4,7 +4,7 @@ package arktwin.center.services
 
 import arktwin.center.actors.Clock
 import arktwin.center.configs.StaticCenterConfig
-import arktwin.common.GrpcHeaderKey
+import arktwin.common.util.GrpcHeaderKey
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.NotUsed
 import org.apache.pekko.actor.typed.ActorRef

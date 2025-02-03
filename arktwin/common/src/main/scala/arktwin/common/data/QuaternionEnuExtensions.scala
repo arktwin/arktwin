@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.common.data
 
-object QuaternionEnuEx:
+object QuaternionEnuExtensions:
   extension (a: QuaternionEnu)
     def *(b: QuaternionEnu): QuaternionEnu =
       QuaternionEnu(

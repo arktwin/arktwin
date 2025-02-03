@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.common.data
 
-object Vector3EnuEx:
+object Vector3EnuExtensions:
   extension (a: Vector3Enu)
     def +(that: Vector3Enu): Vector3Enu = Vector3Enu(a.x + that.x, a.y + that.y, a.z + that.z)
 

@@ -6,7 +6,7 @@ import arktwin.center.actors.Atlas.PartitionIndex
 import arktwin.center.configs.AtlasConfig
 import arktwin.center.services.ChartAgent
 import arktwin.center.util.CommonMessages.Terminate
-import arktwin.common.data.TimestampEx.*
+import arktwin.common.data.TimestampExtensions.*
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 

@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.common.data
 
-object TimestampEx:
+object TimestampExtensions:
   extension (a: Timestamp)
     inline def tagMachine: MachineTimestamp =
       TaggedTimestamp.from[MachineTag](a)

@@ -2,11 +2,11 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.actors.adapters
 
-import arktwin.center.services.ClockBaseEx.*
+import arktwin.center.services.ClockBaseExtensions.*
 import arktwin.center.services.{ClockBase, RegisterAgent}
-import arktwin.common.data.TimestampEx.*
-import arktwin.common.data.TransformEnuEx.*
-import arktwin.common.{MailboxConfig, VirtualDurationHistogram}
+import arktwin.common.data.TimestampExtensions.*
+import arktwin.common.data.TransformEnuExtensions.*
+import arktwin.common.util.{MailboxConfig, VirtualDurationHistogram}
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.sinks.Chart.CullingAgent
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
