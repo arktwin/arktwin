@@ -5,7 +5,7 @@ import scala.sys.process.Process
 // avoid conflict with io.gatling.sbt.GatlingPlugin.autoImport.assembly
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
-val catsVersion = "2.12.0"
+val catsVersion = "2.13.0"
 val gatlingVersion = "3.13.1"
 val jsoniterScalaVersion = "2.33.0"
 val kamonVersion = "2.7.5"
