@@ -7,7 +7,7 @@ RUN $JAVA_HOME/bin/jlink \
         --compress=zip-9 \
         --output /javaruntime
 
-FROM sbtscala/scala-sbt:eclipse-temurin-21.0.5_11_1.10.6_3.6.2 AS jar-build
+FROM sbtscala/scala-sbt:eclipse-temurin-21.0.5_11_1.10.7_3.6.3 AS jar-build
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh && \
     bash nodesource_setup.sh && \
     apt-get install -y nodejs
@@ -26,5 +26,5 @@ RUN mkdir /opt/arktwin/ && \
     mkdir /etc/opt/arktwin/ && \
     touch /etc/opt/arktwin/center.conf
 COPY --from=jre-build /javaruntime $JAVA_HOME
-COPY --from=jar-build /arktwin/center/target/scala-3.6.2/arktwin-center.jar /opt/arktwin/arktwin-center.jar
+COPY --from=jar-build /arktwin/center/target/scala-3.6.3/arktwin-center.jar /opt/arktwin/arktwin-center.jar
 ENTRYPOINT ["java", "-Dconfig.file=/etc/opt/arktwin/center.conf", "-XX:MaxRAMPercentage=75", "-XX:+UseZGC", "-XX:+ZGenerational", "-jar", "/opt/arktwin/arktwin-center.jar"]
