@@ -147,4 +147,56 @@ class TransformSuite extends AnyFunSuite with Matchers:
       targetSetting
     ).localTranslation shouldEqual Vector3(2, 1, -3)
 
-  // TODO add tests for coordinate transformation between Unreal Engine and Unity
+  test("coordinate transformation between Unreal Engine and Unity - case 1"):
+    val configUE = CoordinateConfig(
+      Vector3(400, -500, 200),
+      AxisConfig(East, South, Up),
+      EulerAnglesConfig(Degree, XYZ),
+      Centimeter,
+      MeterPerSecond
+    )
+    val configUnity = CoordinateConfig(
+      Vector3(3, -7, -9),
+      AxisConfig(South, Up, East),
+      QuaternionConfig,
+      Meter,
+      MeterPerSecond
+    )
+    val transformUE = Transform(
+      None,
+      Vector3(1, 1, 1),
+      EulerAngles(60, 30, -60),
+      Vector3(1700, 1700, -1300),
+      Some(Vector3(-1, -2, 3)),
+      None
+    )
+    val transformUnity = Transform(
+      None,
+      Vector3(1, 1, 1),
+      /*
+      EulerAngles(UE) (x, y, z) = (60, 30, -60)
+      Quaternion(Unity)
+      x = cos(15)sin(-30)sin(30) + sin(15)cos(-30)cos(30)
+      y = -sin(15)cos(-30)sin(30) + cos(15)sin(-30)cos(30)
+      z = cos(15)cos(-30)sin(30) - sin(15)sin(-30)cos(30)
+      w = sin(15)sin(-30)sin(30) + cos(15)cos(-30)cos(30)
+      */
+      Quaternion(-0.047367, -0.530330, 0.530330, 0.659739),
+      // Vector3(transformUnity) = Vector3(configUnity) - Vector3(configUE) - Vector3(transformUE)
+      Vector3(25, -22, 4),
+      /*
+      Vx(Unity) = Vy(UE)
+      Vy(Unity) = Vz(UE)
+      Vz(Unity) = Vx(UE)
+      */
+      Some(Vector3(-2, 3, -1)),
+      None
+    )
+    Transform(
+      transformUE.normalize(VirtualTimestamp(0, 0), None, configUE),
+      configUnity
+    ) shouldEqual transformUnity
+    Transform(
+      transformUnity.normalize(VirtualTimestamp(0, 0), None, configUnity),
+      configUE
+    ) shouldEqual transformUE
