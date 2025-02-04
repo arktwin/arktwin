@@ -180,7 +180,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
       y = -sin(15)cos(-30)sin(30) + cos(15)sin(-30)cos(30)
       z = cos(15)cos(-30)sin(30) - sin(15)sin(-30)cos(30)
       w = sin(15)sin(-30)sin(30) + cos(15)cos(-30)cos(30)
-      */
+       */
       Quaternion(-0.047367, -0.530330, 0.530330, 0.659739),
       // Vector3(transformUnity) = Vector3(configUnity) - Vector3(configUE) - Vector3(transformUE)
       Vector3(25, -22, 4),
@@ -188,7 +188,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
       Vx(Unity) = Vy(UE)
       Vy(Unity) = Vz(UE)
       Vz(Unity) = Vx(UE)
-      */
+       */
       Some(Vector3(-2, 3, -1)),
       None
     )
