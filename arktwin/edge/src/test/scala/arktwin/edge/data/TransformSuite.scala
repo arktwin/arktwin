@@ -151,7 +151,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
     val configUE = CoordinateConfig(
       Vector3(400, -500, 200),
       AxisConfig(East, South, Up),
-      EulerAnglesConfig(Degree, XYZ),
+      EulerAnglesConfig(Degree, XYZ), // extrinsic
       Centimeter,
       MeterPerSecond
     )
@@ -248,7 +248,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
     val configUE = CoordinateConfig(
       Vector3(1230, -460, 950),
       AxisConfig(South, West, Up),
-      EulerAnglesConfig(Degree, XYZ),
+      EulerAnglesConfig(Degree, XYZ), // extrinsic
       Centimeter,
       MeterPerSecond
     )
@@ -325,3 +325,93 @@ class TransformSuite extends AnyFunSuite with Matchers:
       transformUE.normalize(VirtualTimestamp(0, 0), None, configUE),
       configUnity
     ) shouldEqual transformUnity
+
+  test("coordinate transformation between Unreal Engine and Unity - case 3"):
+    val configUE = CoordinateConfig(
+      Vector3(-3260, -4225, 12),
+      AxisConfig(South, West, Up),
+      EulerAnglesConfig(Degree, XYZ), // extrinsic
+      Centimeter,
+      MeterPerSecond
+    )
+    val configUnity = CoordinateConfig(
+      Vector3(21.4, -0.2, -2.9),
+      AxisConfig(North, Up, West),
+      QuaternionConfig,
+      Meter,
+      MeterPerSecond
+    )
+    val transformUE = Transform(
+      None,
+      Vector3(1, 1, 1),
+      EulerAngles(-117.2, -25.5, 50),
+      Vector3(-929, -2193, 648),
+      Some(Vector3(6.7, 3.1, -1.6)),
+      None
+    )
+    val transformUnity = Transform(
+      None,
+      Vector3(-1, 1, 1),
+      /*
+      <local rotation transformation steps>
+      1.exchange axis -> 2.calculate Quaternion
+
+      1.exchange axis
+      AxisConfig(UE) = (South, West, Up)
+      AxisConfig(Unity) = (North, Up, West)
+      EulerAngles(UE) (x, y, z) = (-117.2, -25.5, 50)
+      EulerAngles(Unity) (x, y, z) = (117.2, 50, -25.5)
+      RotationOrder(UE) = XYZ
+      RotationOrder(Unity) = XZY
+
+      2.calculate Quaternion
+      Quaternion(Unity) (RotationOrder : XZY)
+      q_x = cos(117.2/2)sin(50/2)sin(-25.5/2) + sin(117.2/2)cos(50/2)cos(-25.5/2) = 0.705910085
+      q_y = sin(117.2/2)cos(50/2)sin(-25.5/2) + cos(117.2/2)sin(50/2)cos(-25.5/2) = 0.044031792
+      q_z = cos(117.2/2)cos(50/2)sin(-25.5/2) - sin(117.2/2)sin(50/2)cos(-25.5/2) = -0.456043729
+      q_w = -sin(117.2/2)sin(50/2)sin(-25.5/2) + cos(117.2/2)cos(50/2)cos(-25.5/2) = 0.540163188
+       */
+      Quaternion(0.705910085, 0.044031792, -0.456043729, 0.540163188),
+      /*
+      <local position transformation steps>
+      1.calculate vector on UE-axis -> 2.exchange axis & unit -> 3.calculate vector on Unity-axis
+
+      1.calculate vector on UE-axis
+      Vector(UE origin -> global origin) = (-3260, -4225, 12)
+      Vector(UE origin -> position) = (-929, -2193, 648)
+      Vector(global origin -> position) = (-929, -2193, 648) - (-3260, -4225, 12) = (2331, 2032, 636)
+
+      2.exchange axis & unit
+      AxisConfig(UE) = (South, West, Up) [cm]
+      AxisConfig(Unity) = (North, Up, West) [m]
+      "on Unity-axis"
+      Vector(global origin -> position) = (-23.31, 6.36, 20.32)
+
+      3.calculate vector on Unity-axis
+      Vector(Unity origin -> global origin) = (21.4, -0.2, -2.9)
+      Vector(Unity origin -> position)
+      = Vector(Unity origin -> global origin) + Vector(global origin -> position)
+      = (-23.31, 6.36, 20.32) + (21.4, -0.2, -2.9)
+      = (-1.91, 6.16, 17.42)
+       */
+      Vector3(-1.91, 6.16, 17.42),
+      /*
+      <local speed transformation step>
+      1.exchange axis
+      AxisConfig(UE) = (South, West, Up)
+      AxisConfig(Unity) = (North, Up, West)
+      Vx(Unity) = -Vx(UE) = -6.7
+      Vy(Unity) = Vz(UE) = -1.6
+      Vz(Unity) = Vy(UE) = 3.1
+       */
+      Some(Vector3(-6.7, -1.6, 3.1)),
+      None
+    )
+    Transform(
+      transformUE.normalize(VirtualTimestamp(0, 0), None, configUE),
+      configUnity
+    ) shouldEqual transformUnity
+    Transform(
+      transformUnity.normalize(VirtualTimestamp(0, 0), None, configUnity),
+      configUE
+    ) shouldEqual transformUE
