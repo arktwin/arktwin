@@ -7,6 +7,7 @@ import arktwin.edge.configs.AxisConfig.Direction.*
 import arktwin.edge.configs.CoordinateConfig.LengthUnit.*
 import arktwin.edge.configs.CoordinateConfig.SpeedUnit.*
 import arktwin.edge.configs.EulerAnglesConfig.AngleUnit.*
+import arktwin.edge.configs.EulerAnglesConfig.RotationMode.*
 import arktwin.edge.configs.EulerAnglesConfig.RotationOrder.*
 import arktwin.edge.configs.{AxisConfig, CoordinateConfig, EulerAnglesConfig, QuaternionConfig}
 import org.scalactic.{Equality, TolerantNumerics}
@@ -59,6 +60,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
           AxisConfig(South, Up, West)
         )
       angleUnit <- Seq(Degree, Radian)
+      mode <- Seq(Extrinsic, Intrinsic)
       order <- Seq(XYZ, YZX, ZYX)
       lengthUnit <- Seq(Meter, Kilometer)
       speedUnit <- Seq(MeterPerSecond, MillimeterPerMinute, KilometerPerHour)
@@ -66,7 +68,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
       val config = CoordinateConfig(
         Vector3(1.1, 2.2, 3.3),
         axisConfig,
-        EulerAnglesConfig(angleUnit, order),
+        EulerAnglesConfig(angleUnit, mode, order),
         lengthUnit,
         speedUnit
       )
@@ -151,7 +153,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
     val configUE = CoordinateConfig(
       Vector3(400, -500, 200),
       AxisConfig(East, South, Up),
-      EulerAnglesConfig(Degree, XYZ), // extrinsic
+      EulerAnglesConfig(Degree, Extrinsic, XYZ),
       Centimeter,
       MeterPerSecond
     )
@@ -248,7 +250,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
     val configUE = CoordinateConfig(
       Vector3(1230, -460, 950),
       AxisConfig(South, West, Up),
-      EulerAnglesConfig(Degree, XYZ), // extrinsic
+      EulerAnglesConfig(Degree, Extrinsic, XYZ),
       Centimeter,
       MeterPerSecond
     )
@@ -330,7 +332,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
     val configUE = CoordinateConfig(
       Vector3(-3260, -4225, 12),
       AxisConfig(South, West, Up),
-      EulerAnglesConfig(Degree, XYZ), // extrinsic
+      EulerAnglesConfig(Degree, Extrinsic, XYZ),
       Centimeter,
       MeterPerSecond
     )
@@ -427,7 +429,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
     val configUE = CoordinateConfig(
       Vector3(4.7, 3.2, 0.1),
       AxisConfig(North, East, Up),
-      EulerAnglesConfig(Degree, XYZ), // extrinsic
+      EulerAnglesConfig(Degree, Extrinsic, XYZ),
       Meter,
       MeterPerSecond
     )
