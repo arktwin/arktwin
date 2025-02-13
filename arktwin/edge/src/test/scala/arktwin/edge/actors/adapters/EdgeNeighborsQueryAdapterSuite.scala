@@ -12,6 +12,7 @@ import arktwin.edge.configs.AxisConfig.Direction.{East, North, Up}
 import arktwin.edge.configs.CoordinateConfig.LengthUnit.Meter
 import arktwin.edge.configs.CoordinateConfig.SpeedUnit.MeterPerSecond
 import arktwin.edge.configs.EulerAnglesConfig.AngleUnit.Degree
+import arktwin.edge.configs.EulerAnglesConfig.RotationMode.Extrinsic
 import arktwin.edge.configs.EulerAnglesConfig.RotationOrder.XYZ
 import arktwin.edge.configs.{AxisConfig, CoordinateConfig, EulerAnglesConfig}
 import arktwin.edge.data.*
@@ -58,7 +59,7 @@ class EdgeNeighborsQueryAdapterSuite extends ActorTestBase:
     adapter ! CoordinateConfig(
       Vector3(0, 0, 0),
       AxisConfig(East, North, Up),
-      EulerAnglesConfig(Degree, XYZ),
+      EulerAnglesConfig(Degree, Extrinsic, XYZ),
       Meter,
       MeterPerSecond
     )

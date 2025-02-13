@@ -25,6 +25,7 @@ object EdgeConfigCoordinatePutScenario:
       |  "rotation": {
       |    "EulerAnglesConfig": {
       |      "angleUnit": "Degree",
+      |      "rotationMode": "Extrinsic",
       |      "rotationOrder": "ZXY"
       |    }
       |  },
