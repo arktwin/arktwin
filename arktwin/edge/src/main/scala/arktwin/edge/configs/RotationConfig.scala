@@ -26,6 +26,10 @@ case class EulerAnglesConfig(
     @description("angle unit")
     angleUnit: EulerAnglesConfig.AngleUnit,
     @description(
+      "rotation mode: extrinsic rotation (world space rotation) or intrinsic rotation (agent space rotation)"
+    )
+    rotationMode: EulerAnglesConfig.RotationMode,
+    @description(
       "rotation order: For example, XYZ means rotate around X axis first, then Y axis, and finally Z axis"
     )
     rotationOrder: EulerAnglesConfig.RotationOrder
@@ -38,6 +42,12 @@ object EulerAnglesConfig:
     case Degree, Radian
   object AngleUnit:
     given Schema[AngleUnit] = Schema.derivedEnumeration[AngleUnit](encode = Some(_.toString))
+
+  enum RotationMode derives EnumConfigIdentityReader:
+    case Extrinsic, Intrinsic
+  object RotationMode:
+    given Schema[RotationMode] =
+      Schema.derivedEnumeration[RotationMode](encode = Some(_.toString))
 
   enum RotationOrder derives EnumConfigIdentityReader:
     case XYZ, XZY, YXZ, YZX, ZXY, ZYX
