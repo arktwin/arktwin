@@ -415,3 +415,92 @@ class TransformSuite extends AnyFunSuite with Matchers:
       transformUnity.normalize(VirtualTimestamp(0, 0), None, configUnity),
       configUE
     ) shouldEqual transformUE
+
+  test("coordinate transformation between Unreal Engine and Unity - case 4"):
+    val configUnity = CoordinateConfig(
+      Vector3(9.5, 0.4, -7.3),
+      AxisConfig(South, Up, East),
+      QuaternionConfig,
+      Meter,
+      MeterPerSecond
+    )
+    val configUE = CoordinateConfig(
+      Vector3(4.7, 3.2, 0.1),
+      AxisConfig(North, East, Up),
+      EulerAnglesConfig(Degree, XYZ), // extrinsic
+      Meter,
+      MeterPerSecond
+    )
+    val transformUnity = Transform(
+      None,
+      Vector3(1, 1, 1),
+      Quaternion(-0.918762872, 0.267438819, 0.258014898, 0.133340076),
+      Vector3(-123.8, 5.7, 97.6),
+      Some(Vector3(0.5, 0.05, -1.2)),
+      None
+    )
+    val transformUE = Transform(
+      None,
+      Vector3(-1, 1, 1),
+      /*
+      <local rotation transformation steps>
+      1.exchange axis -> 2.calculate EulerAngle
+
+      1.exchange axis
+      AxisConfig(Unity) = (South, Up, East)
+      AxisConfig(UE) = (North, East, Up)
+      q_x(UE) = -q_x(Unity) = 0.918762872
+      q_y(UE) = q_z(Unity) = 0.258014898
+      q_z(UE) = q_y(Unity) = 0.267438819
+      q_w(UE) = q_w(Unity) = 0.133340076
+
+      2.calculate EulerAngle
+      EulerAngle(UE) (RotationOrder : XYZ)
+      θ_x = atan2(2*(q_x*q_w + q_y*q_z), 2*q_w*q_w + 2*q_z*q_z - 1) = 155
+      θ_y = asin(2*q_y*q_w - 2*q_x*q_z) = -25
+      θ_z = atan2(2*(q_x*q_y + q_z*q_w), 2*q_w*q_w + 2*q_x*q_x - 1) = 37
+       */
+      EulerAngles(155, -25, 37),
+      /*
+      <local position transformation steps>
+      1.calculate vector on Unity-axis -> 2.exchange axis & unit -> 3.calculate vector on UE-axis
+
+      1.calculate vector on Unity-axis
+      Vector(Unity origin -> global origin) = (9.5, 0.4, -7.3)
+      Vector(Unity origin -> position) = (-123.8, 5.7, 97.6)
+      Vector(global origin -> position) = (-123.8, 5.7, 97.6) - (9.5, 0.4, -7.3) = (-133.3, 5.3, 104.9)
+
+      2.exchange axis & unit
+      AxisConfig(Unity) = (South, Up, East) [m]
+      AxisConfig(UE) = (North, East, Up) [m]
+      "on UE-axis"
+      Vector(global origin -> position) = (133.3, 104.9, 5.3)
+
+      3.calculate vector on UE-axis
+      Vector(UE origin -> global origin) = (4.7, 3.2, 0.1)
+      Vector(UE origin -> position)
+      = Vector(UE origin -> global origin) + Vector(global origin -> position)
+      = (4.7, 3.2, 0.1) + (133.3, 104.9, 5.3)
+      = (138.0, 108.1, 5.4)
+       */
+      Vector3(138.0, 108.1, 5.4),
+      /*
+      <local speed transformation step>
+      1.exchange axis
+      AxisConfig(Unity) = (South, Up, East)
+      AxisConfig(UE) = (North, East, Up)
+      Vx(UE) = -Vx(Unity) = -0.5
+      Vy(UE) = Vz(Unity) = -1.2
+      Vz(UE) = Vy(Unity) = 0.05
+       */
+      Some(Vector3(-0.5, -1.2, 0.05)),
+      None
+    )
+    Transform(
+      transformUnity.normalize(VirtualTimestamp(0, 0), None, configUnity),
+      configUE
+    ) shouldEqual transformUE
+    Transform(
+      transformUE.normalize(VirtualTimestamp(0, 0), None, configUE),
+      configUnity
+    ) shouldEqual transformUnity
