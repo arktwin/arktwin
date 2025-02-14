@@ -17,7 +17,7 @@ case class EdgeConfig(
     dynamic: DynamicEdgeConfig,
     static: StaticEdgeConfig
 ) derives ConfigReader:
-  override def toString(): String =
+  def toJson: String =
     given ConfigWriter[EdgeConfig] = deriveWriter
     ConfigWriter[EdgeConfig].to(this).render(ConfigRenderOptions.concise())
 

@@ -16,7 +16,7 @@ case class CenterConfig(
     dynamic: DynamicCenterConfig,
     static: StaticCenterConfig
 ) derives ConfigReader:
-  override def toString(): String =
+  def toJson: String =
     given ConfigWriter[CenterConfig] = deriveWriter
     ConfigWriter[CenterConfig].to(this).render(ConfigRenderOptions.concise())
 

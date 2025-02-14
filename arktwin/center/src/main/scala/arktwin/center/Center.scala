@@ -45,7 +45,7 @@ object Center:
     given Timeout = config.static.actorTimeout
 
     scribe.info(BuildInfo.toString)
-    scribe.info(config.toString)
+    scribe.info(config.toJson)
     scribe.debug(rawConfig.toString)
 
     val runId = issueRunId(config.static.runIdPrefix)
