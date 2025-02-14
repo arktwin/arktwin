@@ -6,6 +6,7 @@ import arktwin.center.services.{ChartAgent, ChartClient, ChartPublishBatch}
 import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.data.{MachineTimestamp, TaggedTimestamp}
 import arktwin.common.util.GrpcHeaderKey
+import arktwin.common.util.SourceExtensions.*
 import arktwin.edge.actors.sinks.Chart
 import arktwin.edge.configs.StaticEdgeConfig
 import arktwin.edge.util.CommonMessages.Nop
@@ -55,6 +56,7 @@ case class ChartConnector(
           a.agents.size
         )
         batches
+      .wireTapLog("Chart.Publish")
       .preMaterialize()
     client
       .publish()
@@ -72,7 +74,7 @@ case class ChartConnector(
       .subscribe()
       .addHeader(GrpcHeaderKey.edgeId, edgeId)
       .invoke(Empty())
-      .log(getClass.getSimpleName + ".subscribe")
+      .wireTapLog("Chart.Subscribe")
       .mapConcat: a =>
         val currentMachineTimestamp = TaggedTimestamp.machineNow()
         subscribeAgentNumCounter.increment(a.agents.size)

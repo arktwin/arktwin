@@ -6,6 +6,7 @@ import arktwin.center.actors.Register
 import arktwin.center.configs.StaticCenterConfig
 import arktwin.center.util.CommonMessages.Nop
 import arktwin.common.util.GrpcHeaderKey
+import arktwin.common.util.SourceExtensions.*
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.NotUsed
 import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable
@@ -13,7 +14,7 @@ import org.apache.pekko.actor.typed.{ActorRef, Scheduler}
 import org.apache.pekko.grpc.scaladsl.Metadata
 import org.apache.pekko.stream.scaladsl.Source
 import org.apache.pekko.stream.typed.scaladsl.{ActorSink, ActorSource}
-import org.apache.pekko.stream.{Attributes, Materializer, OverflowStrategy}
+import org.apache.pekko.stream.{Materializer, OverflowStrategy}
 import org.apache.pekko.util.Timeout
 
 import scala.concurrent.Future
@@ -40,25 +41,16 @@ class RegisterService(
       metadata: Metadata
   ): Future[Empty] =
     val edgeId = metadata.getText(GrpcHeaderKey.edgeId).getOrElse("")
-    val logName = s"${getClass.getSimpleName}.publish/$edgeId"
 
     in
-      .log(logName)
-      .addAttributes(
-        Attributes.logLevels(
-          onFailure = Attributes.LogLevels.Warning,
-          onFinish = Attributes.LogLevels.Warning
-        )
-      )
+      .wireTapLog(s"Register.Publish/$edgeId")
       .map(Register.UpdateAgents(_))
       .to(ActorSink.actorRef(register, Nop, _ => Nop))
       .run()
-    scribe.info(s"[$logName] connected")
     Future.never
 
   override def subscribe(in: Empty, metadata: Metadata): Source[RegisterAgentsSubscribe, NotUsed] =
     val edgeId = metadata.getText(GrpcHeaderKey.edgeId).getOrElse("")
-    val logName = s"${getClass.getSimpleName}.subscribe/$edgeId"
 
     val (actorRef, source) = ActorSource
       .actorRef[RegisterAgentsSubscribe](
@@ -67,14 +59,7 @@ class RegisterService(
         config.subscribeBufferSize,
         OverflowStrategy.dropHead
       )
-      .log(logName)
-      .addAttributes(
-        Attributes.logLevels(
-          onFailure = Attributes.LogLevels.Warning,
-          onFinish = Attributes.LogLevels.Warning
-        )
-      )
+      .wireTapLog(s"Register.Subscribe/$edgeId")
       .preMaterialize()
     register ! Register.AddSubscriber(edgeId, actorRef)
-    scribe.info(s"[$logName] connected")
     source

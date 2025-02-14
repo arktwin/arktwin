@@ -4,6 +4,7 @@ package arktwin.edge.connectors
 
 import arktwin.center.services.{RegisterAgentUpdated, RegisterAgentsPublish, RegisterClient}
 import arktwin.common.util.GrpcHeaderKey
+import arktwin.common.util.SourceExtensions.*
 import arktwin.edge.actors.sinks.Register
 import arktwin.edge.configs.StaticEdgeConfig
 import arktwin.edge.util.CommonMessages.Nop
@@ -25,17 +26,6 @@ case class RegisterConnector(
 ):
   import RegisterConnector.*
 
-  def subscribe(register: ActorRef[Register.Message]): Unit =
-    // send agents information to Chart individually for quick response edge/neighbors/_query
-    client
-      .subscribe()
-      .addHeader(GrpcHeaderKey.edgeId, edgeId)
-      .invoke(Empty())
-      .log(getClass.getSimpleName + ".subscribe")
-      .mapConcat(_.agents.map(Register.Catch.apply))
-      .to(ActorSink.actorRef(register, Nop, _ => Nop))
-      .run()
-
   def publish(): ActorRef[Publish] =
     val (actorRef, source) = ActorSource
       .actorRef[Publish](
@@ -48,9 +38,21 @@ case class RegisterConnector(
         a.agents
           .grouped(staticConfig.publishBatchSize)
           .map(RegisterAgentsPublish.apply)
+      .wireTapLog("Register.Publish")
       .preMaterialize()
     client
       .publish()
       .addHeader(GrpcHeaderKey.edgeId, edgeId)
       .invoke(source)
     actorRef
+
+  def subscribe(register: ActorRef[Register.Message]): Unit =
+    // send agents information to Chart individually for quick response edge/neighbors/_query
+    client
+      .subscribe()
+      .addHeader(GrpcHeaderKey.edgeId, edgeId)
+      .invoke(Empty())
+      .wireTapLog("Register.Subscribe")
+      .mapConcat(_.agents.map(Register.Catch.apply))
+      .to(ActorSink.actorRef(register, Nop, _ => Nop))
+      .run()
