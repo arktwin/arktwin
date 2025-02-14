@@ -38,7 +38,7 @@ class CenterReporter() extends MetricReporter:
           .mkString("{", ", ", "}")
         val message = s"${metric.name}: ${instrument.value} $tags"
         if metric.name == deadLetterNumName then scribe.warn(message)
-        else scribe.info(message)
+        else scribe.debug(message)
 
     snapshot.histograms
       .filter: metric =>
@@ -59,7 +59,7 @@ class CenterReporter() extends MetricReporter:
           .mkString("{", ", ", "}")
         val summary =
           Seq(0, 25, 50, 75, 100).map(instrument.value.percentile(_).value).mkString(", ")
-        scribe.info(s"${metric.name}: [$summary] ${metric.settings.unit.magnitude.name} $tags")
+        scribe.debug(s"${metric.name}: [$summary] ${metric.settings.unit.magnitude.name} $tags")
 
   override def stop(): Unit = {}
 
