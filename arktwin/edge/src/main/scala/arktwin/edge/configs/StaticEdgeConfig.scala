@@ -18,6 +18,7 @@ case class StaticEdgeConfig(
     portAutoIncrementMax: Int,
     logLevel: LogLevel,
     logLevelColor: Boolean,
+    logSuppressionList: Seq[String],
     actorTimeout: FiniteDuration,
     endpointTimeout: FiniteDuration,
     clockInitialStashSize: Int,
@@ -53,6 +54,7 @@ case class StaticEdgeConfig(
       ),
       valid(logLevel),
       valid(logLevelColor),
+      valid(logSuppressionList),
       condNec(
         actorTimeout > 0.second,
         actorTimeout,

@@ -7,6 +7,7 @@ import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.util.LoggerConfigurator.LogLevel
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.{DynamicEdgeConfig, EdgeConfig, StaticEdgeConfig}
+import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.JsonDerivation.given
 import arktwin.edge.util.{EdgeKamon, ErrorStatus}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
@@ -42,6 +43,7 @@ object EdgeConfigGet:
       portAutoIncrementMax = 100,
       logLevel = LogLevel.Info,
       logLevelColor = true,
+      logSuppressionList = Seq(),
       actorTimeout = 90.milliseconds,
       endpointTimeout = 100.milliseconds,
       clockInitialStashSize = 100,
@@ -73,7 +75,7 @@ object EdgeConfigGet:
 
     given Timeout = staticConfig.endpointTimeout
     PekkoHttpServerInterpreter().toRoute:
-      endpoint.serverLogic: _ =>
+      endpoint.serverLogicWithLog: _ =>
         val requestTime = TaggedTimestamp.machineNow()
         (configurator ? EdgeConfigurator.Get.apply)
           .map(Right[ErrorStatus, EdgeConfig].apply)

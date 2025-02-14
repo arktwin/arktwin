@@ -17,6 +17,7 @@ case class StaticCenterConfig(
     portAutoIncrementMax: Int,
     logLevel: LogLevel,
     logLevelColor: Boolean,
+    logSuppressionList: Seq[String],
     actorTimeout: FiniteDuration,
     subscribeBatchSize: Int,
     subscribeBatchInterval: FiniteDuration,
@@ -49,6 +50,7 @@ case class StaticCenterConfig(
       ),
       valid(logLevel),
       valid(logLevelColor),
+      valid(logSuppressionList),
       condNec(
         actorTimeout > 0.second,
         actorTimeout,
