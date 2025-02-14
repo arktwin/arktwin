@@ -7,12 +7,14 @@ import org.apache.pekko.actor.typed.scaladsl.{ActorContext, Behaviors}
 
 object BehaviorsExtensions:
   extension (a: Behaviors.type)
-    // use Scribe wrapper not via Pekko to reduce logging overhead
+    // call Scribe wrapper not via Pekko logger
+    // Pekko logger evaluates unnecessary log messages because of call-by-value strategy
     def withLogger[A](behavior: ActorLogger => Behavior[A]): Behavior[A] =
       Behaviors.setup: context =>
         behavior(ActorLogger(context.self.path.toString))
 
-    // use Scribe wrapper not via Pekko to reduce logging overhead
+    // call Scribe wrapper not via Pekko logger
+    // Pekko logger evaluates unnecessary log messages because of call-by-value strategy
     def setupWithLogger[A](factory: (ActorContext[A], ActorLogger) => Behavior[A]): Behavior[A] =
       Behaviors.setup: context =>
         factory(context, ActorLogger(context.self.path.toString))

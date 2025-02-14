@@ -9,7 +9,8 @@ import scala.util.{Failure, Success}
 
 object SourceExtensions:
   extension [Out, Mat](a: Source[Out, Mat])
-    // call Scribe directly not via Pekko stream logger to reduce logging overhead
+    // call Scribe directly not via Pekko logger
+    // Pekko logger evaluates unnecessary log messages because of call-by-value strategy
     def wireTapLog(streamName: String): Source[Out, Mat] =
       a.wireTap(
         Sink.combine(
