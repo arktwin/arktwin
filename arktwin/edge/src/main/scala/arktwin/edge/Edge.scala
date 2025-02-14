@@ -134,6 +134,8 @@ object Edge:
 
       scribe.info(BuildInfo.toString)
       scribe.info(config.toString)
+      val grpcClientConfigPath = "pekko.grpc.client.arktwin"
+      scribe.info(s"$grpcClientConfigPath: ${rawConfig.getConfig(grpcClientConfigPath)}")
       scribe.debug(rawConfig.toString)
 
       val grpcSettings = GrpcClientSettings.fromConfig("arktwin")
