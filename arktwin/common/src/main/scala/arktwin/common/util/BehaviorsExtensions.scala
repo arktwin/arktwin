@@ -4,20 +4,15 @@ package arktwin.common.util
 
 import org.apache.pekko.actor.typed.Behavior
 import org.apache.pekko.actor.typed.scaladsl.{ActorContext, Behaviors}
-import scribe.mdc.MDC
 
 object BehaviorsExtensions:
   extension (a: Behaviors.type)
-    // use Scribe mdc directly not via Pekko to reduce logging overhead
-    def withScribeMdc[A](behavior: MDC ?=> Behavior[A]): Behavior[A] =
-      MDC: mdc =>
-        Behaviors.setup: context =>
-          mdc("actor") = context.self.path.name
-          behavior(using mdc)
+    // use Scribe wrapper not via Pekko to reduce logging overhead
+    def withLogger[A](behavior: ActorLogger => Behavior[A]): Behavior[A] =
+      Behaviors.setup: context =>
+        behavior(ActorLogger(context.self.path.name))
 
-    // use Scribe mdc directly not via Pekko to reduce logging overhead
-    def setupWithScribeMdc[A](factory: MDC ?=> ActorContext[A] => Behavior[A]): Behavior[A] =
-      MDC: mdc =>
-        Behaviors.setup: context =>
-          mdc("actor") = context.self.path.name
-          factory(using mdc)(context)
+    // use Scribe wrapper not via Pekko to reduce logging overhead
+    def setupWithLogger[A](factory: (ActorContext[A], ActorLogger) => Behavior[A]): Behavior[A] =
+      Behaviors.setup: context =>
+        factory(context, ActorLogger(context.self.path.name))

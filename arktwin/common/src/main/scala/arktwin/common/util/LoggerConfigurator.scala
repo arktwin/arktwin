@@ -31,8 +31,8 @@ object LoggerConfigurator:
         formatter =
           import scribe.format.*
           if logLevelColor then
-            formatter"$dateFull $coloredLevelPaddedRight $actor$messages   - $logSource $mdc"
-          else formatter"$dateFull $levelPaddedRight $actor$messages   - $logSource $mdc"
+            formatter"$dateFull $coloredLevelPaddedRight $messages   - $logSource $mdc"
+          else formatter"$dateFull $levelPaddedRight $messages   - $logSource $mdc"
       )
       .replace()
 
@@ -50,9 +50,6 @@ object LoggerConfigurator:
       case Level.Warn  => ColoredOutput(Color.Yellow, output)
       case Level.Error => ColoredOutput(Color.Red, output)
       case _           => output
-
-  private def actor: FormatBlock = FormatBlock: logRecord =>
-    TextOutput(logRecord.data.get("actor").map(a => s"[${a()}] ").getOrElse(""))
 
   private def logSource: FormatBlock = FormatBlock: logRecord =>
     val fileLine = logRecord.fileName + logRecord.line.map(":" + _).getOrElse("")

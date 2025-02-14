@@ -8,7 +8,7 @@ import arktwin.center.services.ClockBase
 import arktwin.center.services.ClockBaseExtensions.*
 import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.data.{MachineTag, TaggedDuration, TaggedTimestamp}
-import arktwin.common.util.BehaviorsExtensions.setupWithScribeMdc
+import arktwin.common.util.BehaviorsExtensions.*
 import arktwin.common.util.MailboxConfig
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
@@ -31,7 +31,7 @@ object Clock:
 
   def apply(
       config: ClockConfig
-  ): Behavior[Message] = Behaviors.setupWithScribeMdc: context =>
+  ): Behavior[Message] = Behaviors.setupWithLogger: (context, logger) =>
     Behaviors.withTimers: initialUpdateSpeedTimer =>
       val baseMachineTimestamp = TaggedTimestamp.machineNow()
       val baseVirtualTimestamp = config.start.initialTime match
@@ -49,7 +49,7 @@ object Clock:
           ClockBase(baseMachineTimestamp, baseVirtualTimestamp, 0)
 
       var clockBase = initialClockBase
-      scribe.info(clockBase.toString)
+      logger.info(clockBase.toString)
 
       var subscribers = Map[String, ActorRef[ClockBase]]()
       var initialUpdateSpeedTimerFlag = true
@@ -66,7 +66,7 @@ object Clock:
             clockSpeed
           )
           for subscriber <- subscribers.values do subscriber ! clockBase
-          scribe.info(clockBase.toString)
+          logger.info(clockBase.toString)
           Behaviors.same
 
         case AddSubscriber(edgeId, subscriber) =>

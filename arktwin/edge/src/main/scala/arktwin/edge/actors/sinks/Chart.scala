@@ -39,7 +39,7 @@ object Chart:
 
   def apply(
       initCullingConfig: CullingConfig
-  ): Behavior[Message] = Behaviors.setupWithScribeMdc: context =>
+  ): Behavior[Message] = Behaviors.setupWithLogger: (context, logger) =>
     context.system.receptionist ! Receptionist.Register(
       EdgeConfigurator.cullingObserverKey,
       context.self
@@ -82,7 +82,7 @@ object Chart:
           if newFirstAgents.size <= cullingConfig.maxFirstAgents then firstAgents = newFirstAgents
           else
             if firstAgents.nonEmpty then
-              scribe.warn(
+              logger.warn(
                 "edge culling is disabled because first agents is greater than arktwin.edge.culling.maxFirstAgents"
               )
             firstAgents = Seq()

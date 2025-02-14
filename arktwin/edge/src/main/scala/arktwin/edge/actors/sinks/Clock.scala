@@ -37,14 +37,14 @@ object Clock:
 
   def active(
       initClockBase: ClockBase
-  ): Behavior[Message] = Behaviors.withScribeMdc:
+  ): Behavior[Message] = Behaviors.withLogger: logger =>
     var clockBase = initClockBase
-    scribe.info(clockBase.toString)
+    logger.info(clockBase.toString)
 
     Behaviors.receiveMessage:
       case Catch(newClockBase) =>
         clockBase = newClockBase
-        scribe.info(clockBase.toString)
+        logger.info(clockBase.toString)
         Behaviors.same
 
       case Get(replyTo) =>
