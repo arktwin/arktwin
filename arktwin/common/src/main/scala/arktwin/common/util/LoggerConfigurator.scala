@@ -31,8 +31,8 @@ object LoggerConfigurator:
         formatter =
           import scribe.format.*
           if logLevelColor then
-            formatter"$dateFull $coloredLevelPaddedRight $messages   - $logSource $mdc"
-          else formatter"$dateFull $levelPaddedRight $messages   - $logSource $mdc"
+            formatter"$dateFull $coloredLevelPaddedRight $messages   - $logSource"
+          else formatter"$dateFull $levelPaddedRight $messages   - $logSource"
       )
       .replace()
 

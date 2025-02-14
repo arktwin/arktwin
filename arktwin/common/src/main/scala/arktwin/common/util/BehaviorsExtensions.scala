@@ -10,9 +10,9 @@ object BehaviorsExtensions:
     // use Scribe wrapper not via Pekko to reduce logging overhead
     def withLogger[A](behavior: ActorLogger => Behavior[A]): Behavior[A] =
       Behaviors.setup: context =>
-        behavior(ActorLogger(context.self.path.name))
+        behavior(ActorLogger(context.self.path.toString))
 
     // use Scribe wrapper not via Pekko to reduce logging overhead
     def setupWithLogger[A](factory: (ActorContext[A], ActorLogger) => Behavior[A]): Behavior[A] =
       Behaviors.setup: context =>
-        factory(context, ActorLogger(context.self.path.name))
+        factory(context, ActorLogger(context.self.path.toString))
