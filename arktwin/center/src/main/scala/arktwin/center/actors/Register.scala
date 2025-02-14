@@ -4,6 +4,7 @@ package arktwin.center.actors
 
 import arktwin.center.services.*
 import arktwin.center.util.CommonMessages.Nop
+import arktwin.common.util.BehaviorsExtensions.setupWithScribeMdc
 import arktwin.common.util.MailboxConfig
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
@@ -39,7 +40,9 @@ object Register:
       temp /= idSuffixCharacters.size
     (if prefix.isEmpty() then "" else prefix + "-") + suffix.toString()
 
-  private def apply(runId: String): Behavior[Message] = Behaviors.setup: context =>
+  def apply(
+      runId: String
+  ): Behavior[Message] = Behaviors.setupWithScribeMdc: context =>
     var edgeNum = 0
     var agentNum = 0
     val agents = mutable.Map[String, RegisterAgent]()
@@ -82,7 +85,7 @@ object Register:
               agents.keys.filter(r.matches)
             catch
               case e: PatternSyntaxException =>
-                context.log.warn(e.getMessage)
+                scribe.warn(e.getMessage)
                 Seq()
           case AgentKindSelector(regex) =>
             try
@@ -90,7 +93,7 @@ object Register:
               agents.filter(a => r.matches(a._2.kind)).keys
             catch
               case e: PatternSyntaxException =>
-                context.log.warn(e.getMessage)
+                scribe.warn(e.getMessage)
                 Seq()
           case _ =>
             Seq()

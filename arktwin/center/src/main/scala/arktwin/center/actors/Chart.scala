@@ -26,7 +26,11 @@ object Chart:
   trait RouteTable:
     def apply(vector3: Vector3Enu): Map[String, ActorRef[SubscribeBatch]]
 
-  def apply(edgeId: String, initialRouteTable: RouteTable, kamon: CenterKamon): Behavior[Message] =
+  def apply(
+      edgeId: String,
+      initialRouteTable: RouteTable,
+      kamon: CenterKamon
+  ): Behavior[Message] =
     var routeTable = initialRouteTable
     val routeAgentNumCounter = kamon.chartRouteAgentNumCounter(edgeId)
     val routeBatchNumCounter = kamon.chartRouteBatchNumCounter(edgeId)

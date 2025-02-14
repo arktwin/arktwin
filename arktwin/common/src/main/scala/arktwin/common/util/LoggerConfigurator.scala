@@ -5,14 +5,14 @@ package arktwin.common.util
 import arktwin.common.util.EnumConfigIdentityReader
 import scribe.format.FormatBlock
 import scribe.format.FormatBlock.Level.PaddedRight
-import scribe.handler.SynchronousLogHandle
+import scribe.handler.AsynchronousLogHandle
 import scribe.output.{Color, ColoredOutput, TextOutput}
 import scribe.{Level, Logger}
 import sttp.tapir.Schema
 
 object LoggerConfigurator:
   enum LogLevel derives EnumConfigIdentityReader:
-    case Error, Warning, Info, Debug, Trace
+    case Error, Warn, Info, Debug, Trace
   object LogLevel:
     given Schema[LogLevel] = Schema.derivedEnumeration[LogLevel](encode = Some(_.toString))
 
@@ -20,19 +20,19 @@ object LoggerConfigurator:
     scribe.Logger.root
       .clearModifiers()
       .withMinimumLevel(minimumLevel match
-        case LogLevel.Error   => Level.Error
-        case LogLevel.Warning => Level.Warn
-        case LogLevel.Info    => Level.Info
-        case LogLevel.Debug   => Level.Debug
-        case LogLevel.Trace   => Level.Trace)
+        case LogLevel.Error => Level.Error
+        case LogLevel.Warn  => Level.Warn
+        case LogLevel.Info  => Level.Info
+        case LogLevel.Debug => Level.Debug
+        case LogLevel.Trace => Level.Trace)
       .clearHandlers()
       .withHandler(
-        handle = SynchronousLogHandle,
+        handle = AsynchronousLogHandle(),
         formatter =
           import scribe.format.*
           if logLevelColor then
-            formatter"$dateFull $coloredLevelPaddedRight $messages   - $logSource"
-          else formatter"$dateFull $levelPaddedRight $messages   - $logSource"
+            formatter"$dateFull $coloredLevelPaddedRight $actor$messages   - $logSource $mdc"
+          else formatter"$dateFull $levelPaddedRight $actor$messages   - $logSource $mdc"
       )
       .replace()
 
@@ -50,6 +50,9 @@ object LoggerConfigurator:
       case Level.Warn  => ColoredOutput(Color.Yellow, output)
       case Level.Error => ColoredOutput(Color.Red, output)
       case _           => output
+
+  private def actor: FormatBlock = FormatBlock: logRecord =>
+    TextOutput(logRecord.data.get("actor").map(a => s"[${a()}] ").getOrElse(""))
 
   private def logSource: FormatBlock = FormatBlock: logRecord =>
     val fileLine = logRecord.fileName + logRecord.line.map(":" + _).getOrElse("")

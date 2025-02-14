@@ -27,7 +27,9 @@ object EdgeConfigurator:
     _
   )
 
-  def apply(initEdgeConfig: EdgeConfig): Behavior[Message] = Behaviors.setup: context =>
+  def apply(
+      initEdgeConfig: EdgeConfig
+  ): Behavior[Message] = Behaviors.setup: context =>
     context.system.receptionist ! Receptionist.subscribe(coordinateObserverKey, context.self)
     context.system.receptionist ! Receptionist.subscribe(cullingObserverKey, context.self)
 

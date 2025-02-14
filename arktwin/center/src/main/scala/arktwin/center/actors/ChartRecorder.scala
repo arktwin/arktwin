@@ -21,7 +21,9 @@ object ChartRecorder:
 
   case class ChartRecord(edgeId: String, indexes: Set[PartitionIndex])
 
-  def apply(edgeId: String): Behavior[Message] =
+  def apply(
+      edgeId: String
+  ): Behavior[Message] =
     // TODO expire agents
     val agents = mutable.Map[String, ChartAgent]()
 

@@ -3,7 +3,8 @@
 package arktwin.edge.actors.sinks
 
 import arktwin.center.services.ClockBase
-import arktwin.common.util.MailboxConfig
+import arktwin.common.util.BehaviorsExtensions.*
+import arktwin.common.util.{BehaviorsExtensions, MailboxConfig}
 import arktwin.edge.configs.StaticEdgeConfig
 import arktwin.edge.util.CommonMessages.Nop
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
@@ -23,23 +24,27 @@ object Clock:
     _
   )
 
-  def apply(staticConfig: StaticEdgeConfig): Behavior[Message] =
-    Behaviors.withStash(staticConfig.clockInitialStashSize): buffer =>
-      Behaviors.receiveMessage:
-        case Catch(clockBase) =>
-          buffer.unstashAll(active(clockBase))
+  def apply(
+      staticConfig: StaticEdgeConfig
+  ): Behavior[Message] = Behaviors.withStash(staticConfig.clockInitialStashSize): buffer =>
+    Behaviors.receiveMessage:
+      case Catch(clockBase) =>
+        buffer.unstashAll(active(clockBase))
 
-        case message =>
-          buffer.stash(message)
-          Behaviors.same
+      case message =>
+        buffer.stash(message)
+        Behaviors.same
 
-  def active(initClockBase: ClockBase): Behavior[Message] = Behaviors.setup: context =>
+  def active(
+      initClockBase: ClockBase
+  ): Behavior[Message] = Behaviors.withScribeMdc:
     var clockBase = initClockBase
+    scribe.info(clockBase.toString)
 
     Behaviors.receiveMessage:
       case Catch(newClockBase) =>
         clockBase = newClockBase
-        context.log.info(newClockBase.toString)
+        scribe.info(clockBase.toString)
         Behaviors.same
 
       case Get(replyTo) =>

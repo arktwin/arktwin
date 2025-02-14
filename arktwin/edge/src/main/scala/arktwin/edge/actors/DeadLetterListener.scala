@@ -20,7 +20,9 @@ object DeadLetterListener:
     _
   )
 
-  def apply(kamon: EdgeKamon): Behavior[Message] = Behaviors.setup: context =>
+  def apply(
+      kamon: EdgeKamon
+  ): Behavior[Message] = Behaviors.setup: context =>
     context.system.eventStream ! Subscribe(context.self)
 
     val deadLetterNumCounter = kamon.deadLetterNumCounter()
