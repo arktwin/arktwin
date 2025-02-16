@@ -4,8 +4,8 @@ package arktwin.edge.actors.adapters
 
 import arktwin.center.services.ClockBaseExtensions.*
 import arktwin.center.services.{ChartAgent, ClockBase, RegisterAgentUpdated}
-import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.data.{MachineTimestamp, TransformEnu}
+import arktwin.common.util.BehaviorsExtensions.*
 import arktwin.common.util.{MailboxConfig, VirtualDurationHistogram}
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.sinks.{Chart, Clock}
@@ -113,7 +113,7 @@ object EdgeAgentsPutAdapter:
       virtualLatencyHistogram: VirtualDurationHistogram,
       staticConfig: StaticEdgeConfig,
       coordinateConfig: CoordinateConfig
-  ): Behavior[ChildMessage] = Behaviors.setup: context =>
+  ): Behavior[ChildMessage] = Behaviors.setupWithLogger: (context, logger) =>
     context.setReceiveTimeout(staticConfig.actorTimeout, Timeout)
 
     clock ! Clock.Get(context.self)
@@ -142,10 +142,16 @@ object EdgeAgentsPutAdapter:
             )
         parent ! Report(agents.view.mapValues(_.transform).toMap)
         chart ! Chart.UpdateFirstAgents(agents.values.toSeq)
-        chartPublish ! ChartConnector.Publish(
+
+        val chartPublishMessage = ChartConnector.Publish(
           agents.values.toSeq,
           putMessage.restReceptionMachineTimestamp
         )
+        chartPublish ! chartPublishMessage
+        logger.trace(
+          s"put: ${putMessage.request}, chartPublish: $chartPublishMessage, previousAgents: $previousAgents"
+        )
+
         context.cancelReceiveTimeout()
         Behaviors.stopped
 

@@ -3,13 +3,13 @@
 package arktwin.edge.configs
 
 import arktwin.common.util.LoggerConfigurator.LogLevel
+import arktwin.common.util.PureConfigHints.given
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.ValidatedNec
-import com.typesafe.config.Config
+import com.typesafe.config.{Config, ConfigRenderOptions}
 import pureconfig.*
 import pureconfig.error.ConfigReaderFailures
-import pureconfig.generic.semiauto.deriveReader
-import pureconfig.generic.{FieldCoproductHint, ProductHint}
+import pureconfig.generic.semiauto.{deriveReader, deriveWriter}
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -17,6 +17,10 @@ case class EdgeConfig(
     dynamic: DynamicEdgeConfig,
     static: StaticEdgeConfig
 ) derives ConfigReader:
+  def toJson: String =
+    given ConfigWriter[EdgeConfig] = deriveWriter
+    ConfigWriter[EdgeConfig].to(this).render(ConfigRenderOptions.concise())
+
   def validated(path: String): ValidatedNec[String, EdgeConfig] =
     import cats.syntax.apply.*
     (
@@ -42,13 +46,6 @@ object EdgeConfig:
       )
 
   def loadOrThrow(): EdgeConfig =
-    given [A]: ProductHint[A] = ProductHint[A](
-      ConfigFieldMapping(identity),
-      useDefaultArgs = false,
-      allowUnknownKeys = true
-    )
-    given [A]: FieldCoproductHint[A] = new FieldCoproductHint[A]("type"):
-      override def fieldValue(name: String): String = name
     given ConfigReader[EdgeConfig] = deriveReader
 
     val path = "arktwin.edge"

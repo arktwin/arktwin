@@ -4,20 +4,22 @@ package arktwin.center.configs
 
 import arktwin.common.data.{TaggedTimestamp, Vector3Enu}
 import arktwin.common.util.LoggerConfigurator.LogLevel
+import arktwin.common.util.PureConfigHints.given
 import cats.data.Validated.{Invalid, Valid}
 import cats.data.ValidatedNec
-import com.typesafe.config.Config
+import com.typesafe.config.{Config, ConfigRenderOptions}
 import pureconfig.*
 import pureconfig.error.ConfigReaderFailures
-import pureconfig.generic.semiauto.deriveReader
-import pureconfig.generic.{FieldCoproductHint, ProductHint}
-
-import scala.concurrent.duration.FiniteDuration
+import pureconfig.generic.semiauto.{deriveReader, deriveWriter}
 
 case class CenterConfig(
     dynamic: DynamicCenterConfig,
     static: StaticCenterConfig
 ) derives ConfigReader:
+  def toJson: String =
+    given ConfigWriter[CenterConfig] = deriveWriter
+    ConfigWriter[CenterConfig].to(this).render(ConfigRenderOptions.concise())
+
   def validated(path: String): ValidatedNec[String, CenterConfig] =
     import cats.syntax.apply.*
     (
@@ -43,13 +45,6 @@ object CenterConfig:
       )
 
   def loadOrThrow(): CenterConfig =
-    given [A]: ProductHint[A] = ProductHint[A](
-      ConfigFieldMapping(identity),
-      useDefaultArgs = false,
-      allowUnknownKeys = true
-    )
-    given [A]: FieldCoproductHint[A] = new FieldCoproductHint[A]("type"):
-      override def fieldValue(name: String): String = name
     given ConfigReader[CenterConfig] = deriveReader
 
     val path = "arktwin.center"

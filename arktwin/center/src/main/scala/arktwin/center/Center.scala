@@ -28,7 +28,11 @@ object Center:
     val config = CenterConfig.loadOrThrow()
     val rawConfig = CenterConfig.loadRawOrThrow()
 
-    LoggerConfigurator.init(config.static.logLevel, config.static.logLevelColor)
+    LoggerConfigurator.init(
+      config.static.logLevel,
+      config.static.logLevelColor,
+      config.static.logSuppressionList
+    )
     Kamon.init(rawConfig)
 
     given actorSystem: ActorSystem[SpawnProtocol.Command] = ActorSystem(
@@ -41,7 +45,7 @@ object Center:
     given Timeout = config.static.actorTimeout
 
     scribe.info(BuildInfo.toString)
-    scribe.info(config.toString)
+    scribe.info(config.toJson)
     scribe.debug(rawConfig.toString)
 
     val runId = issueRunId(config.static.runIdPrefix)

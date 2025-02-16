@@ -6,6 +6,7 @@ import arktwin.center.services.ChartAgent
 import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.data.Vector3EnuExtensions.*
 import arktwin.common.data.{TaggedTimestamp, VirtualTag}
+import arktwin.common.util.BehaviorsExtensions.*
 import arktwin.common.util.MailboxConfig
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.CullingConfig
@@ -38,7 +39,7 @@ object Chart:
 
   def apply(
       initCullingConfig: CullingConfig
-  ): Behavior[Message] = Behaviors.setup: context =>
+  ): Behavior[Message] = Behaviors.setupWithLogger: (context, logger) =>
     context.system.receptionist ! Receptionist.Register(
       EdgeConfigurator.cullingObserverKey,
       context.self
@@ -81,7 +82,7 @@ object Chart:
           if newFirstAgents.size <= cullingConfig.maxFirstAgents then firstAgents = newFirstAgents
           else
             if firstAgents.nonEmpty then
-              context.log.warn(
+              logger.warn(
                 "edge culling is disabled because first agents is greater than arktwin.edge.culling.maxFirstAgents"
               )
             firstAgents = Seq()

@@ -6,6 +6,7 @@ import arktwin.center.services.ClockBaseExtensions.*
 import arktwin.center.services.{ClockBase, RegisterAgent}
 import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.data.TransformEnuExtensions.*
+import arktwin.common.util.BehaviorsExtensions.*
 import arktwin.common.util.{MailboxConfig, VirtualDurationHistogram}
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.sinks.Chart.CullingAgent
@@ -128,7 +129,7 @@ object EdgeNeighborsQueryAdapter:
       virtualLatencyHistogram: VirtualDurationHistogram,
       timeout: FiniteDuration,
       coordinateConfig: CoordinateConfig
-  ): Behavior[ChildMessage] = Behaviors.setup: context =>
+  ): Behavior[ChildMessage] = Behaviors.setupWithLogger: (context, logger) =>
     context.setReceiveTimeout(timeout, Timeout)
 
     chart ! Chart.Get(context.self)
@@ -183,9 +184,12 @@ object EdgeNeighborsQueryAdapter:
             )
           .getOrElse(Set())
 
-        replyTo ! Right(
-          Response(requestTime, (recognizedAgents ++ unrecognizedAgents).toMap)
+        val response = Response(requestTime, (recognizedAgents ++ unrecognizedAgents).toMap)
+        replyTo ! Right(response)
+        logger.trace(
+          s"request: $request, response: $response, chartReply: $chartReply, clockBase: $clockBase, registerReply: $registerReply"
         )
+
         context.cancelReceiveTimeout()
         Behaviors.stopped
 

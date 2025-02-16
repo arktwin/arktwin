@@ -6,6 +6,7 @@ import arktwin.center.actors.ChartRecorder.ChartRecord
 import arktwin.center.configs.AtlasConfig
 import arktwin.center.util.CenterKamon
 import arktwin.center.util.CommonMessages.Timeout
+import arktwin.common.util.BehaviorsExtensions.*
 import arktwin.common.util.MailboxConfig
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
@@ -47,7 +48,7 @@ object Atlas:
   def apply(
       config: AtlasConfig,
       kamon: CenterKamon
-  ): Behavior[Message] = Behaviors.setup: context =>
+  ): Behavior[Message] = Behaviors.setupWithLogger: (context, logger) =>
     Behaviors.withTimers: timer =>
       timer.startSingleTimer(SpawnUpdateRouteTable, config.routeTableUpdateInterval)
 
@@ -67,7 +68,7 @@ object Atlas:
           replyTo ! chart
           context.watchWith(chart, RemoveChart(edgeId))
           charts += edgeId -> chart
-          context.log.info(s"spawned a chart for $edgeId: ${chart.path}")
+          logger.info(s"spawned a chart for $edgeId: ${chart.path}")
           Behaviors.same
 
         case RemoveChart(edgeId) =>
@@ -82,7 +83,7 @@ object Atlas:
           replyTo ! chartRecorder
           context.watchWith(chartRecorder, RemoveChartRecorder(edgeId))
           chartRecorders += edgeId -> chartRecorder
-          context.log.info(s"spawned a chart recorder for $edgeId: ${chartRecorder.path} ")
+          logger.info(s"spawned a chart recorder for $edgeId: ${chartRecorder.path} ")
           Behaviors.same
 
         case RemoveChartRecorder(edgeId) =>
@@ -119,7 +120,7 @@ object Atlas:
       charts: Map[String, ActorRef[Chart.Message]],
       chartSubscribers: Map[String, ActorRef[Chart.SubscribeBatch]],
       config: AtlasConfig
-  ): Behavior[ChartRecord | Timeout.type] = Behaviors.setup: context =>
+  ): Behavior[ChartRecord | Timeout.type] = Behaviors.setupWithLogger: (context, logger) =>
     Behaviors.withTimers: timer =>
       config.culling match
         case AtlasConfig.Broadcast() =>
@@ -172,7 +173,7 @@ object Atlas:
               )
               for (edgeId, chart) <- charts do chart ! updateRouteTable
 
-              context.log.debug(
+              logger.debug(
                 partitionToSubscriber.toSeq
                   .sortBy((index, _) => (index.x, index.y, index.z))
                   .map((i, senders) =>

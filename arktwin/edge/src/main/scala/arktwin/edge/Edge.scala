@@ -82,7 +82,11 @@ object Edge:
       val config = EdgeConfig.loadOrThrow()
       val rawConfig = EdgeConfig.loadRawOrThrow()
 
-      LoggerConfigurator.init(config.static.logLevel, config.static.logLevelColor)
+      LoggerConfigurator.init(
+        config.static.logLevel,
+        config.static.logLevelColor,
+        config.static.logSuppressionList
+      )
 
       given actorSystem: ActorSystem[SpawnProtocol.Command] = ActorSystem(
         Behaviors.setup[SpawnProtocol.Command](_ => SpawnProtocol()),
@@ -112,7 +116,11 @@ object Edge:
       val config = EdgeConfig.loadOrThrow()
       val rawConfig = EdgeConfig.loadRawOrThrow()
 
-      LoggerConfigurator.init(config.static.logLevel, config.static.logLevelColor)
+      LoggerConfigurator.init(
+        config.static.logLevel,
+        config.static.logLevelColor,
+        config.static.logSuppressionList
+      )
       Kamon.init(rawConfig)
 
       given actorSystem: ActorSystem[SpawnProtocol.Command] = ActorSystem(
@@ -125,7 +133,9 @@ object Edge:
       given Timeout = config.static.actorTimeout
 
       scribe.info(BuildInfo.toString)
-      scribe.info(config.toString)
+      scribe.info(config.toJson)
+      val grpcClientConfigPath = "pekko.grpc.client.arktwin"
+      scribe.info(s"$grpcClientConfigPath: ${rawConfig.getConfig(grpcClientConfigPath)}")
       scribe.debug(rawConfig.toString)
 
       val grpcSettings = GrpcClientSettings.fromConfig("arktwin")

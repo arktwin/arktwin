@@ -26,7 +26,7 @@ case class EulerAnglesConfig(
     @description("angle unit")
     angleUnit: EulerAnglesConfig.AngleUnit,
     @description(
-      "rotation mode: extrinsic rotation (world space rotation) or intrinsic rotation (agent space rotation)"
+      "rotation mode: extrinsic rotation (world space rotation) or intrinsic rotation (agent's local space rotation)"
     )
     rotationMode: EulerAnglesConfig.RotationMode,
     @description(
