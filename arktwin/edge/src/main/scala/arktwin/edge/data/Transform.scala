@@ -30,7 +30,7 @@ case class Transform(
       config: CoordinateConfig
   ): TransformEnu =
     val localTranslationEnuMeter =
-      (localTranslation - config.globalOrigin).normalize(config.axis) * config.lengthUnit.scale
+      (localTranslation - config.centerOrigin).normalize(config.axis) * config.lengthUnit.scale
     val localTranslationSpeedEnuMps = localTranslationSpeed
       .map(_.normalize(config.axis) * config.speedUnit.scale)
       .getOrElse(
@@ -60,7 +60,7 @@ object Transform:
       (Vector3(
         a.localTranslationMeter,
         config.axis
-      ) / config.lengthUnit.scale) + config.globalOrigin,
+      ) / config.lengthUnit.scale) + config.centerOrigin,
       Some(
         Vector3(
           a.localTranslationSpeedMps,

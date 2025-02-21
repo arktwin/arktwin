@@ -10,10 +10,10 @@ import sttp.tapir.Schema
 import sttp.tapir.Schema.annotations.description
 
 case class CoordinateConfig(
-    @description("global origin in the local coordinate system")
-    globalOrigin: Vector3,
     @description("axis configuration")
     axis: AxisConfig,
+    @description("center's origin in the edge's coordinate system")
+    centerOrigin: Vector3,
     @description("rotation configuration")
     rotation: RotationConfig,
     @description("length unit")
@@ -24,8 +24,8 @@ case class CoordinateConfig(
   def validated(path: String): ValidatedNec[String, CoordinateConfig] =
     import cats.syntax.apply.*
     (
-      valid(globalOrigin),
       axis.validated(s"$path.axis"),
+      valid(centerOrigin),
       rotation.validated(s"$path.rotation"),
       valid(lengthUnit),
       valid(speedUnit)

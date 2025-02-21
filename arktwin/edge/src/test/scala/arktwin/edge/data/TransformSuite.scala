@@ -66,8 +66,8 @@ class TransformSuite extends AnyFunSuite with Matchers:
       speedUnit <- Seq(MeterPerSecond, MillimeterPerMinute, KilometerPerHour)
     do
       val config = CoordinateConfig(
-        Vector3(1.1, 2.2, 3.3),
         axisConfig,
+        Vector3(1.1, 2.2, 3.3),
         EulerAnglesConfig(angleUnit, mode, order),
         lengthUnit,
         speedUnit
@@ -99,8 +99,8 @@ class TransformSuite extends AnyFunSuite with Matchers:
       speedUnit <- Seq(MeterPerSecond, MillimeterPerMinute, KilometerPerHour)
     do
       val config = CoordinateConfig(
-        Vector3(1.1, 2.2, 3.3),
         axisConfig,
+        Vector3(1.1, 2.2, 3.3),
         QuaternionConfig,
         lengthUnit,
         speedUnit
@@ -122,16 +122,16 @@ class TransformSuite extends AnyFunSuite with Matchers:
   test("axis permutation"):
     val sourceSetting =
       CoordinateConfig(
-        Vector3(0, 0, 0),
         AxisConfig(East, North, Up),
+        Vector3(0, 0, 0),
         QuaternionConfig,
         Meter,
         MeterPerSecond
       )
     val targetSetting =
       CoordinateConfig(
-        Vector3(0, 0, 0),
         AxisConfig(North, East, Down),
+        Vector3(0, 0, 0),
         QuaternionConfig,
         Meter,
         MeterPerSecond
@@ -151,15 +151,15 @@ class TransformSuite extends AnyFunSuite with Matchers:
 
   test("coordinate transformation between Unreal Engine and Unity - case 1"):
     val configUE = CoordinateConfig(
-      Vector3(400, -500, 200),
       AxisConfig(East, South, Up),
+      Vector3(400, -500, 200),
       EulerAnglesConfig(Degree, Extrinsic, XYZ),
       Centimeter,
       MeterPerSecond
     )
     val configUnity = CoordinateConfig(
-      Vector3(3, -7, -9),
       AxisConfig(South, Up, East),
+      Vector3(3, -7, -9),
       QuaternionConfig,
       Meter,
       MeterPerSecond
@@ -241,15 +241,15 @@ class TransformSuite extends AnyFunSuite with Matchers:
 
   test("coordinate transformation between Unreal Engine and Unity - case 2"):
     val configUnity = CoordinateConfig(
-      Vector3(-13.4, -25.2, 9.3),
       AxisConfig(East, Up, North),
+      Vector3(-13.4, -25.2, 9.3),
       QuaternionConfig,
       Meter,
       MeterPerSecond
     )
     val configUE = CoordinateConfig(
-      Vector3(1230, -460, 950),
       AxisConfig(South, West, Up),
+      Vector3(1230, -460, 950),
       EulerAnglesConfig(Degree, Extrinsic, XYZ),
       Centimeter,
       MeterPerSecond
@@ -330,15 +330,15 @@ class TransformSuite extends AnyFunSuite with Matchers:
 
   test("coordinate transformation between Unreal Engine and Unity - case 3"):
     val configUE = CoordinateConfig(
-      Vector3(-3260, -4225, 12),
       AxisConfig(South, West, Up),
+      Vector3(-3260, -4225, 12),
       EulerAnglesConfig(Degree, Extrinsic, XYZ),
       Centimeter,
       MeterPerSecond
     )
     val configUnity = CoordinateConfig(
-      Vector3(21.4, -0.2, -2.9),
       AxisConfig(North, Up, West),
+      Vector3(21.4, -0.2, -2.9),
       QuaternionConfig,
       Meter,
       MeterPerSecond
@@ -420,15 +420,15 @@ class TransformSuite extends AnyFunSuite with Matchers:
 
   test("coordinate transformation between Unreal Engine and Unity - case 4"):
     val configUnity = CoordinateConfig(
-      Vector3(9.5, 0.4, -7.3),
       AxisConfig(South, Up, East),
+      Vector3(9.5, 0.4, -7.3),
       QuaternionConfig,
       Meter,
       MeterPerSecond
     )
     val configUE = CoordinateConfig(
-      Vector3(4.7, 3.2, 0.1),
       AxisConfig(North, East, Up),
+      Vector3(4.7, 3.2, 0.1),
       EulerAnglesConfig(Degree, Extrinsic, XYZ),
       Meter,
       MeterPerSecond

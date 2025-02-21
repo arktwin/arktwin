@@ -33,12 +33,12 @@ object EdgeConfigCoordinatePut:
   given JsonValueCodec[Request] = JsonCodecMaker.makeWithoutDiscriminator
 
   val inExample: Request = Request(
-    Vector3(0, 0, 0),
     AxisConfig(
       Direction.East,
       Direction.North,
       Direction.Up
     ),
+    Vector3(0, 0, 0),
     EulerAnglesConfig(
       AngleUnit.Degree,
       RotationMode.Extrinsic,
