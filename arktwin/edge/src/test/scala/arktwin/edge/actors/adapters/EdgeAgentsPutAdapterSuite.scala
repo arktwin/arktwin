@@ -46,8 +46,8 @@ class EdgeAgentsPutAdapterSuite extends ActorTestBase:
     val endpoint = testKit.createTestProbe[Either[ErrorStatus, Response]]()
 
     adapter ! CoordinateConfig(
-      Vector3(0, 0, 0),
       AxisConfig(East, North, Up),
+      Vector3(0, 0, 0),
       QuaternionConfig,
       Meter,
       MeterPerSecond
