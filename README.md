@@ -143,13 +143,37 @@ The default configuration files of ArkTwin are as follows.
 Any configuration can be overridden by specifying a file using the Java startup option `-Dconfig.file=path/to/config-file`.
 The syntax of configuration files is [HOCON](https://github.com/lightbend/config/blob/main/HOCON.md) used in [Typesafe Config](https://github.com/lightbend/config).
 
+### Coordinate Properties
+
+The coordinate system for ArkTwin Edge can be configured under the path `arktwin.edge.dynamic.coordinate`. According to this configuration, agent-based software can send and receive transform data to and from ArkTwin Edge.
+
+| Configuration Path | Type | Default | Description |
+| --- | --- | --- | --- |
+| arktwin.edge.dynamic.coordinate.axis.xDirection | East \| West \| North \| South \| Up \| Down | East | X-axis direction |
+| arktwin.edge.dynamic.coordinate.axis.yDirection | East \| West \| North \| South \| Up \| Down | North | Y-axis direction |
+| arktwin.edge.dynamic.coordinate.axis.zDirection | East \| West \| North \| South \| Up \| Down | Up | Z-axis direction |
+| arktwin.edge.dynamic.coordinate.centerOrigin.x | floating-point number | 0.0 | X-coordinate value of center's origin in the edge's coordinate system |
+| arktwin.edge.dynamic.coordinate.centerOrigin.y | floating-point number | 0.0 | Y-coordinate value of center's origin in the edge's coordinate system |
+| arktwin.edge.dynamic.coordinate.centerOrigin.z | floating-point number | 0.0 | Z-coordinate value of center's origin in the edge's coordinate system |
+| arktwin.edge.dynamic.coordinate.rotation.type | EulerAnglesConfig \| QuaternionConfig | EulerAnglesConfig | Rotation type: euler angles or quaternion |
+| arktwin.edge.dynamic.coordinate.rotation.angleUnit | Degree \| Radian | Degree | Applicable only if type is EulerAnglesConfig<br>angle unit |
+| arktwin.edge.dynamic.coordinate.rotation.rotationMode | Extrinsic \| Intrinsic | Extrinsic | Applicable only if type is EulerAnglesConfig<br>rotation mode: extrinsic rotation (edge's world space rotation) or intrinsic rotation (agent's local space rotation) |
+| arktwin.edge.dynamic.coordinate.rotation.rotationOrder | XYZ \| XZY \| YXZ \| YZX \| ZXY \| ZYX | XYZ | Applicable only if type is EulerAnglesConfig<br>Rotation order: For example, XYZ means rotate around X axis first, then Y axis, and finally Z axis |
+| arktwin.edge.dynamic.coordinate.lengthUnit | Millimeter \| Centimeter \| Meter \| Kilometer | Meter | Length unit |
+| arktwin.edge.dynamic.coordinate.speedUnit | MillimeterPerSecond \| CentimeterPerSecond \| MeterPerSecond \| KilometerPerSecond \| MillimeterPerMinute \| CentimeterPerMinute \| MeterPerMinute \| KilometerPerMinute \| MillimeterPerHour \| CentimeterPerHour \| MeterPerHour \| KilometerPerHour | MeterPerSecond | Speed unit |
+
+Refer to the following links for the coordinate systems of typical game engines.
+
+- [Rotation and orientation in Unity](https://docs.unity3d.com/Manual/QuaternionAndEulerRotationsInUnity.html)
+- [Units of Measurement in Unreal Engine](https://dev.epicgames.com/documentation/en-us/unreal-engine/units-of-measurement-in-unreal-engine)
+
 ### Environment Variables
 
 Some configuration can be overridden using environment variables.
 
 #### Center
 
-| Environment Variable | Configuration Path | Default Value |
+| Environment Variable | Configuration Path | Default |
 | --- | --- | --- |
 | ARKTWIN_CENTER_PROMETHEUS_PUSHGATEWAY | kamon.modules.pushgateway-reporter.enabled | false |
 | ARKTWIN_CENTER_PROMETHEUS_PUSHGATEWAY_API_URL | kamon.prometheus.pushgateway.api-url | http://localhost:9091/metrics/job/arktwin-center |

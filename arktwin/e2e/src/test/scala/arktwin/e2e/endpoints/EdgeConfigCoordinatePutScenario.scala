@@ -12,15 +12,15 @@ object EdgeConfigCoordinatePutScenario:
   val builder: ScenarioBuilder =
     val coordinateConfig =
       """{
-      |  "globalOrigin": {
-      |    "x": 1.1,
-      |    "y": 2.3,
-      |    "z": 4.5
-      |  },
       |  "axis": {
       |    "xDirection": "North",
       |    "yDirection": "East",
       |    "zDirection": "Down"
+      |  },
+      |  "centerOrigin": {
+      |    "x": 1.1,
+      |    "y": 2.3,
+      |    "z": 4.5
       |  },
       |  "rotation": {
       |    "EulerAnglesConfig": {
