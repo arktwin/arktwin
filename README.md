@@ -178,12 +178,12 @@ Some configuration can be overridden using environment variables.
 | ARKTWIN_CENTER_PROMETHEUS_PUSHGATEWAY | kamon.modules.pushgateway-reporter.enabled | false |
 | ARKTWIN_CENTER_PROMETHEUS_PUSHGATEWAY_API_URL | kamon.prometheus.pushgateway.api-url | http://localhost:9091/metrics/job/arktwin-center |
 | ARKTWIN_CENTER_STATIC_HOST | arktwin.center.static.host | 0.0.0.0 |
-| ARKTWIN_CENTER_STATIC_LOG_LEVEL | arktwin.center.static.log-level | Info |
-| ARKTWIN_CENTER_STATIC_LOG_LEVEL_COLOR | arktwin.center.static.log-level-color | true |
+| ARKTWIN_CENTER_STATIC_LOG_LEVEL | arktwin.center.static.logLevel | Info |
+| ARKTWIN_CENTER_STATIC_LOG_LEVEL_COLOR | arktwin.center.static.logLevelColor | true |
 | ARKTWIN_CENTER_STATIC_PORT | arktwin.center.static.port | 2236 |
-| ARKTWIN_CENTER_STATIC_PORT_AUTO_INCREMENT | arktwin.center.static.port-auto-increment | false |
-| ARKTWIN_CENTER_STATIC_PORT_AUTO_INCREMENT_MAX | arktwin.center.static.port-auto-increment-max | 100 |
-| ARKTWIN_CENTER_STATIC_RUN_ID_PREFIX | arktwin.center.static.run-id-prefix | run |
+| ARKTWIN_CENTER_STATIC_PORT_AUTO_INCREMENT | arktwin.center.static.portAutoIncrement | false |
+| ARKTWIN_CENTER_STATIC_PORT_AUTO_INCREMENT_MAX | arktwin.center.static.portAutoIncrementMax | 100 |
+| ARKTWIN_CENTER_STATIC_RUN_ID_PREFIX | arktwin.center.static.runIdPrefix | run |
 
 #### Edge
 
@@ -196,11 +196,11 @@ Some configuration can be overridden using environment variables.
 | ARKTWIN_EDGE_PROMETHEUS_PUSHGATEWAY_API_URL | kamon.prometheus.pushgateway.api-url | http://localhost:9091/metrics/job/arktwin-edge |
 | ARKTWIN_EDGE_STATIC_EDGE_ID_PREFIX | arktwin.edge.static.edgeIdPrefix | edge |
 | ARKTWIN_EDGE_STATIC_HOST | arktwin.edge.static.host | 0.0.0.0 |
-| ARKTWIN_EDGE_STATIC_LOG_LEVEL | arktwin.edge.static.log-level | Info |
-| ARKTWIN_EDGE_STATIC_LOG_LEVEL_COLOR | arktwin.edge.static.log-level-color | true |
+| ARKTWIN_EDGE_STATIC_LOG_LEVEL | arktwin.edge.static.logLevel | Info |
+| ARKTWIN_EDGE_STATIC_LOG_LEVEL_COLOR | arktwin.edge.static.logLevelColor | true |
 | ARKTWIN_EDGE_STATIC_PORT | arktwin.edge.static.port | 2237 |
-| ARKTWIN_EDGE_STATIC_PORT_AUTO_INCREMENT | arktwin.edge.static.port-auto-increment | true |
-| ARKTWIN_EDGE_STATIC_PORT_AUTO_INCREMENT_MAX | arktwin.edge.static.port-auto-increment-max | 100 |
+| ARKTWIN_EDGE_STATIC_PORT_AUTO_INCREMENT | arktwin.edge.static.portAutoIncrement | true |
+| ARKTWIN_EDGE_STATIC_PORT_AUTO_INCREMENT_MAX | arktwin.edge.static.portAutoIncrementMax | 100 |
 
 ## REST API
 
