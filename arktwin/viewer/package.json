@@ -31,7 +31,7 @@
     "@mui/x-date-pickers": "7.27.1",
     "@react-three/drei": "9.121.4",
     "@react-three/fiber": "8.17.14",
-    "material-react-table": "3.1.0",
+    "material-react-table": "3.2.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "three": "0.174.0"
