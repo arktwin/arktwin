@@ -7,7 +7,7 @@ import {
   MaterialReactTable,
   useMaterialReactTable,
 } from 'material-react-table'
-import { useEffect, useMemo, useState } from 'react'
+import { type ReactElement, useEffect, useMemo, useState } from 'react'
 import { Euler, OrthographicCamera } from 'three'
 import type { EdgeNeighborsQueryResponse } from './types.tsx'
 
@@ -21,7 +21,7 @@ class Agent {
   ) {}
 }
 
-export function App(): JSX.Element {
+export function App(): ReactElement {
   const [selectedAgentIds, setSelectedAgentIds] = useState<string[]>([])
   const [agents, updateAgents] = useState<Agent[]>([])
   const [projectionAxes, setProjectionAxes] = useState<'xy' | 'yz' | 'xz'>('xy')
@@ -110,7 +110,7 @@ function AgentsTable(props: {
   agents: Agent[]
   selectedAgentIds: string[]
   setSelectedAgentIds: (a: string[]) => void
-}): JSX.Element {
+}): ReactElement {
   const [rowSelection, setRowSelection] = useState<MRT_RowSelectionState>({})
 
   const columns = useMemo<MRT_ColumnDef<Agent>[]>(
@@ -180,7 +180,7 @@ function AgentsCanvas(props: {
   agents: Agent[]
   selectedAgentIds: string[]
   projectionAxes: 'xy' | 'yz' | 'xz'
-}): JSX.Element {
+}): ReactElement {
   const { agents, projectionAxes } = props
   const gridSize = useMemo<number>(
     () =>
@@ -248,7 +248,7 @@ function AgentsCanvas(props: {
 function Camera(props: {
   gridSize: number
   projectionAxes: 'xy' | 'yz' | 'xz'
-}): JSX.Element {
+}): ReactElement {
   const { gridSize, projectionAxes } = props
 
   // see https://r3f.docs.pmnd.rs/api/hooks#exchanging-defaults
