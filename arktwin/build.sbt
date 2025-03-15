@@ -6,7 +6,7 @@ import scala.sys.process.Process
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val catsVersion = "2.13.0"
-val gatlingVersion = "3.13.4"
+val gatlingVersion = "3.13.5"
 val jsoniterScalaVersion = "2.33.2"
 val kamonVersion = "2.7.5"
 val pekkoHttpVersion = "1.1.0"
