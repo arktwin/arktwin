@@ -33,7 +33,7 @@
     "@react-three/fiber": "9.0.4",
     "material-react-table": "3.2.1",
     "react": "19.1.0",
-    "react-dom": "19.0.0",
+    "react-dom": "19.1.0",
     "three": "0.174.0"
   },
   "overrides": {
