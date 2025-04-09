@@ -13,7 +13,7 @@ val pekkoHttpVersion = "1.1.0"
 val pekkoVersion = "1.1.3"
 val pureConfigVersion = "0.17.8"
 val scalaTestVersion = "3.2.19"
-val scribeVersion = "3.16.0"
+val scribeVersion = "3.16.1"
 val tapirSpecVersion = "0.11.7"
 val tapirVersion = "1.11.20"
 
