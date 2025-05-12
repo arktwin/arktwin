@@ -6,7 +6,6 @@ import arktwin.common.data.Vector3Enu
 import arktwin.common.util.EnumConfigIdentityReader
 import cats.data.Validated.condNec
 import cats.data.ValidatedNec
-import pureconfig.ConfigReader
 import sttp.tapir.Schema
 import sttp.tapir.Schema.annotations.description
 

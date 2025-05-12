@@ -4,7 +4,6 @@ package arktwin.edge.endpoints
 
 import arktwin.center.services.{AdminClient, UpdateClockSpeedRequest}
 import arktwin.common.data.TaggedTimestamp
-import arktwin.common.data.TimestampExtensions.*
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.JsonDerivation.given
 import arktwin.edge.util.{EdgeKamon, ErrorStatus, RequestValidator}

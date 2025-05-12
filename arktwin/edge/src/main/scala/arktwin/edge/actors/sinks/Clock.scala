@@ -4,7 +4,7 @@ package arktwin.edge.actors.sinks
 
 import arktwin.center.services.ClockBase
 import arktwin.common.util.BehaviorsExtensions.*
-import arktwin.common.util.{BehaviorsExtensions, MailboxConfig}
+import arktwin.common.util.MailboxConfig
 import arktwin.edge.configs.StaticEdgeConfig
 import arktwin.edge.util.CommonMessages.Nop
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
