@@ -19,7 +19,7 @@ object SourceExtensions:
             .take(1)
             .to(Sink.foreach(_ => scribe.info(s"[$streamName] stream receives first element"))),
           Sink.onComplete[Out]:
-            case Success(done) => scribe.warn(s"[$streamName] upstream completes")
-            case Failure(e)    => scribe.warn(s"[$streamName] downstream cancels, cause: $e")
+            case Success(_) => scribe.warn(s"[$streamName] upstream completes")
+            case Failure(e) => scribe.warn(s"[$streamName] downstream cancels, cause: $e")
         )(Broadcast(_))
       )

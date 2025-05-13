@@ -3,7 +3,6 @@
 package arktwin.edge.endpoints
 
 import arktwin.common.data.TaggedTimestamp
-import arktwin.common.data.TimestampExtensions.*
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.AxisConfig.Direction
 import arktwin.edge.configs.CoordinateConfig.{LengthUnit, SpeedUnit}

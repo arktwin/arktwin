@@ -3,7 +3,6 @@
 package arktwin.edge.data
 
 import arktwin.common.data.Vector3Enu
-import arktwin.common.data.Vector3EnuExtensions.*
 import arktwin.edge.configs.AxisConfig
 
 case class Vector3(

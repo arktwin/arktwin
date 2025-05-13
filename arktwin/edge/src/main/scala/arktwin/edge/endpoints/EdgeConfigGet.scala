@@ -3,7 +3,6 @@
 package arktwin.edge.endpoints
 
 import arktwin.common.data.TaggedTimestamp
-import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.util.LoggerConfigurator.LogLevel
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.{DynamicEdgeConfig, EdgeConfig, StaticEdgeConfig}

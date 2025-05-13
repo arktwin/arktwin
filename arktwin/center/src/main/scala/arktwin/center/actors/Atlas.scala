@@ -125,7 +125,7 @@ object Atlas:
       config.culling match
         case AtlasConfig.Broadcast() =>
           val updateRouteTable = Chart.UpdateRouteTable(_ => chartSubscribers)
-          for (edgeId, chart) <- charts do chart ! updateRouteTable
+          for (_, chart) <- charts do chart ! updateRouteTable
           Behaviors.stopped
 
         case AtlasConfig.GridCulling(gridCellSize) =>
@@ -171,7 +171,7 @@ object Atlas:
                     Map()
                   )
               )
-              for (edgeId, chart) <- charts do chart ! updateRouteTable
+              for (_, chart) <- charts do chart ! updateRouteTable
 
               logger.debug(
                 partitionToSubscriber.toSeq

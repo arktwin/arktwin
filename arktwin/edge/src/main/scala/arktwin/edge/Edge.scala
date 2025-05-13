@@ -226,7 +226,7 @@ object Edge:
             if port <= (config.static.port + config.static.portAutoIncrementMax)
             then
               runServer(port).recoverWith:
-                case e: BindFailedException =>
+                case _: BindFailedException =>
                   runServerRecursively(port + 1)
             else
               Future(
