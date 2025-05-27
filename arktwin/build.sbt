@@ -6,7 +6,7 @@ import scala.sys.process.Process
 import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val catsVersion = "2.13.0"
-val gatlingVersion = "3.14.1"
+val gatlingVersion = "3.14.3"
 val jsoniterScalaVersion = "2.36.2"
 val kamonVersion = "2.7.7"
 val pekkoHttpVersion = "1.2.0"
@@ -15,7 +15,7 @@ val pureConfigVersion = "0.17.9"
 val scalaTestVersion = "3.2.19"
 val scribeVersion = "3.16.1"
 val tapirSpecVersion = "0.11.9"
-val tapirVersion = "1.11.29"
+val tapirVersion = "1.11.32"
 
 val apacheLicenseV2 = Some(
   HeaderLicense.Custom(
