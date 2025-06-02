@@ -29,7 +29,7 @@
     "@mui/icons-material": "7.1.0",
     "@mui/material": "7.1.0",
     "@mui/x-date-pickers": "8.5.0",
-    "@react-three/drei": "10.0.7",
+    "@react-three/drei": "10.1.2",
     "@react-three/fiber": "9.1.2",
     "material-react-table": "3.2.1",
     "react": "19.1.0",
