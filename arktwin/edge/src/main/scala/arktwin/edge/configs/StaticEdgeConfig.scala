@@ -29,7 +29,7 @@ case class StaticEdgeConfig(
     import cats.syntax.apply.*
     (
       Validator[CreateEdgeRequest].validate(CreateEdgeRequest(edgeIdPrefix)) match
-        case Success => valid(edgeIdPrefix)
+        case Success             => valid(edgeIdPrefix)
         case Failure(violations) =>
           invalidNec(
             s"$path.edgeIdPrefix: " + violations
