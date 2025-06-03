@@ -3,20 +3,20 @@ skinparam defaultTextAlignment center
 
 frame "Remote Network" {
   node "ArkTwin Center" {
-    agent "<color:#gray>Conductor</color>" as Conductor
+    storage "<color:#gray>Conductor</color>" as Conductor
 
-    agent "Atlas" as Atlas
-    collections "ChartRecorder" as ChartRecorder
-    collections "Chart" as center.Chart
+    storage "Atlas" as Atlas
+    storage "ChartRecorder x N" as ChartRecorder
+    storage "Chart x N" as center.Chart
 
-    agent "Clock" as center.Clock
-    agent "<color:#gray>Reporter</color>" as Reporter
-    agent "Register" as center.Register
+    storage "Clock" as center.Clock
+    storage "<color:#gray>Reporter</color>" as Reporter
+    storage "Register" as center.Register
 
-    storage "Kamon" as center.Kamon
-    agent "CenterKamon" as CenterKamon
-    agent "CenterReporter" as CenterReporter
-    agent "DeadLetterListener" as center.DeadLetterListener
+    rectangle "Kamon" as center.Kamon
+    storage "CenterKamon" as CenterKamon
+    storage "CenterReporter" as CenterReporter
+    storage "DeadLetterListener" as center.DeadLetterListener
 
     rectangle "gRPC Services" as center.services {
       interface "Admin" as AdminService
@@ -37,7 +37,7 @@ frame "Remote Network" {
 }
 
 frame "Local Network<plain>, which can deny inbound connections</plain>" {
-  node "ArkTwin Edge" {
+  node "ArkTwin Edge x N" {
     rectangle "gRPC Clients" as edge.clients {
       interface "Admin" as AdminClient
       interface "Chart" as ChartClient
@@ -46,21 +46,21 @@ frame "Local Network<plain>, which can deny inbound connections</plain>" {
       interface "Register" as RegisterClient
     }
 
-    storage "Kamon" as Kamon
-    agent "EdgeKamon" as EdgeKamon
-    agent "EdgeReporter" as EdgeReporter
-    agent "DeadLetterListener" as DeadLetterListener
+    rectangle "Kamon" as Kamon
+    storage "EdgeKamon" as EdgeKamon
+    storage "EdgeReporter" as EdgeReporter
+    storage "DeadLetterListener" as DeadLetterListener
 
     rectangle " " as edge.actors {
-      agent "Chart" as Chart
-      agent "Clock" as Clock
-      agent "Register" as Register
+      storage "Chart" as Chart
+      storage "Clock" as Clock
+      storage "Register" as Register
 
-      agent " " as EdgeAgentsPutAdapter
-      agent " " as EdgeNeighborsQueryAdapter
+      storage " " as EdgeAgentsPutAdapter
+      storage " " as EdgeNeighborsQueryAdapter
     }
 
-    agent "EdgeConfigurator" as EdgeConfigurator
+    storage "EdgeConfigurator" as EdgeConfigurator
 
     rectangle "REST API" as edge.endpoints {
       rectangle "/api/center" {
