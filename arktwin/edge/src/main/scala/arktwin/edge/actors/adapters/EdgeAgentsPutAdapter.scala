@@ -70,7 +70,7 @@ object EdgeAgentsPutAdapter:
         optionalPreviousAgents match
           case Some(previousAgents) =>
             context.spawnAnonymous(
-              child(
+              session(
                 putMessage,
                 previousAgents,
                 context.self,
@@ -100,9 +100,9 @@ object EdgeAgentsPutAdapter:
         coordinateConfig = newCoordinateConfig
         Behaviors.same
 
-  private type ChildMessage = ClockBase | Timeout.type
+  private type SessionMessage = ClockBase | Timeout.type
 
-  private def child(
+  private def session(
       putMessage: Put,
       previousAgents: Map[String, TransformEnu],
       parent: ActorRef[Report],
@@ -113,13 +113,13 @@ object EdgeAgentsPutAdapter:
       virtualLatencyHistogram: VirtualDurationHistogram,
       staticConfig: StaticEdgeConfig,
       coordinateConfig: CoordinateConfig
-  ): Behavior[ChildMessage] = Behaviors.setupWithLogger: (context, logger) =>
+  ): Behavior[SessionMessage] = Behaviors.setupWithLogger: (context, logger) =>
     context.setReceiveTimeout(staticConfig.actorTimeout, Timeout)
 
     clock ! Clock.Get(context.self)
     var clockWait = Option.empty[ClockBase]
 
-    def next(): Behavior[ChildMessage] = clockWait match
+    def next(): Behavior[SessionMessage] = clockWait match
       case Some(clockBase) =>
         val now = clockBase.now()
         val requestTime = putMessage.request.timestamp.getOrElse(now)

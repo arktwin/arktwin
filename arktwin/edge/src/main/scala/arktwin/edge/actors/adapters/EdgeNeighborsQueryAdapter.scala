@@ -71,7 +71,7 @@ object EdgeNeighborsQueryAdapter:
         (request.changeDetection, optionalPreviousAgents) match
           case (false, _) =>
             context.spawnAnonymous(
-              child(
+              session(
                 request,
                 None,
                 replyTo,
@@ -88,7 +88,7 @@ object EdgeNeighborsQueryAdapter:
 
           case (true, Some(_)) =>
             context.spawnAnonymous(
-              child(
+              session(
                 request,
                 optionalPreviousAgents,
                 replyTo,
@@ -116,9 +116,9 @@ object EdgeNeighborsQueryAdapter:
         coordinateConfig = newCoordinateConfig
         Behaviors.same
 
-  private type ChildMessage = Chart.ReadReply | ClockBase | Register.ReadReply | Timeout.type
+  private type SessionMessage = Chart.ReadReply | ClockBase | Register.ReadReply | Timeout.type
 
-  private def child(
+  private def session(
       request: Request,
       optionalPreviousAgents: Option[Set[String]],
       replyTo: ActorRef[Either[ErrorStatus, Response]],
@@ -129,7 +129,7 @@ object EdgeNeighborsQueryAdapter:
       virtualLatencyHistogram: VirtualDurationHistogram,
       timeout: FiniteDuration,
       coordinateConfig: CoordinateConfig
-  ): Behavior[ChildMessage] = Behaviors.setupWithLogger: (context, logger) =>
+  ): Behavior[SessionMessage] = Behaviors.setupWithLogger: (context, logger) =>
     context.setReceiveTimeout(timeout, Timeout)
 
     chart ! Chart.Get(context.self)
@@ -141,7 +141,7 @@ object EdgeNeighborsQueryAdapter:
     register ! Register.Get(context.self)
     var registerWait = Option.empty[Map[String, RegisterAgent]]
 
-    def next(): Behavior[ChildMessage] = (chartWait, clockWait, registerWait) match
+    def next(): Behavior[SessionMessage] = (chartWait, clockWait, registerWait) match
       case (Some(chartReply), Some(clockBase), Some(registerReply)) =>
         val requestTime = request.timestamp.getOrElse(clockBase.now())
         val recognizedAgents = chartReply.view
