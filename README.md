@@ -262,8 +262,8 @@ For more details on mailboxes, see [Pekko Mailboxes documentation](https://pekko
 
 ## Presentations
 
-- Akira Yoshioka, Takatomo Torigoe, Naoki Akiyama, Hideki Fujii, Takashi Machida, Satoru Nakanishi, Takayoshi Yoshimura. [ArkTwin: Distributed Heterogeneous Multi-Agent Simulation Platform (Japanese)](https://tsys.jp/dicomo/2024/program/program_abst.html#DS-2). Multimedia, Distributed, Cooperative, and Mobile Symposium 2024. (awarded first prize at the Noguchi Awards)
 - Takatomo Torigoe. [The Future of Distributed Simulation with the Typed Actor Model (Japanese)](https://speakerdeck.com/piyo7/the-future-of-distributed-simulation-with-the-typed-actor-model). FP Matsuri 2025.
+- Akira Yoshioka, Takatomo Torigoe, Naoki Akiyama, Hideki Fujii, Takashi Machida, Satoru Nakanishi, Takayoshi Yoshimura. [ArkTwin: Distributed Heterogeneous Multi-Agent Simulation Platform (Japanese)](https://tsys.jp/dicomo/2024/program/program_abst.html#DS-2). Multimedia, Distributed, Cooperative, and Mobile Symposium 2024. (awarded first prize at the Noguchi Awards)
 
 ## Contributing
 
