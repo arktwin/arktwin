@@ -104,7 +104,7 @@ object Atlas:
           Behaviors.same
 
         case SpawnUpdateRouteTable =>
-          val child = context.spawnAnonymous(
+          val session = context.spawnAnonymous(
             updateRouteTable(
               chartRecorders,
               charts,
@@ -112,7 +112,7 @@ object Atlas:
               config
             )
           )
-          context.watchWith(child, UpdateRouteTableTerminated)
+          context.watchWith(session, UpdateRouteTableTerminated)
           Behaviors.same
 
   private def updateRouteTable(
