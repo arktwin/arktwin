@@ -3,7 +3,7 @@
 package arktwin.edge
 
 import arktwin.center.services.*
-import arktwin.common.util.LoggerConfigurator
+import arktwin.common.util.{ErrorHandler, LoggerConfigurator}
 import arktwin.edge.actors.adapters.*
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
 import arktwin.edge.actors.{DeadLetterListener, EdgeConfigurator}
@@ -32,6 +32,7 @@ import java.io.{File, FileWriter}
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, ExecutionContextExecutor, Future}
 import scala.util.{Failure, Success, Using}
+import arktwin.common.util.ErrorHandler
 
 object Edge:
   val centerYaml: String = OpenAPIDocsInterpreter()
@@ -240,9 +241,7 @@ object Edge:
           case Success(server) =>
             scribe.info(s"running on ${server.localAddress.toString}")
           case Failure(e) =>
-            scribe.error(e.getMessage)
-            LoggerConfigurator.flush()
-            sys.exit(1)
+            ErrorHandler.flushAndExit(e.getMessage)
 
     case _ =>
       scribe.error("invalid arguments")
