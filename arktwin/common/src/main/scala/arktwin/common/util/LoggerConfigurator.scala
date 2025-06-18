@@ -16,7 +16,7 @@ object LoggerConfigurator:
   object LogLevel:
     given Schema[LogLevel] = Schema.derivedEnumeration[LogLevel](encode = Some(_.toString))
 
-  private val logHandle = AsynchronousLogHandle()
+  private lazy val logHandle = AsynchronousLogHandle()
 
   export logHandle.flush
 
