@@ -32,6 +32,7 @@ import java.io.{File, FileWriter}
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, ExecutionContextExecutor, Future}
 import scala.util.{Failure, Success, Using}
+
 object Edge:
   val centerYaml: String = OpenAPIDocsInterpreter()
     .toOpenAPI(
