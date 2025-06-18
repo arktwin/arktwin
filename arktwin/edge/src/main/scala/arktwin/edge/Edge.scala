@@ -241,6 +241,7 @@ object Edge:
             scribe.info(s"running on ${server.localAddress.toString}")
           case Failure(e) =>
             scribe.error(e.getMessage)
+            LoggerConfigurator.flush()
             sys.exit(1)
 
     case _ =>
