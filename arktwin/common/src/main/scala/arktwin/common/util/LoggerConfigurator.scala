@@ -16,6 +16,10 @@ object LoggerConfigurator:
   object LogLevel:
     given Schema[LogLevel] = Schema.derivedEnumeration[LogLevel](encode = Some(_.toString))
 
+  private lazy val logHandle = AsynchronousLogHandle()
+
+  export logHandle.flush
+
   def init(minimumLevel: LogLevel, logLevelColor: Boolean, logSuppressionList: Seq[String]): Unit =
     scribe.Logger.root
       .clearModifiers()
@@ -27,7 +31,7 @@ object LoggerConfigurator:
         case LogLevel.Trace => Level.Trace)
       .clearHandlers()
       .withHandler(
-        handle = AsynchronousLogHandle(),
+        handle = logHandle,
         formatter =
           import scribe.format.*
           if logLevelColor then

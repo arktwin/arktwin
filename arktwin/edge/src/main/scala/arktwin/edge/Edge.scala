@@ -3,7 +3,7 @@
 package arktwin.edge
 
 import arktwin.center.services.*
-import arktwin.common.util.LoggerConfigurator
+import arktwin.common.util.{ErrorHandler, LoggerConfigurator}
 import arktwin.edge.actors.adapters.*
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
 import arktwin.edge.actors.{DeadLetterListener, EdgeConfigurator}
@@ -240,8 +240,7 @@ object Edge:
           case Success(server) =>
             scribe.info(s"running on ${server.localAddress.toString}")
           case Failure(e) =>
-            scribe.error(e.getMessage)
-            sys.exit(1)
+            ErrorHandler.flushAndExit(e)
 
     case _ =>
       scribe.error("invalid arguments")
