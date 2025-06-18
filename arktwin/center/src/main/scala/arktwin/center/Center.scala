@@ -98,7 +98,7 @@ object Center:
         case Success(server) =>
           scribe.info(s"running on ${server.localAddress.toString}")
         case Failure(e) =>
-          ErrorHandler.flushAndExit(e.getMessage)
+          ErrorHandler.flushAndExit(e)
 
   private def issueRunId(runIdPrefix: String): String =
     val characters = "0123456789abcdefghijklmnopqrstuvwxyz"
