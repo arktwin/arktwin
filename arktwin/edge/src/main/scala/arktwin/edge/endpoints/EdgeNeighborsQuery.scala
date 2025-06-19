@@ -30,8 +30,8 @@ object EdgeNeighborsQuery:
   val Request: EdgeNeighborsQueryRequest.type = EdgeNeighborsQueryRequest
   val Response: EdgeNeighborsQueryResponse.type = EdgeNeighborsQueryResponse
   val ResponseAgent: EdgeNeighborsQueryResponseAgent.type = EdgeNeighborsQueryResponseAgent
-  given codecRequest: JsonValueCodec[Request] = JsonCodecMaker.makeWithoutDiscriminator
-  given codecResponse: JsonValueCodec[Response] = JsonCodecMaker.make(
+  given JsonValueCodec[Request] = JsonCodecMaker.makeWithoutDiscriminator
+  given JsonValueCodec[Response] = JsonCodecMaker.make(
     CodecMakerConfig
       .withDiscriminatorFieldName(None)
       .withRequireCollectionFields(true)
