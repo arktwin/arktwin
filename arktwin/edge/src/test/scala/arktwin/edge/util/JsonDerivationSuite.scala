@@ -10,7 +10,7 @@ import scala.concurrent.duration.{FiniteDuration, SECONDS}
 
 class JsonDerivationSuite extends AnyFunSuite with Matchers:
   test("codecFiniteDuration"):
-    import arktwin.edge.util.JsonDerivation.codecFiniteDuration
+    import arktwin.edge.util.JsonDerivation.given
 
     readFromString[FiniteDuration]("\"273 seconds\"") shouldEqual FiniteDuration(273, SECONDS)
     writeToString(FiniteDuration(273, SECONDS)) shouldEqual "\"273 seconds\""

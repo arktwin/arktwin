@@ -77,7 +77,7 @@ object EdgeConfigGet:
       endpoint.serverLogicWithLog: _ =>
         val requestTime = TaggedTimestamp.machineNow()
         (configurator ? EdgeConfigurator.Get.apply)
-          .map(Right[ErrorStatus, EdgeConfig].apply)
+          .map(Right.apply)
           .recover(ErrorStatus.handleFailure)
           .andThen: _ =>
             requestNumCounter.increment()

@@ -1,5 +1,6 @@
 .bsp/
 .bloop/
+.claude/
 .idea/
 .metals/
 .vscode/

@@ -4,6 +4,6 @@ package arktwin.common.util
 
 object ErrorHandler:
   def flushAndExit(e: Throwable): Unit =
-    scribe.error(e.getMessage)
+    scribe.error(e.getMessage())
     LoggerConfigurator.flush()
     sys.exit(1)

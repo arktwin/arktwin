@@ -52,9 +52,9 @@ object JsonDerivation extends SchemaDerivation:
       case _ =>
         originalSchema
 
-  given schemaFiniteDuration: Schema[FiniteDuration] = Schema.string
+  given Schema[FiniteDuration] = Schema.string
 
-  given codecFiniteDuration: JsonValueCodec[FiniteDuration] = new JsonValueCodec[FiniteDuration]:
+  given JsonValueCodec[FiniteDuration] = new JsonValueCodec[FiniteDuration]:
     override val nullValue: FiniteDuration = null
 
     override def encodeValue(x: FiniteDuration, out: JsonWriter): Unit = out.writeVal(x.toString())

@@ -6,10 +6,10 @@ import pureconfig.ConfigFieldMapping
 import pureconfig.generic.{FieldCoproductHint, ProductHint}
 
 object PureConfigHints:
-  given productHint[A]: ProductHint[A] = ProductHint[A](
+  given [A]: ProductHint[A] = ProductHint[A](
     ConfigFieldMapping(identity),
     useDefaultArgs = false,
     allowUnknownKeys = true
   )
-  given fieldCoproductHint[A]: FieldCoproductHint[A] = new FieldCoproductHint[A]("type"):
+  given [A]: FieldCoproductHint[A] = new FieldCoproductHint[A]("type"):
     override def fieldValue(name: String): String = name

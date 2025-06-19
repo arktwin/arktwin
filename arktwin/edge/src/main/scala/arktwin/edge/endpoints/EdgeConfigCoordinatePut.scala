@@ -73,7 +73,7 @@ object EdgeConfigCoordinatePut:
             Future.successful(Left(BadRequest(errors.toChain.toVector)))
           case Valid(request) =>
             configurator ! request
-            Future.successful(Right[ErrorStatus, Response](()))
+            Future.successful(Right(()))
         ).andThen: _ =>
           requestNumCounter.increment()
           processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)

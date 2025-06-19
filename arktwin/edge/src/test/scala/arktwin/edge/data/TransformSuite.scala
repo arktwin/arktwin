@@ -33,7 +33,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
     case _ =>
       false
 
-  given translationSpeedEquality: Equality[Option[Vector3]] =
+  given optionVector3Equality: Equality[Option[Vector3]] =
     case (Some(a), Some(b)) =>
       vector3Equality.areEqual(a, b)
     case (None, None) =>
@@ -41,13 +41,13 @@ class TransformSuite extends AnyFunSuite with Matchers:
     case _ =>
       false
 
-  given transformEquality: Equality[Transform] =
+  given Equality[Transform] =
     case (a: Transform, b: Transform) =>
       a.parentAgentId == b.parentAgentId &&
       vector3Equality.areEqual(a.globalScale, b.globalScale) &&
       rotationEquality.areEqual(a.localRotation, b.localRotation) &&
       vector3Equality.areEqual(a.localTranslation, b.localTranslation) &&
-      translationSpeedEquality.areEqual(a.localTranslationSpeed, b.localTranslationSpeed)
+      optionVector3Equality.areEqual(a.localTranslationSpeed, b.localTranslationSpeed)
     case _ =>
       false
 

@@ -29,14 +29,14 @@ object EdgeAgentsPut:
   type Response = EdgeAgentsPutResponse
   val Request: EdgeAgentsPutRequest.type = EdgeAgentsPutRequest
   val Response: EdgeAgentsPutResponse.type = EdgeAgentsPutResponse
-  given codecRequest: JsonValueCodec[Request] = JsonCodecMaker.make(
+  given JsonValueCodec[Request] = JsonCodecMaker.make(
     CodecMakerConfig
       .withDiscriminatorFieldName(None)
       .withRequireCollectionFields(true)
       .withTransientEmpty(false)
       .withMapMaxInsertNumber(Int.MaxValue)
   )
-  given codecResponse: JsonValueCodec[Response] = JsonCodecMaker.makeWithoutDiscriminator
+  given JsonValueCodec[Response] = JsonCodecMaker.makeWithoutDiscriminator
 
   val inExample: Request = Request(
     Some(VirtualTimestamp(123, 100_000_000)),

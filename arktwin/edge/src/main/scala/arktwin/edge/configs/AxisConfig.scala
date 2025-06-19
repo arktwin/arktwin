@@ -3,9 +3,12 @@
 package arktwin.edge.configs
 
 import arktwin.common.data.Vector3Enu
-import arktwin.common.util.EnumConfigIdentityReader
+import arktwin.common.util.EnumCaseInsensitiveConfigReader
+import arktwin.edge.util.EnumCaseInsensitiveJsonValueCodec
 import cats.data.Validated.condNec
 import cats.data.ValidatedNec
+import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
+import pureconfig.ConfigReader
 import sttp.tapir.Schema
 import sttp.tapir.Schema.annotations.description
 
@@ -44,7 +47,7 @@ case class AxisConfig(
     )
 
 object AxisConfig:
-  enum Direction(val enu: Vector3Enu) derives EnumConfigIdentityReader:
+  enum Direction(val enu: Vector3Enu):
     case East extends Direction(Vector3Enu(1, 0, 0))
     case West extends Direction(Vector3Enu(-1, 0, 0))
     case North extends Direction(Vector3Enu(0, 1, 0))
@@ -52,4 +55,6 @@ object AxisConfig:
     case Up extends Direction(Vector3Enu(0, 0, 1))
     case Down extends Direction(Vector3Enu(0, 0, -1))
   object Direction:
-    given Schema[Direction] = Schema.derivedEnumeration[Direction](encode = Some(_.toString))
+    given Schema[Direction] = Schema.derivedEnumeration(encode = Some(_.toString))
+    given ConfigReader[Direction] = EnumCaseInsensitiveConfigReader(values)
+    given JsonValueCodec[Direction] = EnumCaseInsensitiveJsonValueCodec(values, East)
