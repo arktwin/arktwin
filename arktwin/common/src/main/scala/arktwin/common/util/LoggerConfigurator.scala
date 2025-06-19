@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.common.util
 
-import arktwin.common.util.EnumConfigIdentityReader
+import pureconfig.ConfigReader
 import scribe.format.FormatBlock
 import scribe.format.FormatBlock.Level.PaddedRight
 import scribe.handler.AsynchronousLogHandle
@@ -11,10 +11,11 @@ import scribe.{Level, Logger}
 import sttp.tapir.Schema
 
 object LoggerConfigurator:
-  enum LogLevel derives EnumConfigIdentityReader:
+  enum LogLevel:
     case Error, Warn, Info, Debug, Trace
   object LogLevel:
-    given Schema[LogLevel] = Schema.derivedEnumeration[LogLevel](encode = Some(_.toString))
+    given Schema[LogLevel] = Schema.derivedEnumeration(encode = Some(_.toString))
+    given ConfigReader[LogLevel] = EnumCaseInsensitiveConfigReader(values)
 
   private lazy val logHandle = AsynchronousLogHandle()
 

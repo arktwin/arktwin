@@ -2,10 +2,13 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.configs
 
-import arktwin.common.util.EnumConfigIdentityReader
+import arktwin.common.util.EnumCaseInsensitiveConfigReader
 import arktwin.edge.data.Vector3
+import arktwin.edge.util.EnumCaseInsensitiveJsonValueCodec
 import cats.data.Validated.valid
 import cats.data.ValidatedNec
+import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
+import pureconfig.ConfigReader
 import sttp.tapir.Schema
 import sttp.tapir.Schema.annotations.description
 
@@ -32,15 +35,17 @@ case class CoordinateConfig(
     ).mapN(CoordinateConfig.apply)
 
 object CoordinateConfig:
-  enum LengthUnit(val scale: Double) derives EnumConfigIdentityReader:
+  enum LengthUnit(val scale: Double):
     case Millimeter extends LengthUnit(1e-3)
     case Centimeter extends LengthUnit(1e-2)
     case Meter extends LengthUnit(1)
     case Kilometer extends LengthUnit(1e3)
   object LengthUnit:
-    given Schema[LengthUnit] = Schema.derivedEnumeration[LengthUnit](encode = Some(_.toString))
+    given Schema[LengthUnit] = Schema.derivedEnumeration(encode = Some(_.toString))
+    given ConfigReader[LengthUnit] = EnumCaseInsensitiveConfigReader(values)
+    given JsonValueCodec[LengthUnit] = EnumCaseInsensitiveJsonValueCodec(values, Millimeter)
 
-  enum SpeedUnit(val scale: Double) derives EnumConfigIdentityReader:
+  enum SpeedUnit(val scale: Double):
     case MillimeterPerSecond extends SpeedUnit(1e-3)
     case CentimeterPerSecond extends SpeedUnit(1e-2)
     case MeterPerSecond extends SpeedUnit(1)
@@ -56,4 +61,6 @@ object CoordinateConfig:
     case MeterPerHour extends SpeedUnit(1 / 3600.0)
     case KilometerPerHour extends SpeedUnit(1e3 / 3600.0)
   object SpeedUnit:
-    given Schema[SpeedUnit] = Schema.derivedEnumeration[SpeedUnit](encode = Some(_.toString))
+    given Schema[SpeedUnit] = Schema.derivedEnumeration(encode = Some(_.toString))
+    given ConfigReader[SpeedUnit] = EnumCaseInsensitiveConfigReader(values)
+    given JsonValueCodec[SpeedUnit] = EnumCaseInsensitiveJsonValueCodec(values, MillimeterPerSecond)

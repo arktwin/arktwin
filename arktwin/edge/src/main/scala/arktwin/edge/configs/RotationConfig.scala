@@ -2,10 +2,12 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.configs
 
-import arktwin.common.util.EnumConfigIdentityReader
-import arktwin.edge.util.JsonDerivation
+import arktwin.common.util.EnumCaseInsensitiveConfigReader
+import arktwin.edge.util.{EnumCaseInsensitiveJsonValueCodec, JsonDerivation}
 import cats.data.Validated.valid
 import cats.data.ValidatedNec
+import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
+import pureconfig.ConfigReader
 import sttp.tapir.Schema
 import sttp.tapir.Schema.annotations.description
 
@@ -36,19 +38,23 @@ case class EulerAnglesConfig(
     valid(this)
 
 object EulerAnglesConfig:
-  enum AngleUnit derives EnumConfigIdentityReader:
+  enum AngleUnit:
     case Degree, Radian
   object AngleUnit:
-    given Schema[AngleUnit] = Schema.derivedEnumeration[AngleUnit](encode = Some(_.toString))
+    given Schema[AngleUnit] = Schema.derivedEnumeration(encode = Some(_.toString))
+    given ConfigReader[AngleUnit] = EnumCaseInsensitiveConfigReader(values)
+    given JsonValueCodec[AngleUnit] = EnumCaseInsensitiveJsonValueCodec(values, Degree)
 
-  enum RotationMode derives EnumConfigIdentityReader:
+  enum RotationMode:
     case Extrinsic, Intrinsic
   object RotationMode:
-    given Schema[RotationMode] =
-      Schema.derivedEnumeration[RotationMode](encode = Some(_.toString))
+    given Schema[RotationMode] = Schema.derivedEnumeration(encode = Some(_.toString))
+    given ConfigReader[RotationMode] = EnumCaseInsensitiveConfigReader(values)
+    given JsonValueCodec[RotationMode] = EnumCaseInsensitiveJsonValueCodec(values, Extrinsic)
 
-  enum RotationOrder derives EnumConfigIdentityReader:
+  enum RotationOrder:
     case XYZ, XZY, YXZ, YZX, ZXY, ZYX
   object RotationOrder:
-    given Schema[RotationOrder] =
-      Schema.derivedEnumeration[RotationOrder](encode = Some(_.toString))
+    given Schema[RotationOrder] = Schema.derivedEnumeration(encode = Some(_.toString))
+    given ConfigReader[RotationOrder] = EnumCaseInsensitiveConfigReader(values)
+    given JsonValueCodec[RotationOrder] = EnumCaseInsensitiveJsonValueCodec(values, XYZ)
