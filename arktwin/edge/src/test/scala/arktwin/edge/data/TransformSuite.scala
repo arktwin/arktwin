@@ -15,15 +15,15 @@ import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 
 class TransformSuite extends AnyFunSuite with Matchers:
-  given Equality[Double] = TolerantNumerics.tolerantDoubleEquality(0.05)
+  given doubleEquality: Equality[Double] = TolerantNumerics.tolerantDoubleEquality(0.05)
 
-  given Equality[Vector3] =
+  given vector3Equality: Equality[Vector3] =
     case (a: Vector3, b: Vector3) =>
       Seq(a.x, a.y, a.z).zip(Seq(b.x, b.y, b.z)).forall(doubleEquality.areEqual.tupled)
     case _ =>
       false
 
-  given Equality[Rotation] =
+  given rotationEquality: Equality[Rotation] =
     case (a: EulerAngles, b: EulerAngles) =>
       val f = (e: EulerAngles) => Seq(e.x, e.y, e.z)
       f(a).zip(f(b)).forall(doubleEquality.areEqual.tupled)
@@ -33,7 +33,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
     case _ =>
       false
 
-  given Equality[Option[Vector3]] =
+  given optionVector3Equality: Equality[Option[Vector3]] =
     case (Some(a), Some(b)) =>
       vector3Equality.areEqual(a, b)
     case (None, None) =>
@@ -47,7 +47,7 @@ class TransformSuite extends AnyFunSuite with Matchers:
       vector3Equality.areEqual(a.globalScale, b.globalScale) &&
       rotationEquality.areEqual(a.localRotation, b.localRotation) &&
       vector3Equality.areEqual(a.localTranslation, b.localTranslation) &&
-      translationSpeedEquality.areEqual(a.localTranslationSpeed, b.localTranslationSpeed)
+      optionVector3Equality.areEqual(a.localTranslationSpeed, b.localTranslationSpeed)
     case _ =>
       false
 
