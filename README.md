@@ -173,34 +173,34 @@ Some configuration can be overridden using environment variables.
 
 #### Center
 
-| Environment Variable | Configuration Path | Default |
-| --- | --- | --- |
-| ARKTWIN_CENTER_PROMETHEUS_PUSHGATEWAY | kamon.modules.pushgateway-reporter.enabled | false |
-| ARKTWIN_CENTER_PROMETHEUS_PUSHGATEWAY_API_URL | kamon.prometheus.pushgateway.api-url | http://localhost:9091/metrics/job/arktwin-center |
-| ARKTWIN_CENTER_STATIC_HOST | arktwin.center.static.host | 0.0.0.0 |
-| ARKTWIN_CENTER_STATIC_LOG_LEVEL | arktwin.center.static.logLevel | Info |
-| ARKTWIN_CENTER_STATIC_LOG_LEVEL_COLOR | arktwin.center.static.logLevelColor | true |
-| ARKTWIN_CENTER_STATIC_PORT | arktwin.center.static.port | 2236 |
-| ARKTWIN_CENTER_STATIC_PORT_AUTO_INCREMENT | arktwin.center.static.portAutoIncrement | false |
-| ARKTWIN_CENTER_STATIC_PORT_AUTO_INCREMENT_MAX | arktwin.center.static.portAutoIncrementMax | 100 |
-| ARKTWIN_CENTER_STATIC_RUN_ID_PREFIX | arktwin.center.static.runIdPrefix | run |
+| Environment Variable | Configuration Path | Type | Default |
+| --- | --- | --- | --- |
+| ARKTWIN_CENTER_PROMETHEUS_PUSHGATEWAY | kamon.modules.pushgateway-reporter.enabled | boolean | false |
+| ARKTWIN_CENTER_PROMETHEUS_PUSHGATEWAY_API_URL | kamon.prometheus.pushgateway.api-url | string | http://localhost:9091/metrics/job/arktwin-center |
+| ARKTWIN_CENTER_STATIC_HOST | arktwin.center.static.host | string | 0.0.0.0 |
+| ARKTWIN_CENTER_STATIC_LOG_LEVEL | arktwin.center.static.logLevel | Error \| Warn \| Info \| Debug \| Trace | Info |
+| ARKTWIN_CENTER_STATIC_LOG_LEVEL_COLOR | arktwin.center.static.logLevelColor | boolean | true |
+| ARKTWIN_CENTER_STATIC_PORT | arktwin.center.static.port | integer | 2236 |
+| ARKTWIN_CENTER_STATIC_PORT_AUTO_INCREMENT | arktwin.center.static.portAutoIncrement | boolean | false |
+| ARKTWIN_CENTER_STATIC_PORT_AUTO_INCREMENT_MAX | arktwin.center.static.portAutoIncrementMax | integer | 00 |
+| ARKTWIN_CENTER_STATIC_RUN_ID_PREFIX | arktwin.center.static.runIdPrefix | string | run |
 
 #### Edge
 
-| Environment Variable | Configuration Path | Default Value |
-| --- | --- | --- |
-| ARKTWIN_CENTER_STATIC_HOST | pekko.grpc.client.arktwin.host | 127.0.0.1 |
-| ARKTWIN_CENTER_STATIC_PORT | pekko.grpc.client.arktwin.port  | 2236 |
-| ARKTWIN_EDGE_GRPC_CLIENT_TLS | pekko.grpc.client.arktwin.use-tls | false |
-| ARKTWIN_EDGE_PROMETHEUS_PUSHGATEWAY | kamon.modules.pushgateway-reporter.enabled | false |
-| ARKTWIN_EDGE_PROMETHEUS_PUSHGATEWAY_API_URL | kamon.prometheus.pushgateway.api-url | http://localhost:9091/metrics/job/arktwin-edge |
-| ARKTWIN_EDGE_STATIC_EDGE_ID_PREFIX | arktwin.edge.static.edgeIdPrefix | edge |
-| ARKTWIN_EDGE_STATIC_HOST | arktwin.edge.static.host | 0.0.0.0 |
-| ARKTWIN_EDGE_STATIC_LOG_LEVEL | arktwin.edge.static.logLevel | Info |
-| ARKTWIN_EDGE_STATIC_LOG_LEVEL_COLOR | arktwin.edge.static.logLevelColor | true |
-| ARKTWIN_EDGE_STATIC_PORT | arktwin.edge.static.port | 2237 |
-| ARKTWIN_EDGE_STATIC_PORT_AUTO_INCREMENT | arktwin.edge.static.portAutoIncrement | true |
-| ARKTWIN_EDGE_STATIC_PORT_AUTO_INCREMENT_MAX | arktwin.edge.static.portAutoIncrementMax | 100 |
+| Environment Variable | Configuration Path | Type | Default Value |
+| --- | --- | --- | --- |
+| ARKTWIN_CENTER_STATIC_HOST | pekko.grpc.client.arktwin.host | string | 127.0.0.1 |
+| ARKTWIN_CENTER_STATIC_PORT | pekko.grpc.client.arktwin.port  | integer | 2236 |
+| ARKTWIN_EDGE_GRPC_CLIENT_TLS | pekko.grpc.client.arktwin.use-tls | boolean | false |
+| ARKTWIN_EDGE_PROMETHEUS_PUSHGATEWAY | kamon.modules.pushgateway-reporter.enabled | boolean | false |
+| ARKTWIN_EDGE_PROMETHEUS_PUSHGATEWAY_API_URL | kamon.prometheus.pushgateway.api-url | string | http://localhost:9091/metrics/job/arktwin-edge |
+| ARKTWIN_EDGE_STATIC_EDGE_ID_PREFIX | arktwin.edge.static.edgeIdPrefix | string | edge |
+| ARKTWIN_EDGE_STATIC_HOST | arktwin.edge.static.host | string | 0.0.0.0 |
+| ARKTWIN_EDGE_STATIC_LOG_LEVEL | arktwin.edge.static.logLevel | Error \| Warn \| Info \| Debug \| Trace | Info |
+| ARKTWIN_EDGE_STATIC_LOG_LEVEL_COLOR | arktwin.edge.static.logLevelColor | boolean | true |
+| ARKTWIN_EDGE_STATIC_PORT | arktwin.edge.static.port | integer | 2237 |
+| ARKTWIN_EDGE_STATIC_PORT_AUTO_INCREMENT | arktwin.edge.static.portAutoIncrement | boolean | true |
+| ARKTWIN_EDGE_STATIC_PORT_AUTO_INCREMENT_MAX | arktwin.edge.static.portAutoIncrementMax | integer | 100 |
 
 ## REST API
 
