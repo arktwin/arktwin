@@ -182,7 +182,7 @@ Some configuration can be overridden using environment variables.
 | ARKTWIN_CENTER_STATIC_LOG_LEVEL_COLOR | arktwin.center.static.logLevelColor | boolean | true |
 | ARKTWIN_CENTER_STATIC_PORT | arktwin.center.static.port | integer | 2236 |
 | ARKTWIN_CENTER_STATIC_PORT_AUTO_INCREMENT | arktwin.center.static.portAutoIncrement | boolean | false |
-| ARKTWIN_CENTER_STATIC_PORT_AUTO_INCREMENT_MAX | arktwin.center.static.portAutoIncrementMax | integer | 00 |
+| ARKTWIN_CENTER_STATIC_PORT_AUTO_INCREMENT_MAX | arktwin.center.static.portAutoIncrementMax | integer | 100 |
 | ARKTWIN_CENTER_STATIC_RUN_ID_PREFIX | arktwin.center.static.runIdPrefix | string | run |
 
 #### Edge
