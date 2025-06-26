@@ -73,8 +73,8 @@ frame "Local Network<plain>, which can deny inbound connections</plain>" {
         interface "PUT\n/agents" as EdgeAgentsPut
         interface "GET\n/config" as EdgeConfigGet
         interface "PUT\n/config/*" as EdgeConfigPut
-        interface "POST\n/nighbors/_query" as EdgeNeighborsQuery
-        interface "<color:#gray>POST</color>\n<color:#gray>/_tick</color>" as EdgeTick
+        interface "POST\n/neighbors/_query" as EdgeNeighborsQuery
+        interface "POST\n/_bulk" as EdgeBulk
       }
     }
     rectangle "Prometheus\nExporter" as edge.prometheus {
@@ -135,13 +135,13 @@ Chart <-- EdgeAgentsPutAdapter
 Clock o--> EdgeAgentsPutAdapter
 RegisterClient <-- EdgeAgentsPutAdapter
 EdgeAgentsPutAdapter <-- EdgeAgentsPut
-EdgeAgentsPutAdapter <-[#gray]-> EdgeTick
+EdgeAgentsPutAdapter <-- EdgeBulk
 
 Chart o--> EdgeNeighborsQueryAdapter
 Clock o--> EdgeNeighborsQueryAdapter
 Register o--> EdgeNeighborsQueryAdapter
 EdgeNeighborsQueryAdapter o--> EdgeNeighborsQuery
-EdgeNeighborsQueryAdapter o-[#gray]-> EdgeTick
+EdgeNeighborsQueryAdapter o--> EdgeBulk
 
 EdgeConfigurator o--> EdgeConfigGet
 EdgeConfigurator <-- EdgeConfigPut
