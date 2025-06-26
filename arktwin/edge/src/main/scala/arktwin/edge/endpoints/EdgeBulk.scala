@@ -52,8 +52,8 @@ object EdgeBulk:
   )
 
   val outExample: Response = Response(
-    Some(ResponsePart(EdgeAgentsPut.outExample)),
-    Some(ResponsePart(InternalServerError(Seq("unexpected error"))))
+    Some(ResponsePart(InternalServerError(Seq("unexpected error")))),
+    Some(ResponsePart(EdgeNeighborsQuery.outExample))
   )
 
   val endpoint: PublicEndpoint[Request, ErrorStatus, Response, Any] =
