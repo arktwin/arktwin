@@ -12,13 +12,21 @@ import sttp.tapir.{EndpointOutput, oneOfVariant}
 
 import scala.annotation.tailrec
 
-sealed trait ErrorStatus
-case class BadRequest(errors: Seq[String]) extends ErrorStatus
-case class InternalServerError(errors: Seq[String]) extends ErrorStatus
-case class ServiceUnavailable(error: String) extends ErrorStatus
+sealed trait ErrorStatus:
+  def message: String
 
 object ErrorStatus:
   val logger: Logger = LoggerFactory.getLogger(getClass.getName)
+
+  case class BadRequest(errors: Seq[String]) extends ErrorStatus:
+    override def message: String =
+      s"400 Bad Request: ${errors.mkString(", ")}"
+  case class InternalServerError(errors: Seq[String]) extends ErrorStatus:
+    override def message: String =
+      s"500 Internal Server Error: ${errors.mkString(", ")}"
+  case class ServiceUnavailable(error: String) extends ErrorStatus:
+    override def message: String =
+      s"503 Service Unavailable: $error"
 
   val badRequest: EndpointOutput.OneOfVariant[BadRequest] =
     given JsonValueCodec[BadRequest] = JsonCodecMaker.makeWithoutDiscriminator
@@ -32,10 +40,9 @@ object ErrorStatus:
     given JsonValueCodec[ServiceUnavailable] = JsonCodecMaker.makeWithoutDiscriminator
     oneOfVariant(StatusCode.ServiceUnavailable, jsonBody[ServiceUnavailable])
 
-  def handleFailure[A]: PartialFunction[Throwable, Either[ErrorStatus, A]] =
-    case throwable =>
-      logger.warn("Internal Server Error", throwable)
-      Left(InternalServerError(recursiveCauses(List(throwable)).map(_.getMessage).reverse))
+  def apply(throwable: Throwable): ErrorStatus =
+    logger.warn("Internal Server Error", throwable)
+    InternalServerError(recursiveCauses(List(throwable)).map(_.getMessage).reverse)
 
   @tailrec
   private def recursiveCauses(ts: List[Throwable]): List[Throwable] =

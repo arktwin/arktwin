@@ -96,7 +96,7 @@ object EdgeNeighborsQuery:
         val requestTime = TaggedTimestamp.machineNow()
         adapter
           .?[Either[ErrorStatus, Response]](EdgeNeighborsQueryAdapter.Query(request, _))
-          .recover(ErrorStatus.handleFailure)
+          .recover(throwable => Left(ErrorStatus(throwable)))
           .andThen: _ =>
             requestNumCounter.increment()
             processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)

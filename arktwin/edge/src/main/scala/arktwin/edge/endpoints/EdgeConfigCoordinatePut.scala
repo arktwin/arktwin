@@ -10,8 +10,9 @@ import arktwin.edge.configs.EulerAnglesConfig.{AngleUnit, RotationMode, Rotation
 import arktwin.edge.configs.{AxisConfig, CoordinateConfig, EulerAnglesConfig}
 import arktwin.edge.data.Vector3
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
+import arktwin.edge.util.ErrorStatus.BadRequest
 import arktwin.edge.util.JsonDerivation.given
-import arktwin.edge.util.{BadRequest, EdgeKamon, ErrorStatus}
+import arktwin.edge.util.{EdgeKamon, ErrorStatus}
 import cats.data.Validated.{Invalid, Valid}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker

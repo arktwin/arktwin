@@ -55,7 +55,7 @@ object CenterAgentsDelete:
         RequestValidator(request.asMessage)
           .map(client.deleteAgents(_).map(_ => {}))
           .sequence
-          .recover(ErrorStatus.handleFailure)
+          .recover(throwable => Left(ErrorStatus(throwable)))
           .andThen: _ =>
             requestNumCounter.increment()
             processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)
