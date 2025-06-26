@@ -78,7 +78,7 @@ object EdgeConfigGet:
         val requestTime = TaggedTimestamp.machineNow()
         (configurator ? EdgeConfigurator.Get.apply)
           .map(Right.apply)
-          .recover(ErrorStatus.handleFailure)
+          .recover(throwable => Left(ErrorStatus(throwable)))
           .andThen: _ =>
             requestNumCounter.increment()
             processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)

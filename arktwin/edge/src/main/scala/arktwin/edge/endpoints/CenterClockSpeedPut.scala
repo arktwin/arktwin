@@ -51,7 +51,7 @@ object CenterClockSpeedPut:
         RequestValidator(request)
           .map(client.updateClockSpeed(_).map(_ => {}))
           .sequence
-          .recover(ErrorStatus.handleFailure)
+          .recover(throwable => Left(ErrorStatus(throwable)))
           .andThen: _ =>
             requestNumCounter.increment()
             processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)

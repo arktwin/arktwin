@@ -112,7 +112,7 @@ object EdgeAgentsPut:
           .?[Either[ErrorStatus, Response]](
             EdgeAgentsPutAdapter.Put(request, TaggedTimestamp.machineNow(), _)
           )
-          .recover(ErrorStatus.handleFailure)
+          .recover(throwable => Left(ErrorStatus(throwable)))
           .andThen: _ =>
             requestNumCounter.increment()
             agentNumCounter.increment(request.agents.size)

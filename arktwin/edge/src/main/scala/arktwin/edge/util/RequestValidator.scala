@@ -2,6 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.util
 
+import arktwin.edge.util.ErrorStatus.BadRequest
 import scalapb.validate.{Failure, Success, ValidationFailure, Validator}
 
 object RequestValidator:

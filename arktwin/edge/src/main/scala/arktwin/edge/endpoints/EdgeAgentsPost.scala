@@ -71,7 +71,7 @@ object EdgeAgentsPost:
           .map(client.createAgents)
           .map(_.map(_.responses))
           .sequence
-          .recover(ErrorStatus.handleFailure)
+          .recover(throwable => Left(ErrorStatus(throwable)))
           .andThen: _ =>
             requestNumCounter.increment()
             agentNumCounter.increment(requests.size)

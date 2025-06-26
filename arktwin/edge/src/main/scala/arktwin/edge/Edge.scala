@@ -47,6 +47,7 @@ object Edge:
       Seq(
         EdgeAgentsPost.endpoint,
         EdgeAgentsPut.endpoint,
+        EdgeBulk.endpoint,
         EdgeConfigCoordinatePut.endpoint,
         EdgeConfigCullingPut.endpoint,
         EdgeConfigGet.endpoint,
@@ -212,6 +213,8 @@ object Edge:
                 CenterClockSpeedPut.route(adminClient, kamon) ~
                 EdgeAgentsPost.route(registerClient, kamon) ~
                 EdgeAgentsPut.route(edgeAgentsTransformAdapter, config.static, kamon) ~
+                EdgeBulk
+                  .route(edgeAgentsTransformAdapter, edgeNeighborsAdapter, config.static, kamon) ~
                 EdgeConfigCoordinatePut.route(configurator, kamon) ~
                 EdgeConfigCullingPut.route(configurator, kamon) ~
                 EdgeConfigGet.route(configurator, config.static, kamon) ~
