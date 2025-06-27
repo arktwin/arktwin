@@ -3,6 +3,7 @@
 package arktwin.edge.util
 
 import com.github.plokhotnyuk.jsoniter_scala.core.{JsonReader, JsonValueCodec, JsonWriter}
+import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 import sttp.tapir.Schema.SName
 import sttp.tapir.SchemaType.{SCoproduct, SProduct, SProductField, SString}
 import sttp.tapir.Validator.Enumeration
@@ -51,6 +52,15 @@ object JsonDerivation extends SchemaDerivation:
 
       case _ =>
         originalSchema
+
+  inline def makeCodec[A]: JsonValueCodec[A] = JsonCodecMaker.make(
+    CodecMakerConfig
+      .withDiscriminatorFieldName(None)
+      .withRequireCollectionFields(true)
+      .withSkipUnexpectedFields(false)
+      .withTransientEmpty(false)
+      .withMapMaxInsertNumber(Int.MaxValue)
+  )
 
   given Schema[FiniteDuration] = Schema.string
 

@@ -8,7 +8,6 @@ import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.{EdgeKamon, ErrorStatus, JsonDerivation, JsonValidator, RequestValidator}
 import cats.implicits.toTraverseOps
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import org.apache.pekko.http.scaladsl.server.Route
 import sttp.model.StatusCode.Accepted
 import sttp.tapir
@@ -21,7 +20,7 @@ import scala.concurrent.ExecutionContext
 object CenterAgentsDelete:
   type Request = AgentSelector
   type Response = Unit
-  given JsonValueCodec[Request] = JsonCodecMaker.makeWithoutDiscriminator
+  given JsonValueCodec[Request] = JsonDerivation.makeCodec
   given Schema[AgentIdSelector] =
     Schema.derived[AgentIdSelector].modify(_.regex)(JsonValidator.regex)
   given Schema[AgentKindSelector] =

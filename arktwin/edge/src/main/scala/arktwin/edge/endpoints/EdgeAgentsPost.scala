@@ -7,10 +7,9 @@ import arktwin.center.services.{CreateAgentRequest, CreateAgentResponse, Registe
 import arktwin.common.data.TaggedTimestamp
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.JsonDerivation.given
-import arktwin.edge.util.{EdgeKamon, ErrorStatus, RequestValidator}
+import arktwin.edge.util.{EdgeKamon, ErrorStatus, JsonDerivation, RequestValidator}
 import cats.implicits.toTraverseOps
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import org.apache.pekko.http.scaladsl.server.Route
 import sttp.model.StatusCode
 import sttp.tapir
@@ -25,8 +24,8 @@ object EdgeAgentsPost:
   type Response = CreateAgentResponse
   val Request: CreateAgentRequest.type = CreateAgentRequest
   val Response: CreateAgentResponse.type = CreateAgentResponse
-  given codecRequest: JsonValueCodec[Seq[Request]] = JsonCodecMaker.makeWithoutDiscriminator
-  given codecResponse: JsonValueCodec[Seq[Response]] = JsonCodecMaker.makeWithoutDiscriminator
+  given codecRequest: JsonValueCodec[Seq[Request]] = JsonDerivation.makeCodec
+  given codecResponse: JsonValueCodec[Seq[Response]] = JsonDerivation.makeCodec
 
   val inExample: Seq[Request] = Seq(
     Request("alice", "human", Map("emotion" -> "relaxed"), Map("model" -> "girl.obj")),

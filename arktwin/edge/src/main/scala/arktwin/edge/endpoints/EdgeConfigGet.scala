@@ -8,9 +8,8 @@ import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.{DynamicEdgeConfig, EdgeConfig, StaticEdgeConfig}
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.JsonDerivation.given
-import arktwin.edge.util.{EdgeKamon, ErrorStatus}
+import arktwin.edge.util.{EdgeKamon, ErrorStatus, JsonDerivation}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable
 import org.apache.pekko.actor.typed.{ActorRef, Scheduler}
 import org.apache.pekko.http.scaladsl.server.Route
@@ -27,7 +26,7 @@ object EdgeConfigGet:
   type Request = Unit
   type Response = EdgeConfig
   val Response: EdgeConfig.type = EdgeConfig
-  given JsonValueCodec[Response] = JsonCodecMaker.makeWithoutDiscriminator
+  given JsonValueCodec[Response] = JsonDerivation.makeCodec
 
   val outExample: Response = Response(
     dynamic = DynamicEdgeConfig(
