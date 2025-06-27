@@ -7,9 +7,11 @@ import com.github.plokhotnyuk.jsoniter_scala.core.{JsonReader, JsonValueCodec, J
 class EnumCaseInsensitiveJsonValueCodec[A](values: Array[A], override val nullValue: A)
     extends JsonValueCodec[A]:
 
+  private val valuesMap = values.map(v => v.toString.toLowerCase -> v).toMap
+
   override def decodeValue(in: JsonReader, default: A): A =
     val str = in.readString("")
-    values.find(_.toString.toLowerCase == str.toLowerCase) match
+    valuesMap.get(str.toLowerCase) match
       case Some(value) => value
       case None        =>
         throw new IllegalArgumentException(
