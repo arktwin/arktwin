@@ -13,8 +13,8 @@ object EdgeAgentsPostScenario:
       .fill(n)(s"""{
         |  "agentIdPrefix": "$agentIdPrefix",
         |  "kind": "$kind",
-        |  "status": {
-        |  }
+        |  "status": {},
+        |  "assets": {}
         |}""".stripMargin.filterNot(_.isWhitespace))
       .mkString("[", ",", "]")
 

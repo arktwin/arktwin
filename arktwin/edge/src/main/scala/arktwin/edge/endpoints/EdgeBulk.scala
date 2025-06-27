@@ -9,9 +9,8 @@ import arktwin.edge.data.*
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.ErrorStatus.InternalServerError
 import arktwin.edge.util.JsonDerivation.given
-import arktwin.edge.util.{EdgeKamon, ErrorStatus}
+import arktwin.edge.util.{EdgeKamon, ErrorStatus, JsonDerivation}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable
 import org.apache.pekko.actor.typed.{ActorRef, Scheduler}
 import org.apache.pekko.http.scaladsl.server.Route
@@ -31,20 +30,8 @@ object EdgeBulk:
   val Request: EdgeBulkRequest.type = EdgeBulkRequest
   val Response: EdgeBulkResponse.type = EdgeBulkResponse
   val ResponsePart: EdgeBulkResponsePart.type = EdgeBulkResponsePart
-  given JsonValueCodec[Request] = JsonCodecMaker.make(
-    CodecMakerConfig
-      .withDiscriminatorFieldName(None)
-      .withRequireCollectionFields(true)
-      .withTransientEmpty(false)
-      .withMapMaxInsertNumber(Int.MaxValue)
-  )
-  given JsonValueCodec[Response] = JsonCodecMaker.make(
-    CodecMakerConfig
-      .withDiscriminatorFieldName(None)
-      .withRequireCollectionFields(true)
-      .withTransientEmpty(false)
-      .withMapMaxInsertNumber(Int.MaxValue)
-  )
+  given JsonValueCodec[Request] = JsonDerivation.makeCodec
+  given JsonValueCodec[Response] = JsonDerivation.makeCodec
 
   val inExample: Request = Request(
     Some(EdgeAgentsPut.inExample),

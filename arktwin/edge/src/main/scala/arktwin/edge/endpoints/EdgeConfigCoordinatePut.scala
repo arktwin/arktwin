@@ -12,10 +12,9 @@ import arktwin.edge.data.Vector3
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.ErrorStatus.BadRequest
 import arktwin.edge.util.JsonDerivation.given
-import arktwin.edge.util.{EdgeKamon, ErrorStatus}
+import arktwin.edge.util.{EdgeKamon, ErrorStatus, JsonDerivation}
 import cats.data.Validated.{Invalid, Valid}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import org.apache.pekko.actor.typed.ActorRef
 import org.apache.pekko.http.scaladsl.server.Route
 import sttp.model.StatusCode.Accepted
@@ -30,7 +29,7 @@ object EdgeConfigCoordinatePut:
   type Request = CoordinateConfig
   type Response = Unit
   val Request: CoordinateConfig.type = CoordinateConfig
-  given JsonValueCodec[Request] = JsonCodecMaker.makeWithoutDiscriminator
+  given JsonValueCodec[Request] = JsonDerivation.makeCodec
 
   val inExample: Request = Request(
     AxisConfig(

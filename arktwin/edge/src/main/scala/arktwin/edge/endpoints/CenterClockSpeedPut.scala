@@ -6,10 +6,9 @@ import arktwin.center.services.{AdminClient, UpdateClockSpeedRequest}
 import arktwin.common.data.TaggedTimestamp
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.JsonDerivation.given
-import arktwin.edge.util.{EdgeKamon, ErrorStatus, RequestValidator}
+import arktwin.edge.util.{EdgeKamon, ErrorStatus, JsonDerivation, RequestValidator}
 import cats.implicits.toTraverseOps
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import org.apache.pekko.http.scaladsl.server.Route
 import sttp.model.StatusCode.Accepted
 import sttp.tapir
@@ -23,7 +22,7 @@ object CenterClockSpeedPut:
   type Request = UpdateClockSpeedRequest
   type Response = Unit
   val Request: UpdateClockSpeedRequest.type = UpdateClockSpeedRequest
-  given JsonValueCodec[Request] = JsonCodecMaker.makeWithoutDiscriminator
+  given JsonValueCodec[Request] = JsonDerivation.makeCodec
 
   val inExample: Request = Request(1.2)
 

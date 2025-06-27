@@ -2,8 +2,8 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.util
 
+import arktwin.edge.util.JsonDerivation
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import org.slf4j.{Logger, LoggerFactory}
 import sttp.model.StatusCode
 import sttp.tapir.generic.auto.*
@@ -29,15 +29,15 @@ object ErrorStatus:
       s"503 Service Unavailable: $error"
 
   val badRequest: EndpointOutput.OneOfVariant[BadRequest] =
-    given JsonValueCodec[BadRequest] = JsonCodecMaker.makeWithoutDiscriminator
+    given JsonValueCodec[BadRequest] = JsonDerivation.makeCodec
     oneOfVariant(StatusCode.BadRequest, jsonBody[BadRequest])
 
   val internalServerError: EndpointOutput.OneOfVariant[InternalServerError] =
-    given JsonValueCodec[InternalServerError] = JsonCodecMaker.makeWithoutDiscriminator
+    given JsonValueCodec[InternalServerError] = JsonDerivation.makeCodec
     oneOfVariant(StatusCode.InternalServerError, jsonBody[InternalServerError])
 
   val serviceUnavailable: EndpointOutput.OneOfVariant[ServiceUnavailable] =
-    given JsonValueCodec[ServiceUnavailable] = JsonCodecMaker.makeWithoutDiscriminator
+    given JsonValueCodec[ServiceUnavailable] = JsonDerivation.makeCodec
     oneOfVariant(StatusCode.ServiceUnavailable, jsonBody[ServiceUnavailable])
 
   def apply(throwable: Throwable): ErrorStatus =

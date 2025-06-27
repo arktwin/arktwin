@@ -8,10 +8,9 @@ import arktwin.edge.configs.CullingConfig
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.ErrorStatus.BadRequest
 import arktwin.edge.util.JsonDerivation.given
-import arktwin.edge.util.{EdgeKamon, ErrorStatus}
+import arktwin.edge.util.{EdgeKamon, ErrorStatus, JsonDerivation}
 import cats.data.Validated.{Invalid, Valid}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
-import com.github.plokhotnyuk.jsoniter_scala.macros.JsonCodecMaker
 import org.apache.pekko.actor.typed.ActorRef
 import org.apache.pekko.http.scaladsl.server.Route
 import sttp.model.StatusCode.Accepted
@@ -26,7 +25,7 @@ object EdgeConfigCullingPut:
   type Request = CullingConfig
   type Response = Unit
   val Request: CullingConfig.type = CullingConfig
-  given JsonValueCodec[Request] = JsonCodecMaker.makeWithoutDiscriminator
+  given JsonValueCodec[Request] = JsonDerivation.makeCodec
 
   val inExample: Request = Request(edgeCulling = true, 9)
 
