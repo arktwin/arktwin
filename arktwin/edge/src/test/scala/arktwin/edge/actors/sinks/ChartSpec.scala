@@ -3,7 +3,7 @@
 package arktwin.edge.actors.sinks
 
 import arktwin.center.services.ChartAgent
-import arktwin.common.data.{QuaternionEnu, Timestamp, TransformEnu, Vector3Enu}
+import arktwin.common.data.*
 import arktwin.edge.actors.sinks.Chart.*
 import arktwin.edge.configs.CullingConfig
 import arktwin.edge.endpoints.EdgeConfigGet

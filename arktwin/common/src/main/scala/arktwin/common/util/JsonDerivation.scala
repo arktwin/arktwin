@@ -6,7 +6,7 @@ import arktwin.common.data.Timestamp
 import com.github.plokhotnyuk.jsoniter_scala.core.{JsonReader, JsonValueCodec, JsonWriter}
 import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 import sttp.tapir.Schema.SName
-import sttp.tapir.SchemaType.{SCoproduct, SProduct, SProductField, SString}
+import sttp.tapir.SchemaType.*
 import sttp.tapir.Validator.Enumeration
 import sttp.tapir.generic.auto.SchemaDerivation
 import sttp.tapir.{FieldName, Schema}

@@ -3,7 +3,7 @@
 package arktwin.edge.util
 
 import arktwin.edge.util.ErrorStatus.BadRequest
-import scalapb.validate.{Failure, Success, ValidationFailure, Validator}
+import scalapb.validate.*
 
 object RequestValidator:
   def apply[A: Validator](value: A): Either[BadRequest, A] =

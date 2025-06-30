@@ -3,13 +3,13 @@
 package arktwin.edge.data
 
 import arktwin.common.data.VirtualTimestamp
+import arktwin.edge.configs.*
 import arktwin.edge.configs.AxisConfig.Direction.*
 import arktwin.edge.configs.CoordinateConfig.LengthUnit.*
 import arktwin.edge.configs.CoordinateConfig.SpeedUnit.*
 import arktwin.edge.configs.EulerAnglesConfig.AngleUnit.*
 import arktwin.edge.configs.EulerAnglesConfig.RotationMode.*
 import arktwin.edge.configs.EulerAnglesConfig.RotationOrder.*
-import arktwin.edge.configs.{AxisConfig, CoordinateConfig, EulerAnglesConfig, QuaternionConfig}
 import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
