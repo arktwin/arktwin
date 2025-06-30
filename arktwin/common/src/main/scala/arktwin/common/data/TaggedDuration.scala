@@ -4,6 +4,8 @@ package arktwin.common.data
 
 import scala.concurrent.duration.Duration as ScalaDuration
 
+import TimeConstants.*
+
 type MachineDuration = TaggedDuration[MachineTag]
 object MachineDuration:
   inline def apply(seconds: Long, nanos: Int): MachineDuration =
@@ -82,9 +84,3 @@ object TaggedDuration:
 
   def normalize[A <: TimeTag](duration: TaggedDuration[A]): TaggedDuration[A] =
     normalize(duration.seconds, duration.nanos)
-
-  inline val nanosPerSecond = 1000000000L
-  inline val nanosPerMillisecond = 1000000L
-  inline val nanosPerMicrosecond = 1000L
-  inline val millisPerSecond = 1000L
-  inline val microsPerSeconds = 1000000L

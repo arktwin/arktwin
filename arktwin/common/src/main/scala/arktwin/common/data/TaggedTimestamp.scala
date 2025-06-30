@@ -5,6 +5,8 @@ package arktwin.common.data
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZoneOffset, ZonedDateTime}
 
+import TimeConstants.*
+
 type MachineTimestamp = TaggedTimestamp[MachineTag]
 object MachineTimestamp:
   inline def apply(seconds: Long, nanos: Int): MachineTimestamp =
@@ -65,12 +67,12 @@ object TaggedTimestamp:
   def normalize[A <: TimeTag](seconds: Long, nanos: Long): TaggedTimestamp[A] =
     var s = seconds
     var n = nanos
-    if n <= -TaggedDuration.nanosPerSecond || n >= TaggedDuration.nanosPerSecond then
-      s = Math.addExact(s, n / TaggedDuration.nanosPerSecond)
-      n = n % TaggedDuration.nanosPerSecond
+    if n <= -nanosPerSecond || n >= nanosPerSecond then
+      s = Math.addExact(s, n / nanosPerSecond)
+      n = n % nanosPerSecond
     if n < 0 then
       s = Math.subtractExact(s, 1)
-      n = n + TaggedDuration.nanosPerSecond // no overflow since negative nanos is added
+      n = n + nanosPerSecond // no overflow since negative nanos is added
     TaggedTimestamp(s, n.toInt)
 
   def normalize[A <: TimeTag](timestamp: TaggedTimestamp[A]): TaggedTimestamp[A] =
