@@ -3,12 +3,13 @@
 package arktwin.edge.endpoints
 
 import arktwin.common.data.TaggedTimestamp
+import arktwin.common.util.JsonDerivation
+import arktwin.common.util.JsonDerivation.given
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.CullingConfig
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.ErrorStatus.BadRequest
-import arktwin.edge.util.JsonDerivation.given
-import arktwin.edge.util.{EdgeKamon, ErrorStatus, JsonDerivation}
+import arktwin.edge.util.{EdgeKamon, ErrorStatus}
 import cats.data.Validated.{Invalid, Valid}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import org.apache.pekko.actor.typed.ActorRef

@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package arktwin.common.data;
 
+import "validate/validate.proto";
+
 message Duration {
   int64 seconds = 1;
-  int32 nanos = 2;
+  int32 nanos = 2 [(validate.rules).int32 = {gte: -999999999, lte: 999999999}];
 }

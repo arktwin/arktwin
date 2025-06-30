@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.util
 
-import arktwin.edge.util.JsonDerivation
+import arktwin.common.util.JsonDerivation
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import org.slf4j.{Logger, LoggerFactory}
 import sttp.model.StatusCode

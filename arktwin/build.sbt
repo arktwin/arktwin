@@ -71,12 +71,15 @@ lazy val common = (project in file("common"))
     headerLicense := apacheLicenseV2,
     headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
+      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core" % jsoniterScalaVersion,
+      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % jsoniterScalaVersion,
       "com.github.pureconfig" %% "pureconfig-core" % pureConfigVersion,
       "com.github.pureconfig" %% "pureconfig-generic-scala3" % pureConfigVersion,
       "com.outr" %% "scribe" % scribeVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-core" % tapirVersion,
       "com.thesamet.scalapb" %% "scalapb-validate-core" % scalapb.validate.compiler.BuildInfo.version % "protobuf",
       "io.kamon" %% "kamon-core" % kamonVersion,
+      "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
@@ -106,9 +109,6 @@ lazy val center = (project in file("center"))
     headerLicense := apacheLicenseV2,
     headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
-      "com.github.pureconfig" %% "pureconfig-core" % pureConfigVersion,
-      "com.github.pureconfig" %% "pureconfig-generic-scala3" % pureConfigVersion,
-      "com.outr" %% "scribe" % scribeVersion,
       "com.outr" %% "scribe-slf4j2" % scribeVersion,
       // kamon-prometheus depends on okio with module name problems via okhttp
       // see https://github.com/square/okio/issues/1306
@@ -116,10 +116,8 @@ lazy val center = (project in file("center"))
       "io.kamon" %% "kamon-prometheus" % kamonVersion exclude ("com.squareup.okhttp3", "okhttp"),
       "io.kamon" %% "kamon-system-metrics" % kamonVersion,
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
-      "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
       "org.apache.pekko" %% "pekko-discovery" % pekkoVersion,
       "org.apache.pekko" %% "pekko-http" % pekkoHttpVersion,
-      "org.apache.pekko" %% "pekko-stream-testkit" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-stream-typed" % pekkoVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
       "org.typelevel" %% "cats-core" % catsVersion
@@ -150,9 +148,6 @@ lazy val edge = (project in file("edge"))
     headerLicense := apacheLicenseV2,
     headerMappings := headerMappings.value + (HeaderFileType.scala -> HeaderCommentStyle.cppStyleLineComment),
     libraryDependencies ++= Seq(
-      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % jsoniterScalaVersion % Provided,
-      "com.github.pureconfig" %% "pureconfig-core" % pureConfigVersion,
-      "com.outr" %% "scribe" % scribeVersion,
       "com.outr" %% "scribe-slf4j2" % scribeVersion,
       "com.softwaremill.sttp.apispec" %% "openapi-circe-yaml" % tapirSpecVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-jsoniter-scala" % tapirVersion,
@@ -165,10 +160,8 @@ lazy val edge = (project in file("edge"))
       "io.kamon" %% "kamon-prometheus" % kamonVersion exclude ("com.squareup.okhttp3", "okhttp"),
       "io.kamon" %% "kamon-system-metrics" % kamonVersion,
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
-      "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
       "org.apache.pekko" %% "pekko-discovery" % pekkoVersion,
       "org.apache.pekko" %% "pekko-http" % pekkoHttpVersion,
-      "org.apache.pekko" %% "pekko-stream-testkit" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-stream-typed" % pekkoVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
       "org.typelevel" %% "cats-core" % catsVersion
