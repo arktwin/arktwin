@@ -4,9 +4,10 @@ package arktwin.edge.endpoints
 
 import arktwin.center.services.{AdminClient, UpdateClockSpeedRequest}
 import arktwin.common.data.TaggedTimestamp
+import arktwin.common.util.JsonDerivation
+import arktwin.common.util.JsonDerivation.given
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
-import arktwin.edge.util.JsonDerivation.given
-import arktwin.edge.util.{EdgeKamon, ErrorStatus, JsonDerivation, RequestValidator}
+import arktwin.edge.util.{EdgeKamon, ErrorStatus, RequestValidator}
 import cats.implicits.toTraverseOps
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import org.apache.pekko.http.scaladsl.server.Route

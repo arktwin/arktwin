@@ -2,6 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.common.data
 
+import com.github.plokhotnyuk.jsoniter_scala.core.*
 import org.scalatest.funspec.AnyFunSpec
 
 import java.time.format.DateTimeFormatter
@@ -99,6 +100,19 @@ class TaggedTimestampSpec extends AnyFunSpec:
         assert(VirtualTimestamp(-86400, 0).formatIso == "1969-12-31T00:00:00")
 
   describe("TaggedTimestamp$"):
+    describe("apply"):
+      it("normalizes positive overflow nanos"):
+        val result = TaggedTimestamp[MachineTag](10, 2_500_000_000L)
+
+        assert(result.seconds == 12)
+        assert(result.nanos == 500_000_000)
+
+      it("normalizes negative nanos"):
+        val result = TaggedTimestamp[VirtualTag](10, -500_000_000L)
+
+        assert(result.seconds == 9)
+        assert(result.nanos == 500_000_000)
+
     describe("from"):
       it("creates from Timestamp"):
         val timestamp = Timestamp(1234567890, 123456789)
@@ -156,19 +170,6 @@ class TaggedTimestampSpec extends AnyFunSpec:
         )
         assert(result.nanos == 0)
 
-    describe("normalize"):
-      it("normalizes positive overflow nanos"):
-        val result = TaggedTimestamp.normalize[MachineTag](10, 2_500_000_000L)
-
-        assert(result.seconds == 12)
-        assert(result.nanos == 500_000_000)
-
-      it("normalizes negative nanos"):
-        val result = TaggedTimestamp.normalize[VirtualTag](10, -500_000_000L)
-
-        assert(result.seconds == 9)
-        assert(result.nanos == 500_000_000)
-
     describe("machineNow"):
       it("returns current machine time"):
         val before = Instant.now()
@@ -177,3 +178,29 @@ class TaggedTimestampSpec extends AnyFunSpec:
 
         assert(now.seconds >= before.getEpochSecond)
         assert(now.seconds <= after.getEpochSecond)
+
+    describe("given JsonValueCodec[VirtualTimestamp]"):
+      it("serializes VirtualTimestamp to JSON"):
+        val timestamp = VirtualTimestamp(1234567890L, 123456789)
+        val json = writeToString(timestamp)
+
+        assert(json == """{"seconds":1234567890,"nanos":123456789}""")
+
+      it("deserializes JSON to VirtualTimestamp"):
+        val json = """{"seconds":9876543210,"nanos":987654321}"""
+        val timestamp = readFromString[VirtualTimestamp](json)
+
+        assert(timestamp.seconds == 9876543210L)
+        assert(timestamp.nanos == 987654321)
+
+      it("throws JsonReaderException for invalid JSON"):
+        val invalidJson = """{"seconds":"not a number","nanos":123}"""
+
+        intercept[JsonReaderException]:
+          readFromString[VirtualTimestamp](invalidJson)
+
+      it("throws JsonReaderException for missing fields"):
+        val incompleteJson = """{"seconds":123}"""
+
+        intercept[JsonReaderException]:
+          readFromString[VirtualTimestamp](incompleteJson)

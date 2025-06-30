@@ -4,8 +4,9 @@ package arktwin.edge.endpoints
 
 import arktwin.center.services.*
 import arktwin.common.data.TaggedTimestamp
+import arktwin.common.util.JsonDerivation
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
-import arktwin.edge.util.{EdgeKamon, ErrorStatus, JsonDerivation, JsonValidator, RequestValidator}
+import arktwin.edge.util.{EdgeKamon, ErrorStatus, JsonValidator, RequestValidator}
 import cats.implicits.toTraverseOps
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import org.apache.pekko.http.scaladsl.server.Route

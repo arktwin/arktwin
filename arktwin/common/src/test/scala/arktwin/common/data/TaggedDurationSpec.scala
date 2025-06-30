@@ -137,6 +137,31 @@ class TaggedDurationSpec extends AnyFunSpec with Matchers:
         assert(MachineDuration(1, 1_000_000_000) == MachineDuration(2, 0))
 
   describe("TaggedDuration$"):
+    describe("apply"):
+      it("normalizes positive overflow nanos"):
+        val result = TaggedDuration[MachineTag](1, 1_500_000_000L)
+
+        assert(result.seconds == 2)
+        assert(result.nanos == 500_000_000)
+
+      it("normalizes negative overflow nanos"):
+        val result = TaggedDuration[VirtualTag](1, -1_500_000_000L)
+
+        assert(result.seconds == 0)
+        assert(result.nanos == -500_000_000)
+
+      it("handles positive seconds with negative nanos"):
+        val result = TaggedDuration[MachineTag](5, -200_000_000)
+
+        assert(result.seconds == 4)
+        assert(result.nanos == 800_000_000)
+
+      it("handles negative seconds with positive nanos"):
+        val result = TaggedDuration[VirtualTag](-5, 200_000_000)
+
+        assert(result.seconds == -4)
+        assert(result.nanos == -800_000_000)
+
     describe("from"):
       it("creates from Duration"):
         val duration = Duration(100, 999_999_999)
@@ -164,28 +189,3 @@ class TaggedDurationSpec extends AnyFunSpec with Matchers:
 
         assert(duration.seconds == -1)
         assert(duration.nanos == -250_000_000)
-
-    describe("normalize"):
-      it("normalizes positive overflow nanos"):
-        val result = TaggedDuration.normalize[MachineTag](1, 1_500_000_000L)
-
-        assert(result.seconds == 2)
-        assert(result.nanos == 500_000_000)
-
-      it("normalizes negative overflow nanos"):
-        val result = TaggedDuration.normalize[VirtualTag](1, -1_500_000_000L)
-
-        assert(result.seconds == 0)
-        assert(result.nanos == -500_000_000)
-
-      it("handles positive seconds with negative nanos"):
-        val result = TaggedDuration.normalize[MachineTag](5, -200_000_000)
-
-        assert(result.seconds == 4)
-        assert(result.nanos == 800_000_000)
-
-      it("handles negative seconds with positive nanos"):
-        val result = TaggedDuration.normalize[VirtualTag](-5, 200_000_000)
-
-        assert(result.seconds == -4)
-        assert(result.nanos == -800_000_000)

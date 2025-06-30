@@ -3,12 +3,13 @@
 package arktwin.edge.endpoints
 
 import arktwin.common.data.TaggedTimestamp
+import arktwin.common.util.JsonDerivation
+import arktwin.common.util.JsonDerivation.given
 import arktwin.common.util.LoggerConfigurator.LogLevel
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.{DynamicEdgeConfig, EdgeConfig, StaticEdgeConfig}
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
-import arktwin.edge.util.JsonDerivation.given
-import arktwin.edge.util.{EdgeKamon, ErrorStatus, JsonDerivation}
+import arktwin.edge.util.{EdgeKamon, ErrorStatus}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
 import org.apache.pekko.actor.typed.scaladsl.AskPattern.Askable
 import org.apache.pekko.actor.typed.{ActorRef, Scheduler}
