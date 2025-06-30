@@ -17,6 +17,7 @@ import scala.concurrent.duration.{Duration, FiniteDuration}
 object JsonDerivation extends SchemaDerivation:
   private def shortNameFrom(sName: SName): String = sName.fullName.split('.').last
 
+  // TODO test
   // fix tapir coproduct schema to match jsoniter-scala codec without discriminator
   def fixCoproductSchemaWithoutDiscriminator[A](originalSchema: Schema[A]): Schema[A] =
     originalSchema.schemaType match

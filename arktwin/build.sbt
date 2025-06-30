@@ -79,6 +79,7 @@ lazy val common = (project in file("common"))
       "com.softwaremill.sttp.tapir" %% "tapir-core" % tapirVersion,
       "com.thesamet.scalapb" %% "scalapb-validate-core" % scalapb.validate.compiler.BuildInfo.version % "protobuf",
       "io.kamon" %% "kamon-core" % kamonVersion,
+      "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
@@ -117,7 +118,6 @@ lazy val center = (project in file("center"))
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-discovery" % pekkoVersion,
       "org.apache.pekko" %% "pekko-http" % pekkoHttpVersion,
-      "org.apache.pekko" %% "pekko-stream-testkit" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-stream-typed" % pekkoVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
       "org.typelevel" %% "cats-core" % catsVersion
@@ -162,7 +162,6 @@ lazy val edge = (project in file("edge"))
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-discovery" % pekkoVersion,
       "org.apache.pekko" %% "pekko-http" % pekkoHttpVersion,
-      "org.apache.pekko" %% "pekko-stream-testkit" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-stream-typed" % pekkoVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
       "org.typelevel" %% "cats-core" % catsVersion
