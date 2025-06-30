@@ -7,19 +7,19 @@ import org.scalatest.funspec.AnyFunSpec
 import pureconfig.{ConfigCursor, ConfigReader, ConfigSource}
 
 class EnumCaseInsensitiveConfigReaderSpec extends AnyFunSpec:
-  given reader: ConfigReader[TestEnum] = EnumCaseInsensitiveConfigReader(TestEnum.values)
-
   enum TestEnum:
     case FirstValue
     case SecondValue
     case ThirdValue
   import TestEnum.*
 
+  given reader: ConfigReader[TestEnum] = EnumCaseInsensitiveConfigReader(TestEnum.values)
+
   case class TestConfig(value: TestEnum) derives ConfigReader
 
   describe("EnumCaseInsensitiveConfigReader"):
     describe("from"):
-      it("parses enum value with exact case match"):
+      it("parses enum value with exact case"):
         val config = ConfigFactory.parseString("""value = "FirstValue"""")
         val result = ConfigSource.fromConfig(config).load[TestConfig]
 

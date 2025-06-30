@@ -2,8 +2,11 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.configs
 
-import arktwin.common.util.{EnumCaseInsensitiveConfigReader, JsonDerivation}
-import arktwin.edge.util.EnumCaseInsensitiveJsonValueCodec
+import arktwin.common.util.{
+  EnumCaseInsensitiveConfigReader,
+  EnumCaseInsensitiveJsonValueCodec,
+  JsonDerivation
+}
 import cats.data.Validated.valid
 import cats.data.ValidatedNec
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec

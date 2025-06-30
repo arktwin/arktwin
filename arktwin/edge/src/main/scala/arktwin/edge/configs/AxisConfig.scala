@@ -3,8 +3,7 @@
 package arktwin.edge.configs
 
 import arktwin.common.data.Vector3Enu
-import arktwin.common.util.EnumCaseInsensitiveConfigReader
-import arktwin.edge.util.EnumCaseInsensitiveJsonValueCodec
+import arktwin.common.util.{EnumCaseInsensitiveConfigReader, EnumCaseInsensitiveJsonValueCodec}
 import cats.data.Validated.condNec
 import cats.data.ValidatedNec
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
