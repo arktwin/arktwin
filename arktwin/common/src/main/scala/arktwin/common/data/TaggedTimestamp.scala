@@ -19,19 +19,8 @@ case class TaggedTimestamp[A <: TimeTag](seconds: Long, nanos: Int)
     extends Ordered[TaggedTimestamp[A]]:
   import TaggedTimestamp.*
 
-  override def compare(that: TaggedTimestamp[A]): Int =
-    val a = normalize(this)
-    val b = normalize(that)
-    summon[Ordering[(Long, Int)]].compare((a.seconds, a.nanos), (b.seconds, b.nanos))
-
   def untag: Timestamp =
     Timestamp(seconds, nanos)
-
-  def -(that: TaggedTimestamp[A]): TaggedDuration[A] =
-    TaggedDuration.normalize(
-      math.subtractExact(seconds, that.seconds),
-      nanos.toLong - that.nanos
-    )
 
   def +(that: TaggedDuration[A]): TaggedTimestamp[A] =
     normalize(
@@ -39,11 +28,22 @@ case class TaggedTimestamp[A <: TimeTag](seconds: Long, nanos: Int)
       nanos.toLong + that.nanos
     )
 
+  def -(that: TaggedTimestamp[A]): TaggedDuration[A] =
+    TaggedDuration.normalize(
+      math.subtractExact(seconds, that.seconds),
+      nanos.toLong - that.nanos
+    )
+
   def -(that: TaggedDuration[A]): TaggedTimestamp[A] =
     normalize(
       math.subtractExact(seconds, that.seconds),
       nanos.toLong - that.nanos
     )
+
+  override def compare(that: TaggedTimestamp[A]): Int =
+    val a = normalize(this)
+    val b = normalize(that)
+    summon[Ordering[(Long, Int)]].compare((a.seconds, a.nanos), (b.seconds, b.nanos))
 
   def formatIso: String =
     LocalDateTime
@@ -56,9 +56,6 @@ object TaggedTimestamp:
 
   def from[A <: TimeTag](value: ZonedDateTime): TaggedTimestamp[A] =
     TaggedTimestamp(value.toEpochSecond, value.getNano)
-
-  def machineNow(): MachineTimestamp =
-    from(ZonedDateTime.now())
 
   def parse[A <: TimeTag](text: String): TaggedTimestamp[A] = from(ZonedDateTime.parse(text))
 
@@ -78,5 +75,8 @@ object TaggedTimestamp:
 
   def normalize[A <: TimeTag](timestamp: TaggedTimestamp[A]): TaggedTimestamp[A] =
     normalize(timestamp.seconds, timestamp.nanos)
+
+  def machineNow(): MachineTimestamp =
+    from(ZonedDateTime.now())
 
   def minValue[A <: TimeTag]: TaggedTimestamp[A] = TaggedTimestamp(Long.MinValue, 0)
