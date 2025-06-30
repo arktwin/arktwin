@@ -20,7 +20,7 @@ case class TaggedDuration[A <: TimeTag](seconds: Long, nanos: Int)
     extends Ordered[TaggedDuration[A]]:
   import TaggedDuration.*
 
-  def untag: Duration =
+  inline def untag: Duration =
     Duration(seconds, nanos)
 
   def secondsDouble: Double =
@@ -59,10 +59,10 @@ case class TaggedDuration[A <: TimeTag](seconds: Long, nanos: Int)
     summon[Ordering[(Long, Int)]].compare((a.seconds, a.nanos), (b.seconds, b.nanos))
 
 object TaggedDuration:
-  def from[A <: TimeTag](value: Duration): TaggedDuration[A] =
+  inline def from[A <: TimeTag](value: Duration): TaggedDuration[A] =
     normalize(value.seconds, value.nanos)
 
-  def from[A <: TimeTag](value: ScalaDuration): TaggedDuration[A] =
+  inline def from[A <: TimeTag](value: ScalaDuration): TaggedDuration[A] =
     normalize(0, value.toNanos)
 
   def fromSecondsDouble[A <: TimeTag](seconds: Double): TaggedDuration[A] =
@@ -82,5 +82,5 @@ object TaggedDuration:
       n = (n - nanosPerSecond).toInt // no overflow since positive nanos is subtracted
     TaggedDuration(s, n.toInt)
 
-  def normalize[A <: TimeTag](duration: TaggedDuration[A]): TaggedDuration[A] =
+  inline def normalize[A <: TimeTag](duration: TaggedDuration[A]): TaggedDuration[A] =
     normalize(duration.seconds, duration.nanos)

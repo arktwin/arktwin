@@ -21,7 +21,7 @@ case class TaggedTimestamp[A <: TimeTag](seconds: Long, nanos: Int)
     extends Ordered[TaggedTimestamp[A]]:
   import TaggedTimestamp.*
 
-  def untag: Timestamp =
+  inline def untag: Timestamp =
     Timestamp(seconds, nanos)
 
   def +(that: TaggedDuration[A]): TaggedTimestamp[A] =
@@ -53,10 +53,10 @@ case class TaggedTimestamp[A <: TimeTag](seconds: Long, nanos: Int)
       .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
 
 object TaggedTimestamp:
-  def from[A <: TimeTag](value: Timestamp): TaggedTimestamp[A] =
+  inline def from[A <: TimeTag](value: Timestamp): TaggedTimestamp[A] =
     TaggedTimestamp(value.seconds, value.nanos)
 
-  def from[A <: TimeTag](value: ZonedDateTime): TaggedTimestamp[A] =
+  inline def from[A <: TimeTag](value: ZonedDateTime): TaggedTimestamp[A] =
     TaggedTimestamp(value.toEpochSecond, value.getNano)
 
   def parse[A <: TimeTag](text: String): TaggedTimestamp[A] = from(ZonedDateTime.parse(text))
@@ -75,10 +75,10 @@ object TaggedTimestamp:
       n = n + nanosPerSecond // no overflow since negative nanos is added
     TaggedTimestamp(s, n.toInt)
 
-  def normalize[A <: TimeTag](timestamp: TaggedTimestamp[A]): TaggedTimestamp[A] =
+  inline def normalize[A <: TimeTag](timestamp: TaggedTimestamp[A]): TaggedTimestamp[A] =
     normalize(timestamp.seconds, timestamp.nanos)
 
   def machineNow(): MachineTimestamp =
     from(ZonedDateTime.now())
 
-  def minValue[A <: TimeTag]: TaggedTimestamp[A] = TaggedTimestamp(Long.MinValue, 0)
+  inline def minValue[A <: TimeTag]: TaggedTimestamp[A] = TaggedTimestamp(Long.MinValue, 0)
