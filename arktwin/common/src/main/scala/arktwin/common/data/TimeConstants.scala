@@ -3,8 +3,8 @@
 package arktwin.common.data
 
 object TimeConstants:
-  inline val nanosPerSecond = 1000000000L
-  inline val nanosPerMillisecond = 1000000L
-  inline val nanosPerMicrosecond = 1000L
-  inline val millisPerSecond = 1000L
-  inline val microsPerSecond = 1000000L
+  inline val nanosPerSecond = 1_000_000_000L
+  inline val nanosPerMillisecond = 1_000_000L
+  inline val nanosPerMicrosecond = 1_000L
+  inline val millisPerSecond = 1_000L
+  inline val microsPerSecond = 1_000_000L
