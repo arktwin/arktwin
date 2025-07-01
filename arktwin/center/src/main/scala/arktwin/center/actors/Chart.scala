@@ -4,8 +4,8 @@ package arktwin.center.actors
 
 import arktwin.center.services.ChartAgent
 import arktwin.center.util.CenterKamon
-import arktwin.center.util.CommonMessages.Terminate
 import arktwin.common.data.{MachineTimestamp, TaggedTimestamp, Vector3Enu}
+import arktwin.common.util.CommonMessages.Terminate
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 

@@ -3,10 +3,10 @@
 package arktwin.edge.connectors
 
 import arktwin.center.services.ClockClient
+import arktwin.common.util.CommonMessages.Nop
 import arktwin.common.util.GrpcHeaderKey
 import arktwin.common.util.SourceExtensions.*
 import arktwin.edge.actors.sinks.Clock
-import arktwin.edge.util.CommonMessages.Nop
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.actor.typed.ActorRef
 import org.apache.pekko.stream.Materializer

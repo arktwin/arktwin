@@ -7,10 +7,10 @@ import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.data.Vector3EnuExtensions.*
 import arktwin.common.data.{TaggedTimestamp, VirtualTag}
 import arktwin.common.util.BehaviorsExtensions.*
+import arktwin.common.util.CommonMessages.Nop
 import arktwin.common.util.MailboxConfig
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.configs.CullingConfig
-import arktwin.edge.util.CommonMessages.Nop
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.Receptionist
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
