@@ -5,19 +5,16 @@ package arktwin.edge.connectors
 import arktwin.center.services.{ChartAgent, ChartClient, ChartPublishBatch}
 import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.data.{MachineTimestamp, TaggedTimestamp}
+import arktwin.common.util.CommonMessages.Nop
 import arktwin.common.util.GrpcHeaderKey
 import arktwin.common.util.SourceExtensions.*
 import arktwin.edge.actors.sinks.Chart
 import arktwin.edge.configs.StaticEdgeConfig
-import arktwin.edge.util.CommonMessages.Nop
 import arktwin.edge.util.EdgeKamon
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.actor.typed.ActorRef
 import org.apache.pekko.stream.typed.scaladsl.{ActorSink, ActorSource}
 import org.apache.pekko.stream.{Materializer, OverflowStrategy}
-
-object ChartConnector:
-  case class Publish(agents: Seq[ChartAgent], putReceptionMachineTimestamp: MachineTimestamp)
 
 // TODO retry connection in actor?
 case class ChartConnector(
@@ -85,3 +82,6 @@ case class ChartConnector(
         a.agents.map(Chart.Catch.apply)
       .to(ActorSink.actorRef(chart, Nop, _ => Nop))
       .run()
+
+object ChartConnector:
+  case class Publish(agents: Seq[ChartAgent], putReceptionMachineTimestamp: MachineTimestamp)

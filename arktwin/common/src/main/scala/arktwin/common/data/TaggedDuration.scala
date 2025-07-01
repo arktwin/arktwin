@@ -6,16 +6,6 @@ import scala.concurrent.duration.Duration as ScalaDuration
 
 import TimeConstants.*
 
-type MachineDuration = TaggedDuration[MachineTag]
-object MachineDuration:
-  inline def apply(seconds: Long, nanos: Int): MachineDuration =
-    TaggedDuration[MachineTag](seconds, nanos)
-
-type VirtualDuration = TaggedDuration[VirtualTag]
-object VirtualDuration:
-  inline def apply(seconds: Long, nanos: Int): VirtualDuration =
-    TaggedDuration[VirtualTag](seconds, nanos)
-
 // private constructor ensures creation only through factory methods that normalize seconds/nanos
 case class TaggedDuration[A <: TimeTag] private (seconds: Long, nanos: Int)
     extends Ordered[TaggedDuration[A]]:
@@ -81,3 +71,13 @@ object TaggedDuration:
 
   def fromSecondsDouble[A <: TimeTag](seconds: Double): TaggedDuration[A] =
     TaggedDuration(seconds.toLong, math.round((seconds % 1) * nanosPerSecond).toLong)
+
+type MachineDuration = TaggedDuration[MachineTag]
+object MachineDuration:
+  inline def apply(seconds: Long, nanos: Int): MachineDuration =
+    TaggedDuration[MachineTag](seconds, nanos)
+
+type VirtualDuration = TaggedDuration[VirtualTag]
+object VirtualDuration:
+  inline def apply(seconds: Long, nanos: Int): VirtualDuration =
+    TaggedDuration[VirtualTag](seconds, nanos)

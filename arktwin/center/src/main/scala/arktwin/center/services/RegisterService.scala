@@ -4,7 +4,7 @@ package arktwin.center.services
 
 import arktwin.center.actors.Register
 import arktwin.center.configs.StaticCenterConfig
-import arktwin.center.util.CommonMessages.Nop
+import arktwin.common.util.CommonMessages.Nop
 import arktwin.common.util.GrpcHeaderKey
 import arktwin.common.util.SourceExtensions.*
 import com.google.protobuf.empty.Empty
