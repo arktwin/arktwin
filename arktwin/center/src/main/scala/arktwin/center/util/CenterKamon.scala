@@ -55,20 +55,20 @@ class CenterKamon(runId: String):
     .withTags(commonTags)
 
 object CenterKamon:
-  val runIdKey: String = "run_id"
-  val edgeIdKey: String = "edge_id"
-  val recipientKey: String = "recipient"
+  inline val runIdKey = "run_id"
+  inline val edgeIdKey = "edge_id"
+  inline val recipientKey = "recipient"
 
-  val chartPublishAgentNumName: String = "arktwin_center_chart_2_publish_agent_num"
-  val chartPublishBatchNumName: String = "arktwin_center_chart_2_publish_batch_num"
-  val chartPublishMachineLatencyName: String =
+  inline val chartPublishAgentNumName = "arktwin_center_chart_2_publish_agent_num"
+  inline val chartPublishBatchNumName = "arktwin_center_chart_2_publish_batch_num"
+  inline val chartPublishMachineLatencyName =
     "arktwin_center_chart_2_publish_from_edge_machine_latency"
-  val chartRouteAgentNumName: String = "arktwin_center_chart_3_route_agent_num"
-  val chartRouteBatchNumName: String = "arktwin_center_chart_3_route_batch_num"
-  val chartRouteMachineLatencyName: String =
+  inline val chartRouteAgentNumName = "arktwin_center_chart_3_route_agent_num"
+  inline val chartRouteBatchNumName = "arktwin_center_chart_3_route_batch_num"
+  inline val chartRouteMachineLatencyName =
     "arktwin_center_chart_3_route_machine_from_publish_machine_latency"
-  val chartSubscribeAgentNumName: String = "arktwin_center_chart_4_subscribe_agent_num"
-  val chartSubscribeBatchNumName: String = "arktwin_center_chart_4_subscribe_batch_num"
-  val chartSubscribeMachineLatencyName: String =
+  inline val chartSubscribeAgentNumName = "arktwin_center_chart_4_subscribe_agent_num"
+  inline val chartSubscribeBatchNumName = "arktwin_center_chart_4_subscribe_batch_num"
+  inline val chartSubscribeMachineLatencyName =
     "arktwin_center_chart_4_subscribe_from_route_machine_latency"
-  val deadLetterNumName: String = "arktwin_center_dead_letter_num"
+  inline val deadLetterNumName = "arktwin_center_dead_letter_num"

@@ -3,4 +3,4 @@
 package arktwin.common.util
 
 object GrpcHeaderKey:
-  val edgeId: String = "edgeId"
+  inline val edgeId = "edgeId"

@@ -49,20 +49,20 @@ class EdgeKamon(runId: String, edgeId: String):
     VirtualDurationHistogram(restVirtualLatencyName, commonTags.withTag(endpointKey, endpoint))
 
 object EdgeKamon:
-  val runIdKey: String = "run_id"
-  val edgeIdKey: String = "edge_id"
-  val endpointKey: String = "endpoint"
-  val recipientKey: String = "recipient"
+  inline val runIdKey = "run_id"
+  inline val edgeIdKey = "edge_id"
+  inline val endpointKey = "endpoint"
+  inline val recipientKey = "recipient"
 
-  val chartPublishAgentNumName: String = "arktwin_edge_chart_1_publish_agent_num"
-  val chartPublishBatchNumName: String = "arktwin_edge_chart_1_publish_batch_num"
-  val chartPublishMachineLatencyName: String =
+  inline val chartPublishAgentNumName = "arktwin_edge_chart_1_publish_agent_num"
+  inline val chartPublishBatchNumName = "arktwin_edge_chart_1_publish_batch_num"
+  inline val chartPublishMachineLatencyName =
     "arktwin_edge_chart_1_publish_from_put_machine_latency"
-  val chartSubscribeAgentNumName: String = "arktwin_edge_chart_5_subscribe_agent_num"
-  val chartSubscribeMachineLatencyName: String =
+  inline val chartSubscribeAgentNumName = "arktwin_edge_chart_5_subscribe_agent_num"
+  inline val chartSubscribeMachineLatencyName =
     "arktwin_edge_chart_5_subscribe_from_center_machine_latency"
-  val deadLetterNumName: String = "arktwin_edge_dead_letter_num"
-  val restRequestNumName: String = "arktwin_edge_rest_request_num"
-  val restAgentNumName: String = "arktwin_edge_rest_agent_num"
-  val restProcessMachineTimeName: String = "arktwin_edge_rest_process_machine_time"
-  val restVirtualLatencyName: String = "arktwin_edge_rest_virtual_latency"
+  inline val deadLetterNumName = "arktwin_edge_dead_letter_num"
+  inline val restRequestNumName = "arktwin_edge_rest_request_num"
+  inline val restAgentNumName = "arktwin_edge_rest_agent_num"
+  inline val restProcessMachineTimeName = "arktwin_edge_rest_process_machine_time"
+  inline val restVirtualLatencyName = "arktwin_edge_rest_virtual_latency"
