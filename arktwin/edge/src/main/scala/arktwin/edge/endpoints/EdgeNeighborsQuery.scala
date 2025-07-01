@@ -61,7 +61,6 @@ object EdgeNeighborsQuery:
 
   val endpoint: PublicEndpoint[Request, ErrorStatus, Response, Any] =
     tapir.endpoint.post
-      .description("alternative to QUERY method")
       .in("api" / "edge" / "neighbors" / "_query")
       .in(jsonBody[Request].example(inExample))
       .out(jsonBody[Response].example(outExample))
@@ -72,6 +71,7 @@ object EdgeNeighborsQuery:
           ErrorStatus.serviceUnavailable
         )
       )
+      .description("Alternative to QUERY method")
 
   def route(
       adapter: ActorRef[EdgeNeighborsQueryAdapter.Message],

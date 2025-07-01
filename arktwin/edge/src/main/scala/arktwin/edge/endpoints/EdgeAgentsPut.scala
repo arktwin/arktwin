@@ -85,6 +85,10 @@ object EdgeAgentsPut:
           ErrorStatus.serviceUnavailable
         )
       )
+      .description(
+        """The response from this endpoint is not essential for the client, so synchronous calls may cause overhead.
+          |Consider using asynchronous calls or the "POST api/edge/_bulk" endpoint instead.""".stripMargin
+      )
 
   def route(
       adapter: ActorRef[EdgeAgentsPutAdapter.Message],

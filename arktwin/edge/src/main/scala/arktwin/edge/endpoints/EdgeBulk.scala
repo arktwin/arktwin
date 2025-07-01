@@ -49,15 +49,15 @@ object EdgeBulk:
       .in("api" / "edge" / "_bulk")
       .in(jsonBody[Request].example(inExample))
       .out(jsonBody[Response].example(outExample))
-      .description(
-        """Bulk endpoint to reduce network overhead by combining following endpoints:
-          |  - PUT /api/edge/agents
-          |  - POST /api/edge/neighbors/_query""".stripMargin
-      )
       .errorOut(
         oneOf[ErrorStatus](
           ErrorStatus.badRequest
         )
+      )
+      .description(
+        """Bulk endpoint to reduce network overhead by combining following endpoints:
+          |  - PUT /api/edge/agents
+          |  - POST /api/edge/neighbors/_query""".stripMargin
       )
 
   def route(
