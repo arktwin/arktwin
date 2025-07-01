@@ -11,16 +11,6 @@ import java.time.{LocalDateTime, ZoneOffset, ZonedDateTime}
 
 import TimeConstants.*
 
-type MachineTimestamp = TaggedTimestamp[MachineTag]
-object MachineTimestamp:
-  inline def apply(seconds: Long, nanos: Int): MachineTimestamp =
-    TaggedTimestamp(seconds, nanos)
-
-type VirtualTimestamp = TaggedTimestamp[VirtualTag]
-object VirtualTimestamp:
-  inline def apply(seconds: Long, nanos: Int): VirtualTimestamp =
-    TaggedTimestamp(seconds, nanos)
-
 // private constructor ensures creation only through factory methods that normalize seconds/nanos
 case class TaggedTimestamp[A <: TimeTag] private (seconds: Long, nanos: Int)
     extends Ordered[TaggedTimestamp[A]]:
@@ -92,3 +82,13 @@ object TaggedTimestamp:
       override def encodeValue(x: VirtualTimestamp, out: JsonWriter): Unit =
         base.encodeValue(x.untag, out)
       override def nullValue: VirtualTimestamp = VirtualTimestamp(0, 0)
+
+type MachineTimestamp = TaggedTimestamp[MachineTag]
+object MachineTimestamp:
+  inline def apply(seconds: Long, nanos: Int): MachineTimestamp =
+    TaggedTimestamp(seconds, nanos)
+
+type VirtualTimestamp = TaggedTimestamp[VirtualTag]
+object VirtualTimestamp:
+  inline def apply(seconds: Long, nanos: Int): VirtualTimestamp =
+    TaggedTimestamp(seconds, nanos)

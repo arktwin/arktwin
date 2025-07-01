@@ -7,16 +7,6 @@ import kamon.Kamon
 import kamon.metric.MeasurementUnit
 import kamon.tag.TagSet
 
-type MachineDurationHistogram = TaggedDurationHistogram[MachineTag]
-object MachineDurationHistogram:
-  inline def apply(name: String, tagSet: TagSet): MachineDurationHistogram =
-    TaggedDurationHistogram[MachineTag](name, tagSet)
-
-type VirtualDurationHistogram = TaggedDurationHistogram[VirtualTag]
-object VirtualDurationHistogram:
-  inline def apply(name: String, tagSet: TagSet): VirtualDurationHistogram =
-    TaggedDurationHistogram[VirtualTag](name, tagSet)
-
 class TaggedDurationHistogram[A <: TimeTag](name: String, tagSet: TagSet):
   private val histogram =
     Kamon.histogram(name, MeasurementUnit.time.milliseconds).withTags(tagSet)
@@ -30,3 +20,13 @@ class TaggedDurationHistogram[A <: TimeTag](name: String, tagSet: TagSet):
     if duration > TaggedDuration[A](0, 0)
     then histogram.record(duration.millisLong, num)
     else histogram.record(0, num)
+
+type MachineDurationHistogram = TaggedDurationHistogram[MachineTag]
+object MachineDurationHistogram:
+  inline def apply(name: String, tagSet: TagSet): MachineDurationHistogram =
+    TaggedDurationHistogram[MachineTag](name, tagSet)
+
+type VirtualDurationHistogram = TaggedDurationHistogram[VirtualTag]
+object VirtualDurationHistogram:
+  inline def apply(name: String, tagSet: TagSet): VirtualDurationHistogram =
+    TaggedDurationHistogram[VirtualTag](name, tagSet)

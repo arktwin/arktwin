@@ -16,9 +16,6 @@ import org.apache.pekko.actor.typed.ActorRef
 import org.apache.pekko.stream.typed.scaladsl.{ActorSink, ActorSource}
 import org.apache.pekko.stream.{Materializer, OverflowStrategy}
 
-object ChartConnector:
-  case class Publish(agents: Seq[ChartAgent], putReceptionMachineTimestamp: MachineTimestamp)
-
 // TODO retry connection in actor?
 case class ChartConnector(
     client: ChartClient,
@@ -85,3 +82,6 @@ case class ChartConnector(
         a.agents.map(Chart.Catch.apply)
       .to(ActorSink.actorRef(chart, Nop, _ => Nop))
       .run()
+
+object ChartConnector:
+  case class Publish(agents: Seq[ChartAgent], putReceptionMachineTimestamp: MachineTimestamp)

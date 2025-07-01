@@ -13,9 +13,6 @@ import org.apache.pekko.actor.typed.ActorRef
 import org.apache.pekko.stream.typed.scaladsl.{ActorSink, ActorSource}
 import org.apache.pekko.stream.{Materializer, OverflowStrategy}
 
-object RegisterConnector:
-  case class Publish(agents: Seq[RegisterAgentUpdated])
-
 // TODO retry connect in actor?
 case class RegisterConnector(
     client: RegisterClient,
@@ -56,3 +53,6 @@ case class RegisterConnector(
       .mapConcat(_.agents.map(Register.Catch.apply))
       .to(ActorSink.actorRef(register, Nop, _ => Nop))
       .run()
+
+object RegisterConnector:
+  case class Publish(agents: Seq[RegisterAgentUpdated])
