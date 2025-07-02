@@ -2,64 +2,46 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.center.util
 
+import arktwin.common.util.KamonFormatter
 import com.typesafe.config.Config
 import kamon.metric.PeriodSnapshot
 import kamon.module.MetricReporter
-import kamon.tag.Tag
 
 class CenterReporter() extends MetricReporter:
-  private val reportIndexes =
-    import CenterKamon.*
-    Seq(recipientKey, edgeIdKey, runIdKey).zipWithIndex.toMap.withDefaultValue(Int.MaxValue)
+  import CenterKamon.*
 
   override def reportPeriodSnapshot(snapshot: PeriodSnapshot): Unit =
-    import CenterKamon.*
+    KamonFormatter
+      .valueLogs(
+        snapshot.counters
+          .filter: metric =>
+            Seq(
+              chartPublishAgentNumName,
+              chartPublishBatchNumName,
+              chartRouteAgentNumName,
+              chartRouteBatchNumName,
+              chartSubscribeAgentNumName,
+              chartSubscribeBatchNumName,
+              deadLetterNumName
+            ).contains(metric.name)
+      )
+      .foreach: metricLog =>
+        if metricLog.name == CenterKamon.deadLetterNumName
+        then scribe.warn(metricLog.message)
+        else scribe.debug(metricLog.message)
 
-    snapshot.counters
-      .filter: metric =>
-        Seq(
-          chartPublishAgentNumName,
-          chartPublishBatchNumName,
-          chartRouteAgentNumName,
-          chartRouteBatchNumName,
-          chartSubscribeAgentNumName,
-          chartSubscribeBatchNumName,
-          deadLetterNumName
-        ).contains(metric.name)
-      .sortBy(_.name)
-      .flatMap: metric =>
-        metric.instruments.filter(_.value != 0).map(instrument => (metric, instrument))
-      .foreach: (metric, instrument) =>
-        val tags = instrument.tags
-          .all()
-          .sortBy(tag => reportIndexes(tag.key))
-          .collect:
-            case tag: Tag.String => s"${tag.key}=\"${tag.value}\""
-          .mkString("{", ", ", "}")
-        val message = s"${metric.name}: ${instrument.value} $tags"
-        if metric.name == deadLetterNumName then scribe.warn(message)
-        else scribe.debug(message)
-
-    snapshot.histograms
-      .filter: metric =>
-        Seq(
-          chartPublishMachineLatencyName,
-          chartRouteMachineLatencyName,
-          chartSubscribeMachineLatencyName
-        ).contains(metric.name)
-      .sortBy(_.name)
-      .flatMap: metric =>
-        metric.instruments.filter(_.value.count != 0).map(instrument => (metric, instrument))
-      .foreach: (metric, instrument) =>
-        val tags = instrument.tags
-          .all()
-          .sortBy(tag => reportIndexes(tag.key))
-          .collect:
-            case tag: Tag.String => s"${tag.key}=\"${tag.value}\""
-          .mkString("{", ", ", "}")
-        val summary =
-          Seq(0, 25, 50, 75, 100).map(instrument.value.percentile(_).value).mkString(", ")
-        scribe.debug(s"${metric.name}: [$summary] ${metric.settings.unit.magnitude.name} $tags")
+    KamonFormatter
+      .distributionLogs(
+        snapshot.histograms
+          .filter: metric =>
+            Seq(
+              chartPublishMachineLatencyName,
+              chartRouteMachineLatencyName,
+              chartSubscribeMachineLatencyName
+            ).contains(metric.name)
+      )
+      .foreach: metricLog =>
+        scribe.debug(metricLog.message)
 
   override def stop(): Unit = {}
 

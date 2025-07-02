@@ -9,6 +9,7 @@ import kamon.tag.TagSet
 
 class EdgeKamon(runId: String, edgeId: String):
   import EdgeKamon.*
+  import arktwin.common.util.KamonTagKeys.*
   val commonTags = TagSet.of(runIdKey, runId).withTag(edgeIdKey, edgeId)
 
   def chartPublishAgentNumCounter(): Counter = Kamon
@@ -49,11 +50,6 @@ class EdgeKamon(runId: String, edgeId: String):
     VirtualDurationHistogram(restVirtualLatencyName, commonTags.withTag(endpointKey, endpoint))
 
 object EdgeKamon:
-  inline val runIdKey = "run_id"
-  inline val edgeIdKey = "edge_id"
-  inline val endpointKey = "endpoint"
-  inline val recipientKey = "recipient"
-
   inline val chartPublishAgentNumName = "arktwin_edge_chart_1_publish_agent_num"
   inline val chartPublishBatchNumName = "arktwin_edge_chart_1_publish_batch_num"
   inline val chartPublishMachineLatencyName =

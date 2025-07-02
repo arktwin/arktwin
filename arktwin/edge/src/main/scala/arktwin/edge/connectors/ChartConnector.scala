@@ -6,7 +6,7 @@ import arktwin.center.services.{ChartAgent, ChartClient, ChartPublishBatch}
 import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.data.{MachineTimestamp, TaggedTimestamp}
 import arktwin.common.util.CommonMessages.Nop
-import arktwin.common.util.GrpcHeaderKey
+import arktwin.common.util.GrpcHeaderKeys
 import arktwin.common.util.SourceExtensions.*
 import arktwin.edge.actors.sinks.Chart
 import arktwin.edge.configs.StaticEdgeConfig
@@ -57,7 +57,7 @@ case class ChartConnector(
       .preMaterialize()
     client
       .publish()
-      .addHeader(GrpcHeaderKey.edgeId, edgeId)
+      .addHeader(GrpcHeaderKeys.edgeId, edgeId)
       .invoke(source)
     actorRef
 
@@ -69,7 +69,7 @@ case class ChartConnector(
     // send agents information to Chart individually for quick response edge/neighbors/_query
     client
       .subscribe()
-      .addHeader(GrpcHeaderKey.edgeId, edgeId)
+      .addHeader(GrpcHeaderKeys.edgeId, edgeId)
       .invoke(Empty())
       .wireTapLog("Chart.Subscribe")
       .mapConcat: a =>

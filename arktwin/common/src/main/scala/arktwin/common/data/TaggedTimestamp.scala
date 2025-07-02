@@ -4,12 +4,12 @@ package arktwin.common.data
 
 import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.util.JsonDerivation.given
+import arktwin.common.util.TimeConstants.*
+import arktwin.common.util.{MachineTag, TimeTag, VirtualTag}
 import com.github.plokhotnyuk.jsoniter_scala.core.{JsonReader, JsonValueCodec, JsonWriter}
 
 import java.time.format.DateTimeFormatter
 import java.time.{LocalDateTime, ZoneOffset, ZonedDateTime}
-
-import TimeConstants.*
 
 // private constructor ensures creation only through factory methods that normalize seconds/nanos
 case class TaggedTimestamp[A <: TimeTag] private (seconds: Long, nanos: Int)

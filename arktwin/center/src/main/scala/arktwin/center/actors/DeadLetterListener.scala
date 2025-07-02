@@ -3,7 +3,7 @@
 package arktwin.center.actors
 
 import arktwin.center.util.CenterKamon
-import arktwin.common.util.MailboxConfig
+import arktwin.common.util.{KamonTagKeys, MailboxConfig}
 import org.apache.pekko.actor.DeadLetter
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.eventstream.EventStream.Subscribe
@@ -30,6 +30,6 @@ object DeadLetterListener:
     Behaviors.receiveMessage:
       case DeadLetter(message, sender, recipient) =>
         deadLetterNumCounter
-          .withTag(CenterKamon.recipientKey, recipient.path.toString())
+          .withTag(KamonTagKeys.recipientKey, recipient.path.toString())
           .increment()
         Behaviors.same

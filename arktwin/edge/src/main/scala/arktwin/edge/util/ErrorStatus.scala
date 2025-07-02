@@ -16,14 +16,16 @@ sealed trait ErrorStatus:
   def message: String
 
 object ErrorStatus:
-  val logger: Logger = LoggerFactory.getLogger(getClass.getName)
+  private val logger: Logger = LoggerFactory.getLogger(getClass.getName)
 
   case class BadRequest(errors: Seq[String]) extends ErrorStatus:
     override def message: String =
       s"400 Bad Request: ${errors.mkString(", ")}"
+
   case class InternalServerError(errors: Seq[String]) extends ErrorStatus:
     override def message: String =
       s"500 Internal Server Error: ${errors.mkString(", ")}"
+
   case class ServiceUnavailable(error: String) extends ErrorStatus:
     override def message: String =
       s"503 Service Unavailable: $error"
