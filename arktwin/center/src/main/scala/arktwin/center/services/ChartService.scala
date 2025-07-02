@@ -8,7 +8,7 @@ import arktwin.center.util.CenterKamon
 import arktwin.common.data.TaggedTimestamp
 import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.util.CommonMessages.Terminate
-import arktwin.common.util.GrpcHeaderKey
+import arktwin.common.util.GrpcHeaderKeys
 import arktwin.common.util.SourceExtensions.*
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.NotUsed
@@ -34,7 +34,7 @@ class ChartService(
 ) extends ChartPowerApi:
   // micro-batch to reduce overhead of stream processing
   override def publish(in: Source[ChartPublishBatch, NotUsed], metadata: Metadata): Future[Empty] =
-    val edgeId = metadata.getText(GrpcHeaderKey.edgeId).getOrElse("")
+    val edgeId = metadata.getText(GrpcHeaderKeys.edgeId).getOrElse("")
 
     val publishAgentNumCounter = kamon.chartPublishAgentNumCounter(edgeId)
     val publishBatchNumCounter = kamon.chartPublishBatchNumCounter(edgeId)
@@ -70,7 +70,7 @@ class ChartService(
 
   // micro-batch to reduce overhead of stream processing
   override def subscribe(in: Empty, metadata: Metadata): Source[ChartSubscribeBatch, NotUsed] =
-    val edgeId = metadata.getText(GrpcHeaderKey.edgeId).getOrElse("")
+    val edgeId = metadata.getText(GrpcHeaderKeys.edgeId).getOrElse("")
 
     val subscribeAgentNumCounter = kamon.chartSubscribeAgentNumCounter(edgeId)
     val subscribeBatchNumCounter = kamon.chartSubscribeBatchNumCounter(edgeId)

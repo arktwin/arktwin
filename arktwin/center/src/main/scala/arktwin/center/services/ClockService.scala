@@ -4,7 +4,7 @@ package arktwin.center.services
 
 import arktwin.center.actors.Clock
 import arktwin.center.configs.StaticCenterConfig
-import arktwin.common.util.GrpcHeaderKey
+import arktwin.common.util.GrpcHeaderKeys
 import arktwin.common.util.SourceExtensions.*
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.NotUsed
@@ -21,7 +21,7 @@ class ClockService(
     Materializer
 ) extends ClockPowerApi:
   override def subscribe(in: Empty, metadata: Metadata): Source[ClockBase, NotUsed] =
-    val edgeId = metadata.getText(GrpcHeaderKey.edgeId).getOrElse("")
+    val edgeId = metadata.getText(GrpcHeaderKeys.edgeId).getOrElse("")
 
     val (actorRef, source) = ActorSource
       .actorRef[ClockBase](

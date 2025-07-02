@@ -4,7 +4,7 @@ package arktwin.edge.connectors
 
 import arktwin.center.services.{RegisterAgentUpdated, RegisterAgentsPublish, RegisterClient}
 import arktwin.common.util.CommonMessages.Nop
-import arktwin.common.util.GrpcHeaderKey
+import arktwin.common.util.GrpcHeaderKeys
 import arktwin.common.util.SourceExtensions.*
 import arktwin.edge.actors.sinks.Register
 import arktwin.edge.configs.StaticEdgeConfig
@@ -39,7 +39,7 @@ case class RegisterConnector(
       .preMaterialize()
     client
       .publish()
-      .addHeader(GrpcHeaderKey.edgeId, edgeId)
+      .addHeader(GrpcHeaderKeys.edgeId, edgeId)
       .invoke(source)
     actorRef
 
@@ -47,7 +47,7 @@ case class RegisterConnector(
     // send agents information to Chart individually for quick response edge/neighbors/_query
     client
       .subscribe()
-      .addHeader(GrpcHeaderKey.edgeId, edgeId)
+      .addHeader(GrpcHeaderKeys.edgeId, edgeId)
       .invoke(Empty())
       .wireTapLog("Register.Subscribe")
       .mapConcat(_.agents.map(Register.Catch.apply))
