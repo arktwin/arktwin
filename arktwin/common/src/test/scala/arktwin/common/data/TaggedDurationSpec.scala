@@ -2,6 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.common.data
 
+import arktwin.common.util.{MachineTag, VirtualTag}
 import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers

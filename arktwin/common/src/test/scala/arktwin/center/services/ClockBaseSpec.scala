@@ -3,7 +3,8 @@
 package arktwin.center.services
 
 import arktwin.center.services.ClockBaseExtensions.*
-import arktwin.common.data.{MachineTag, TaggedTimestamp, VirtualTag}
+import arktwin.common.data.TaggedTimestamp
+import arktwin.common.util.{MachineTag, VirtualTag}
 import org.scalatest.funspec.AnyFunSpec
 
 class ClockBaseSpec extends AnyFunSpec:

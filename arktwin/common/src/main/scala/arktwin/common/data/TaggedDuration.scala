@@ -2,9 +2,10 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.common.data
 
-import scala.concurrent.duration.Duration as ScalaDuration
+import arktwin.common.util.TimeConstants.*
+import arktwin.common.util.{MachineTag, TimeTag, VirtualTag}
 
-import TimeConstants.*
+import scala.concurrent.duration.Duration as ScalaDuration
 
 // private constructor ensures creation only through factory methods that normalize seconds/nanos
 case class TaggedDuration[A <: TimeTag] private (seconds: Long, nanos: Int)
