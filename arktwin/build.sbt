@@ -79,6 +79,7 @@ lazy val common = (project in file("common"))
       "com.softwaremill.sttp.tapir" %% "tapir-core" % tapirVersion,
       "com.thesamet.scalapb" %% "scalapb-validate-core" % scalapb.validate.compiler.BuildInfo.version % "protobuf",
       "io.kamon" %% "kamon-core" % kamonVersion,
+      "io.kamon" %% "kamon-testkit" % kamonVersion % Test,
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % pekkoVersion % Test,
       "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test

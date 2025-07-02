@@ -9,6 +9,8 @@ import kamon.tag.TagSet
 
 class CenterKamon(runId: String):
   import CenterKamon.*
+  import arktwin.common.util.KamonTagKeys.*
+
   val commonTags = TagSet.of(runIdKey, runId)
 
   def chartPublishAgentNumCounter(edgeId: String): Counter = Kamon
@@ -55,10 +57,6 @@ class CenterKamon(runId: String):
     .withTags(commonTags)
 
 object CenterKamon:
-  inline val runIdKey = "run_id"
-  inline val edgeIdKey = "edge_id"
-  inline val recipientKey = "recipient"
-
   inline val chartPublishAgentNumName = "arktwin_center_chart_2_publish_agent_num"
   inline val chartPublishBatchNumName = "arktwin_center_chart_2_publish_batch_num"
   inline val chartPublishMachineLatencyName =
