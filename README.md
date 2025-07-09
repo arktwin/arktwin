@@ -79,7 +79,8 @@ If you want to change the host and port settings, see [# Environment Variables](
 
 ## Integrating
 
-- Synchronize the clocks of all machines via NTP (Network Time Protocol)
+- Synchronize the clocks of all machines via the same reliable NTP (Network Time Protocol) server
+    - time.windows.com may cause clock drift of several hundred milliseconds
 - Run an ArkTwin Center
 - Run your agent-based software
 - Run an ArkTwin Edge as a sidecar of your agent-based software
