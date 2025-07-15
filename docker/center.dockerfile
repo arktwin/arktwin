@@ -7,7 +7,7 @@ RUN $JAVA_HOME/bin/jlink \
         --compress=zip-9 \
         --output /javaruntime
 
-FROM sbtscala/scala-sbt:eclipse-temurin-21.0.7_6_1.11.2_3.7.1 AS jar-build
+FROM sbtscala/scala-sbt:eclipse-temurin-21.0.7_6_1.11.3_3.7.1 AS jar-build
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x -o nodesource_setup.sh && \
     bash nodesource_setup.sh && \
     apt-get install -y nodejs
