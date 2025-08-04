@@ -16,7 +16,7 @@
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@types/react": "19.1.9",
-    "@types/react-dom": "19.1.5",
+    "@types/react-dom": "19.1.7",
     "@types/three": "0.176.0",
     "@vitejs/plugin-react-swc": "3.11.0",
     "license-checker": "25.0.1",
@@ -33,7 +33,7 @@
     "@react-three/fiber": "9.1.2",
     "material-react-table": "3.2.1",
     "react": "19.1.1",
-    "react-dom": "19.1.0",
+    "react-dom": "19.1.1",
     "three": "0.177.0"
   },
   "overrides": {
