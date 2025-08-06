@@ -1,28 +1,30 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.2/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.1.3/schema.json",
   "vcs": {
     "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true
+    "clientKind": "git"
   },
   "files": {
-    "ignore": ["vite.config.ts"]
+    "includes": ["src/**"]
   },
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
     "lineWidth": 100
   },
-  "organizeImports": {
-    "enabled": true
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
   },
   "linter": {
     "enabled": true,
-    "rules": {
-      "all": true,
-      "style": {
-        "noParameterProperties": "off"
-      }
+    "domains": {
+      "project": "all",
+      "react": "all",
+      "test": "all"
     }
   },
   "javascript": {
