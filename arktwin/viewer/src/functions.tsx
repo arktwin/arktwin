@@ -2,9 +2,9 @@ import { ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { Box, MapControls } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import {
+  MaterialReactTable,
   type MRT_ColumnDef,
   type MRT_RowSelectionState,
-  MaterialReactTable,
   useMaterialReactTable,
 } from 'material-react-table'
 import { type ReactElement, useEffect, useMemo, useState } from 'react'
@@ -245,10 +245,7 @@ function AgentsCanvas(props: {
   )
 }
 
-function Camera(props: {
-  gridSize: number
-  projectionAxes: 'xy' | 'yz' | 'xz'
-}): ReactElement {
+function Camera(props: { gridSize: number; projectionAxes: 'xy' | 'yz' | 'xz' }): null {
   const { gridSize, projectionAxes } = props
 
   // see https://r3f.docs.pmnd.rs/api/hooks#exchanging-defaults
@@ -300,7 +297,7 @@ function Camera(props: {
         break
     }
   })
-  return <></>
+  return null
 }
 
 function toPrecision(num: number, precision: number): number {
