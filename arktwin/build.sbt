@@ -172,8 +172,10 @@ lazy val edge = (project in file("edge"))
 lazy val viewer = (project in file("viewer")).settings(
   name := "arktwin-viewer",
   Keys.`package` := {
-    Process("npm install", baseDirectory.value).!
-    Process("npm run build", baseDirectory.value).!
+    val npmInstallExitCode = Process("npm install", baseDirectory.value).!
+    require(npmInstallExitCode == 0, "npm install failed")
+    val npmBuildExitCode = Process("npm run build", baseDirectory.value).!
+    require(npmBuildExitCode == 0, "npm run build failed")
     baseDirectory.value / "dist"
   },
   run := Process("npm run dev", baseDirectory.value).!
