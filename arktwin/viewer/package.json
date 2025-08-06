@@ -11,7 +11,7 @@
     "license-check": "license-checker --production --excludePrivatePackages --onlyAllow 'Apache-2.0; BSD-3-Clause; ISC; MIT'"
   },
   "engines": {
-    "node": "22.x"
+    "node": "24.x"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
