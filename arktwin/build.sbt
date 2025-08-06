@@ -173,12 +173,15 @@ lazy val viewer = (project in file("viewer")).settings(
   name := "arktwin-viewer",
   Keys.`package` := {
     val npmInstallExitCode = Process("npm install", baseDirectory.value).!
-    require(npmInstallExitCode == 0, "npm install failed")
+    require(npmInstallExitCode == 0, s"npm install failed with exit code $npmInstallExitCode.")
     val npmBuildExitCode = Process("npm run build", baseDirectory.value).!
-    require(npmBuildExitCode == 0, "npm run build failed")
+    require(npmBuildExitCode == 0, s"npm run build failed with exit code $npmBuildExitCode.")
     baseDirectory.value / "dist"
   },
-  run := Process("npm run dev", baseDirectory.value).!
+  run := {
+    val npmRunDevExitCode = Process("npm run dev", baseDirectory.value).!
+    require(npmRunDevExitCode == 0, s"npm run dev failed with exit code $npmRunDevExitCode.")
+  }
 )
 
 lazy val e2e = (project in file("e2e"))
