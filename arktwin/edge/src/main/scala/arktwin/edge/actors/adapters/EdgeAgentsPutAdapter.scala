@@ -9,6 +9,7 @@ import arktwin.common.util.BehaviorsExtensions.*
 import arktwin.common.util.CommonMessages.Timeout
 import arktwin.common.util.{MailboxConfig, VirtualDurationHistogram}
 import arktwin.edge.actors.EdgeConfigurator
+import arktwin.edge.actors.EdgeConfigurator.UpdateCoordinateConfig
 import arktwin.edge.actors.sinks.{Chart, Clock}
 import arktwin.edge.configs.{CoordinateConfig, StaticEdgeConfig}
 import arktwin.edge.connectors.{ChartConnector, RegisterConnector}
@@ -22,7 +23,7 @@ import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
 object EdgeAgentsPutAdapter:
-  type Message = Put | CoordinateConfig | Report
+  type Message = Put | UpdateCoordinateConfig | Report
   case class Put(
       request: Request,
       restReceptionMachineTimestamp: MachineTimestamp,
@@ -97,7 +98,7 @@ object EdgeAgentsPutAdapter:
         optionalPreviousAgents = Some(previousAgents)
         Behaviors.same
 
-      case newCoordinateConfig: CoordinateConfig =>
+      case UpdateCoordinateConfig(newCoordinateConfig) =>
         coordinateConfig = newCoordinateConfig
         Behaviors.same
 

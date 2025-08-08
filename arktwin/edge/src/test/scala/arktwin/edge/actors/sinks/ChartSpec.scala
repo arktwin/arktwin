@@ -4,6 +4,7 @@ package arktwin.edge.actors.sinks
 
 import arktwin.center.services.ChartAgent
 import arktwin.common.data.*
+import arktwin.edge.actors.EdgeConfigurator.UpdateCullingConfig
 import arktwin.edge.actors.sinks.Chart.*
 import arktwin.edge.configs.CullingConfig
 import arktwin.edge.endpoints.EdgeConfigGet
@@ -16,14 +17,14 @@ class ChartSpec extends ActorTestBase:
       val chart = testKit.spawn(Chart(config.dynamic.culling))
       val chartReader = testKit.createTestProbe[ReadReply]()
 
-      chart ! CullingConfig(edgeCulling = true, 2)
-      chart ! Get(chartReader.ref)
+      chart ! UpdateCullingConfig(CullingConfig(edgeCulling = true, 2))
+      chart ! Read(chartReader.ref)
       assert(chartReader.receiveMessage().sortedAgents == Seq())
 
       // test that all received agents can be read
       for i <- 0 to 9
-      do chart ! Catch(chartAgent(s"b-$i-$i-$i", Timestamp(0, 0), Vector3Enu(i, i, i)))
-      chart ! Get(chartReader.ref)
+      do chart ! Update(chartAgent(s"b-$i-$i-$i", Timestamp(0, 0), Vector3Enu(i, i, i)))
+      chart ! Read(chartReader.ref)
       assert(
         chartReader.receiveMessage().sortedAgents.map(_.agent.agentId).toSet ==
           (0 to 9).map(i => s"b-$i-$i-$i").toSet
@@ -40,8 +41,8 @@ class ChartSpec extends ActorTestBase:
         x <- 0 to 9
         y <- 0 to 9
         z <- 0 to 9
-      do chart ! Catch(chartAgent(s"b-$x-$y-$z", Timestamp(1, 0), Vector3Enu(x, y, z)))
-      chart ! Get(chartReader.ref)
+      do chart ! Update(chartAgent(s"b-$x-$y-$z", Timestamp(1, 0), Vector3Enu(x, y, z)))
+      chart ! Read(chartReader.ref)
       assert(
         chartReader.receiveMessage().sortedAgents.map(_.agent.agentId).take(9) == Seq(
           "b-2-3-4",
@@ -61,8 +62,8 @@ class ChartSpec extends ActorTestBase:
         x <- 0 to 9
         y <- 0 to 9
         z <- 0 to 9
-      do chart ! Catch(chartAgent(s"b-$x-$y-$z", Timestamp(0, 0), Vector3Enu(-x, -y, -z)))
-      chart ! Get(chartReader.ref)
+      do chart ! Update(chartAgent(s"b-$x-$y-$z", Timestamp(0, 0), Vector3Enu(-x, -y, -z)))
+      chart ! Read(chartReader.ref)
       assert(
         chartReader.receiveMessage().sortedAgents.map(_.agent.agentId).take(1) == Seq(
           "b-2-3-4"
@@ -75,10 +76,10 @@ class ChartSpec extends ActorTestBase:
         y <- 0 to 9
         z <- 0 to 9
       do
-        chart ! Catch(
+        chart ! Update(
           chartAgent(s"b-$x-$y-$z", Timestamp(1, 0), Vector3Enu(x * 0.1, y * 0.1, z * 0.1))
         )
-      chart ! Get(chartReader.ref)
+      chart ! Read(chartReader.ref)
       assert(
         chartReader.receiveMessage().sortedAgents.map(_.agent.agentId).take(3) == Seq(
           "b-9-9-9",
@@ -97,8 +98,8 @@ class ChartSpec extends ActorTestBase:
         z <- 0 to 9
       do
         if !Seq((1, 2, 3), (4, 5, 6), (7, 8, 9)).contains((x, y, z)) then
-          chart ! Catch(chartAgent(s"b-$x-$y-$z", Timestamp(2, 0), Vector3Enu(x, y, z)))
-      chart ! Get(chartReader.ref)
+          chart ! Update(chartAgent(s"b-$x-$y-$z", Timestamp(2, 0), Vector3Enu(x, y, z)))
+      chart ! Read(chartReader.ref)
       assert(
         chartReader.receiveMessage().sortedAgents.map(_.agent.agentId).take(3) == Seq(
           "b-7-8-9",

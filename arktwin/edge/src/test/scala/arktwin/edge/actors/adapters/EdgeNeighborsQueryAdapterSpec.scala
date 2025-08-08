@@ -5,6 +5,7 @@ package arktwin.edge.actors.adapters
 import arktwin.center.services.ClockBaseExtensions.*
 import arktwin.center.services.{ChartAgent, ClockBase, RegisterAgent}
 import arktwin.common.data.*
+import arktwin.edge.actors.EdgeConfigurator.UpdateCoordinateConfig
 import arktwin.edge.actors.adapters.EdgeNeighborsQueryAdapter.*
 import arktwin.edge.actors.sinks.Chart.CullingAgent
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
@@ -30,8 +31,8 @@ class EdgeNeighborsQueryAdapterSpec extends ActorTestBase:
     it("queries neighbors and detects changes"):
       val config = EdgeConfigGet.outExample
       val chartReadQueue = mutable.Queue[Seq[CullingAgent]]()
-      val chart = testKit.spawn[Chart.Get](Behaviors.receiveMessage:
-        case Chart.Get(replyTo) =>
+      val chart = testKit.spawn[Chart.Read](Behaviors.receiveMessage:
+        case Chart.Read(replyTo) =>
           replyTo ! Chart.ReadReply(chartReadQueue.dequeue())
           Behaviors.same)
       val clockReadQueue = mutable.Queue[ClockBase]()
@@ -57,12 +58,14 @@ class EdgeNeighborsQueryAdapterSpec extends ActorTestBase:
         )
       val endpoint = testKit.createTestProbe[Either[ErrorStatus, Response]]()
 
-      adapter ! CoordinateConfig(
-        AxisConfig(East, North, Up),
-        Vector3(0, 0, 0),
-        EulerAnglesConfig(Degree, Extrinsic, XYZ),
-        Meter,
-        MeterPerSecond
+      adapter ! UpdateCoordinateConfig(
+        CoordinateConfig(
+          AxisConfig(East, North, Up),
+          Vector3(0, 0, 0),
+          EulerAnglesConfig(Degree, Extrinsic, XYZ),
+          Meter,
+          MeterPerSecond
+        )
       )
 
       chartReadQueue += Seq(

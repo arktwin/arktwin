@@ -4,6 +4,7 @@ package arktwin.edge.actors.adapters
 
 import arktwin.center.services.{ChartAgent, ClockBase}
 import arktwin.common.data.*
+import arktwin.edge.actors.EdgeConfigurator.UpdateCoordinateConfig
 import arktwin.edge.actors.adapters.EdgeAgentsPutAdapter.*
 import arktwin.edge.actors.sinks.{Chart, Clock}
 import arktwin.edge.configs.AxisConfig.Direction.{East, North, Up}
@@ -46,12 +47,14 @@ class EdgeAgentsPutAdapterSpec extends ActorTestBase:
         )
       val endpoint = testKit.createTestProbe[Either[ErrorStatus, Response]]()
 
-      adapter ! CoordinateConfig(
-        AxisConfig(East, North, Up),
-        Vector3(0, 0, 0),
-        QuaternionConfig,
-        Meter,
-        MeterPerSecond
+      adapter ! UpdateCoordinateConfig(
+        CoordinateConfig(
+          AxisConfig(East, North, Up),
+          Vector3(0, 0, 0),
+          QuaternionConfig,
+          Meter,
+          MeterPerSecond
+        )
       )
       clockReadQueue += ClockBase(Timestamp(0, 0), Timestamp(0, 0), 1)
       adapter ! Put(
