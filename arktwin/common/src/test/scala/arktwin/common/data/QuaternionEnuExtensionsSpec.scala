@@ -24,22 +24,22 @@ class QuaternionEnuExtensionsSpec extends AnyFunSpec with Matchers:
         val identity = QuaternionEnu(0.0, 0.0, 0.0, 1.0)
         val q = QuaternionEnu(0.1, 0.2, 0.3, 0.927362)
 
-        identity * q shouldEqual q
-        q * identity shouldEqual q
+        assert(identity * q === q)
+        assert(q * identity === q)
 
       it("multiplies with itself to yield double rotation"):
         val q = QuaternionEnu(0.0, 0.0, 0.707107, 0.707107) // 90 degree rotation around Z
 
-        q * q shouldEqual QuaternionEnu(0.0, 0.0, 1.0, 0.0) // 180 degree rotation around Z
+        assert(q * q === QuaternionEnu(0.0, 0.0, 1.0, 0.0)) // 180 degree rotation around Z
 
       it("performs non-commutative multiplication"):
         val q1 = QuaternionEnu(0.707107, 0.0, 0.0, 0.707107) // 90 degree rotation around X
         val q2 = QuaternionEnu(0.0, 0.707107, 0.0, 0.707107) // 90 degree rotation around Y
 
-        q1 * q2 shouldNot equal(q2 * q1)
+        assert(q1 * q2 !== q2 * q1)
 
       it("multiplies with conjugate quaternion to yield identity quaternion"):
         val q = QuaternionEnu(0.1, 0.2, 0.3, 0.927362)
         val conjugate = QuaternionEnu(-0.1, -0.2, -0.3, 0.927362)
 
-        q * conjugate shouldEqual QuaternionEnu(0.0, 0.0, 0.0, 1.0)
+        assert(q * conjugate === QuaternionEnu(0.0, 0.0, 0.0, 1.0))
