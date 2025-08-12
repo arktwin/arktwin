@@ -37,7 +37,7 @@ object Chart:
   case class Update(agent: ChartAgent)
   case class UpdateFirstAgents(agents: Seq[ChartAgent])
 
-  case class ReadReply(sortedAgents: Seq[CullingAgent]) extends AnyVal
+  case class ReadReply(orderedAgents: Seq[CullingAgent]) extends AnyVal
   case class CullingAgent(agent: ChartAgent, nearestDistance: Option[Double])
 
   def spawn(
@@ -60,7 +60,7 @@ object Chart:
     var cullingConfig = initCullingConfig
     val distances = mutable.Map[String, Double]()
     val orderedAgents = mutable.TreeMap[(Double, String), ChartAgent]()
-    var firstAgents = Seq[ChartAgent]()
+    var firstAgents = Option(Seq[ChartAgent]())
 
     Behaviors.receiveMessage:
       case Read(actorRef) =>
@@ -80,6 +80,7 @@ object Chart:
           // TODO consider relative coordinates
           // TODO extrapolate first agents based on previous transforms?
           val distance = firstAgents
+            .getOrElse(Seq())
             .map(a =>
               agent.transform.localTranslationMeter.distance(a.transform.localTranslationMeter)
             )
@@ -91,14 +92,15 @@ object Chart:
 
       case UpdateFirstAgents(newFirstAgents) =>
         if cullingConfig.edgeCulling then
-          if newFirstAgents.size <= cullingConfig.maxFirstAgents then firstAgents = newFirstAgents
+          if newFirstAgents.size <= cullingConfig.maxFirstAgents
+          then firstAgents = Some(newFirstAgents)
           else
             if firstAgents.nonEmpty then
               logger.warn(
                 "edge culling is disabled because first agents is greater than arktwin.edge.culling.maxFirstAgents"
               )
-            firstAgents = Seq()
-        else firstAgents = Seq()
+            firstAgents = None
+        else firstAgents = None
         Behaviors.same
 
       case UpdateCullingConfig(newCullingConfig) =>

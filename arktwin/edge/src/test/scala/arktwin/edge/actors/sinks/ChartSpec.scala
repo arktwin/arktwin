@@ -29,8 +29,8 @@ class ChartSpec extends ActorTestBase:
 
         chart ! Read(chartReader.ref)
 
-        val sortedAgents = chartReader.receiveMessage().sortedAgents
-        assert(sortedAgents == Seq())
+        val orderedAgents = chartReader.receiveMessage().orderedAgents
+        assert(orderedAgents == Seq())
 
     describe("Update"):
       it("adds new agents"):
@@ -41,9 +41,9 @@ class ChartSpec extends ActorTestBase:
           chart ! Update(chartAgent(s"agent-$i", Timestamp(0, 0), Vector3Enu(i, i, i)))
         chart ! Read(chartReader.ref)
 
-        val sortedAgents = chartReader.receiveMessage().sortedAgents
-        assert(sortedAgents.map(_.agent.agentId).toSet == Set("agent-1", "agent-2", "agent-3"))
-        assert(sortedAgents.forall(_.nearestDistance == None))
+        val orderedAgents = chartReader.receiveMessage().orderedAgents
+        assert(orderedAgents.map(_.agent.agentId).toSet == Set("agent-1", "agent-2", "agent-3"))
+        assert(orderedAgents.forall(_.nearestDistance == None))
 
       it("updates existing agents with newer timestamp"):
         val chart = testKit.spawn(Chart(CullingConfig(edgeCulling = true, maxFirstAgents = 1)))
@@ -53,11 +53,11 @@ class ChartSpec extends ActorTestBase:
         chart ! Update(chartAgent("agent-1", Timestamp(1, 0), Vector3Enu(2, 2, 2)))
         chart ! Read(chartReader.ref)
 
-        val sortedAgents = chartReader.receiveMessage().sortedAgents
-        assert(sortedAgents.map(_.agent.agentId).toSet == Set("agent-1"))
-        assert(sortedAgents(0).agent.transform.timestamp == Timestamp(1, 0))
-        assert(sortedAgents(0).agent.transform.localTranslationMeter == Vector3Enu(2, 2, 2))
-        assert(sortedAgents(0).nearestDistance == None)
+        val orderedAgents = chartReader.receiveMessage().orderedAgents
+        assert(orderedAgents.map(_.agent.agentId).toSet == Set("agent-1"))
+        assert(orderedAgents(0).agent.transform.timestamp == Timestamp(1, 0))
+        assert(orderedAgents(0).agent.transform.localTranslationMeter == Vector3Enu(2, 2, 2))
+        assert(orderedAgents(0).nearestDistance == None)
 
       it("ignores existing agents with older timestamp"):
         val chart = testKit.spawn(Chart(CullingConfig(edgeCulling = true, maxFirstAgents = 1)))
@@ -67,11 +67,11 @@ class ChartSpec extends ActorTestBase:
         chart ! Update(chartAgent("agent-1", Timestamp(1, 0), Vector3Enu(1, 1, 1)))
         chart ! Read(chartReader.ref)
 
-        val sortedAgents = chartReader.receiveMessage().sortedAgents
-        assert(sortedAgents.map(_.agent.agentId).toSet == Set("agent-1"))
-        assert(sortedAgents(0).agent.transform.localTranslationMeter == Vector3Enu(2, 2, 2))
-        assert(sortedAgents(0).agent.transform.timestamp == Timestamp(2, 0))
-        assert(sortedAgents(0).nearestDistance == None)
+        val orderedAgents = chartReader.receiveMessage().orderedAgents
+        assert(orderedAgents.map(_.agent.agentId).toSet == Set("agent-1"))
+        assert(orderedAgents(0).agent.transform.localTranslationMeter == Vector3Enu(2, 2, 2))
+        assert(orderedAgents(0).agent.transform.timestamp == Timestamp(2, 0))
+        assert(orderedAgents(0).nearestDistance == None)
 
       it("sorts neighbors by distance from nearest first agent"):
         val chart = testKit.spawn(Chart(CullingConfig(edgeCulling = true, maxFirstAgents = 10)))
@@ -90,10 +90,10 @@ class ChartSpec extends ActorTestBase:
         do chart ! Update(chartAgent(s"b-$x-$y-$z", Timestamp(1, 0), Vector3Enu(x, y, z)))
         chart ! Read(chartReader.ref)
         {
-          val sortedAgents = chartReader.receiveMessage().sortedAgents
-          assert(sortedAgents.size == 1000)
+          val orderedAgents = chartReader.receiveMessage().orderedAgents
+          assert(orderedAgents.size == 1000)
           assert(
-            sortedAgents.map(_.agent.agentId).take(9) == Seq(
+            orderedAgents.map(_.agent.agentId).take(9) == Seq(
               "b-2-3-4",
               "b-9-8-7",
               "b-8-8-7",
@@ -106,17 +106,17 @@ class ChartSpec extends ActorTestBase:
             )
           )
           assert(
-            sortedAgents(0).nearestDistance === Some(
+            orderedAgents(0).nearestDistance === Some(
               math.sqrt(0.0014)
             ) // (1.99, 2.98, 3.97) to (2, 3, 4)
           )
           assert(
-            sortedAgents(1).nearestDistance === Some(
+            orderedAgents(1).nearestDistance === Some(
               math.sqrt(0.1085)
             ) // (8.80, 7.81, 6.82) to (9, 8, 7)
           )
           assert(
-            sortedAgents(2).nearestDistance === Some(
+            orderedAgents(2).nearestDistance === Some(
               math.sqrt(0.7085)
             ) // (8.80, 7.81, 6.82) to (8, 8, 7)
           )
@@ -132,10 +132,10 @@ class ChartSpec extends ActorTestBase:
           )
         chart ! Read(chartReader.ref)
         {
-          val sortedAgents = chartReader.receiveMessage().sortedAgents
-          assert(sortedAgents.size == 1000)
+          val orderedAgents = chartReader.receiveMessage().orderedAgents
+          assert(orderedAgents.size == 1000)
           assert(
-            sortedAgents.map(_.agent.agentId).take(3) == Seq(
+            orderedAgents.map(_.agent.agentId).take(3) == Seq(
               "b-9-9-9",
               "b-8-9-9",
               "b-9-8-9"
@@ -157,10 +157,10 @@ class ChartSpec extends ActorTestBase:
         chart ! Update(chartAgent("agent-1", Timestamp(0, 0), Vector3Enu(1, 0, 0)))
         chart ! Read(chartReader.ref)
 
-        val sortedAgents = chartReader.receiveMessage().sortedAgents
-        assert(sortedAgents.size == 1)
-        assert(sortedAgents(0).agent.agentId == "agent-1")
-        assert(sortedAgents(0).nearestDistance === Some(1.0)) // (0,0,0) to (1,0,0)
+        val orderedAgents = chartReader.receiveMessage().orderedAgents
+        assert(orderedAgents.size == 1)
+        assert(orderedAgents(0).agent.agentId == "agent-1")
+        assert(orderedAgents(0).nearestDistance === Some(1.0)) // (0,0,0) to (1,0,0)
 
       it("ignores first agents when culling is disabled"):
         val chart = testKit.spawn(Chart(CullingConfig(edgeCulling = false, maxFirstAgents = 0)))
@@ -175,10 +175,10 @@ class ChartSpec extends ActorTestBase:
         chart ! Update(chartAgent("agent-1", Timestamp(0, 0), Vector3Enu(1, 0, 0)))
         chart ! Read(chartReader.ref)
 
-        val sortedAgents = chartReader.receiveMessage().sortedAgents
-        assert(sortedAgents.size == 1)
-        assert(sortedAgents(0).agent.agentId == "agent-1")
-        assert(sortedAgents(0).nearestDistance == None)
+        val orderedAgents = chartReader.receiveMessage().orderedAgents
+        assert(orderedAgents.size == 1)
+        assert(orderedAgents(0).agent.agentId == "agent-1")
+        assert(orderedAgents(0).nearestDistance == None)
 
       it("ignores first agents when exceeding maxFirstAgents"):
         val chart = testKit.spawn(Chart(CullingConfig(edgeCulling = true, maxFirstAgents = 2)))
@@ -192,10 +192,10 @@ class ChartSpec extends ActorTestBase:
         chart ! Update(chartAgent("agent-1", Timestamp(0, 0), Vector3Enu(1, 0, 0)))
         chart ! Read(chartReader.ref)
         {
-          val sortedAgents = chartReader.receiveMessage().sortedAgents
-          assert(sortedAgents.size == 1)
-          assert(sortedAgents(0).agent.agentId == "agent-1")
-          assert(sortedAgents(0).nearestDistance == Some(math.sqrt(2)))
+          val orderedAgents = chartReader.receiveMessage().orderedAgents
+          assert(orderedAgents.size == 1)
+          assert(orderedAgents(0).agent.agentId == "agent-1")
+          assert(orderedAgents(0).nearestDistance == Some(math.sqrt(2)))
         }
 
         chart ! UpdateFirstAgents(
@@ -208,10 +208,10 @@ class ChartSpec extends ActorTestBase:
         chart ! Update(chartAgent("agent-1", Timestamp(0, 1), Vector3Enu(1, 0, 0)))
         chart ! Read(chartReader.ref)
         {
-          val sortedAgents = chartReader.receiveMessage().sortedAgents
-          assert(sortedAgents.size == 1)
-          assert(sortedAgents(0).agent.agentId == "agent-1")
-          assert(sortedAgents(0).nearestDistance == None)
+          val orderedAgents = chartReader.receiveMessage().orderedAgents
+          assert(orderedAgents.size == 1)
+          assert(orderedAgents(0).agent.agentId == "agent-1")
+          assert(orderedAgents(0).nearestDistance == None)
         }
 
     describe("UpdateCullingConfig"):
@@ -223,10 +223,10 @@ class ChartSpec extends ActorTestBase:
         chart ! Update(chartAgent("agent-1", Timestamp(0, 0), Vector3Enu(3, 4, 0)))
         chart ! Read(chartReader.ref)
         {
-          val sortedAgents = chartReader.receiveMessage().sortedAgents
-          assert(sortedAgents.size == 1)
-          assert(sortedAgents(0).agent.agentId == "agent-1")
-          assert(sortedAgents(0).nearestDistance == None)
+          val orderedAgents = chartReader.receiveMessage().orderedAgents
+          assert(orderedAgents.size == 1)
+          assert(orderedAgents(0).agent.agentId == "agent-1")
+          assert(orderedAgents(0).nearestDistance == None)
         }
 
         chart ! UpdateCullingConfig(CullingConfig(edgeCulling = true, maxFirstAgents = 10))
@@ -234,10 +234,10 @@ class ChartSpec extends ActorTestBase:
         chart ! Update(chartAgent("agent-1", Timestamp(1, 0), Vector3Enu(3, 4, 0)))
         chart ! Read(chartReader.ref)
         {
-          val sortedAgents = chartReader.receiveMessage().sortedAgents
-          assert(sortedAgents.size == 1)
-          assert(sortedAgents(0).agent.agentId == "agent-1")
-          assert(sortedAgents(0).nearestDistance === Some(5.0))
+          val orderedAgents = chartReader.receiveMessage().orderedAgents
+          assert(orderedAgents.size == 1)
+          assert(orderedAgents(0).agent.agentId == "agent-1")
+          assert(orderedAgents(0).nearestDistance === Some(5.0))
         }
 
   private def chartAgent(
