@@ -9,15 +9,27 @@ import org.apache.pekko.actor.typed.receptionist.{Receptionist, ServiceKey}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 
+/** An actor that manages and distributes edge configuration.
+  *
+  * # Message Protocol
+  *   - `Read`: Reads the current edge configuration
+  *   - `UpdateCoordinateConfig`: Updates the coordinate configuration and distributes it to
+  *     registered coordinate observers
+  *   - `UpdateCullingConfig`: Updates the culling configuration and distributes it to registered
+  *     culling observers
+  *   - `Receptionist.Listing`: Updates the list of registered observers
+  */
 object EdgeConfigurator:
-  type Message = Get | CoordinateConfig | CullingConfig | Receptionist.Listing
-  case class Get(replyTo: ActorRef[EdgeConfig])
+  type Message = Read | UpdateCoordinateConfig | UpdateCullingConfig | Receptionist.Listing
+  case class Read(replyTo: ActorRef[EdgeConfig])
+  case class UpdateCoordinateConfig(config: CoordinateConfig) extends AnyVal
+  case class UpdateCullingConfig(config: CullingConfig) extends AnyVal
 
-  val coordinateObserverKey: ServiceKey[CoordinateConfig] = ServiceKey(
-    getClass.getName + "/" + CoordinateConfig.getClass.getName
+  val coordinateObserverKey: ServiceKey[UpdateCoordinateConfig] = ServiceKey(
+    getClass.getName + "/" + UpdateCoordinateConfig.getClass.getName
   )
-  val cullingObserverKey: ServiceKey[CullingConfig] = ServiceKey(
-    getClass.getName + "/" + CullingConfig.getClass.getName
+  val cullingObserverKey: ServiceKey[UpdateCullingConfig] = ServiceKey(
+    getClass.getName + "/" + UpdateCullingConfig.getClass.getName
   )
 
   def spawn(initEdgeConfig: EdgeConfig): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
@@ -34,32 +46,36 @@ object EdgeConfigurator:
     context.system.receptionist ! Receptionist.subscribe(cullingObserverKey, context.self)
 
     var edgeConfig = initEdgeConfig
-    var coordinateObservers = Set[ActorRef[CoordinateConfig]]()
-    var cullingObservers = Set[ActorRef[CullingConfig]]()
+    var coordinateObservers = Set[ActorRef[UpdateCoordinateConfig]]()
+    var cullingObservers = Set[ActorRef[UpdateCullingConfig]]()
 
     Behaviors.receiveMessage:
-      case Get(replyTo) =>
+      case Read(replyTo) =>
         replyTo ! edgeConfig
         Behaviors.same
 
-      case coordinateConfig: CoordinateConfig =>
+      case UpdateCoordinateConfig(coordinateConfig) =>
         edgeConfig =
           edgeConfig.copy(dynamic = edgeConfig.dynamic.copy(coordinate = coordinateConfig))
-        coordinateObservers.foreach(_ ! coordinateConfig)
+        coordinateObservers.foreach(_ ! UpdateCoordinateConfig(coordinateConfig))
         Behaviors.same
 
-      case cullingConfig: CullingConfig =>
+      case UpdateCullingConfig(cullingConfig) =>
         edgeConfig = edgeConfig.copy(dynamic = edgeConfig.dynamic.copy(culling = cullingConfig))
-        cullingObservers.foreach(_ ! cullingConfig)
+        cullingObservers.foreach(_ ! UpdateCullingConfig(cullingConfig))
         Behaviors.same
 
       case coordinateObserverKey.Listing(newObservers) =>
-        (newObservers &~ coordinateObservers).foreach(_ ! edgeConfig.dynamic.coordinate)
+        (newObservers &~ coordinateObservers).foreach(
+          _ ! UpdateCoordinateConfig(edgeConfig.dynamic.coordinate)
+        )
         coordinateObservers = newObservers
         Behaviors.same
 
       case cullingObserverKey.Listing(newObservers) =>
-        (newObservers &~ cullingObservers).foreach(_ ! edgeConfig.dynamic.culling)
+        (newObservers &~ cullingObservers).foreach(
+          _ ! UpdateCullingConfig(edgeConfig.dynamic.culling)
+        )
         cullingObservers = newObservers
         Behaviors.same
 

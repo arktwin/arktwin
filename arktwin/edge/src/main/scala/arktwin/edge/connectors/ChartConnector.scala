@@ -79,7 +79,7 @@ case class ChartConnector(
           currentMachineTimestamp - a.transmissionMachineTimestamp.tagMachine,
           a.agents.size
         )
-        a.agents.map(Chart.Catch.apply)
+        a.agents.map(Chart.Update.apply)
       .to(ActorSink.actorRef(chart, Nop, _ => Nop))
       .run()
 

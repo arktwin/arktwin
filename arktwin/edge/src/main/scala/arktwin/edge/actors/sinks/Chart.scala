@@ -10,6 +10,7 @@ import arktwin.common.util.BehaviorsExtensions.*
 import arktwin.common.util.CommonMessages.Nop
 import arktwin.common.util.{MailboxConfig, VirtualTag}
 import arktwin.edge.actors.EdgeConfigurator
+import arktwin.edge.actors.EdgeConfigurator.UpdateCullingConfig
 import arktwin.edge.configs.CullingConfig
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.Receptionist
@@ -19,13 +20,24 @@ import org.apache.pekko.dispatch.ControlMessage
 
 import scala.collection.mutable
 
+/** An actor that manages transform data of neighbors.
+  *
+  * # Message Protocol
+  *   - `Read`: Reads transform data of neighbors sorted by distance from first agents when edge
+  *     culling is enabled
+  *   - `Update`: Updates transform data of neighbors sorted by distance from first agents when edge
+  *     culling is enabled
+  *   - `UpdateFirstAgents`: Updates first agents used as reference points for distance calculations
+  *   - `UpdateCullingConfig`: Updates the culling configuration
+  *   - `Nop`: No operation
+  */
 object Chart:
-  type Message = Catch | Get | UpdateFirstAgents | CullingConfig | Nop.type
-  case class Catch(agent: ChartAgent)
-  case class Get(replyTo: ActorRef[ReadReply]) extends ControlMessage
+  type Message = Read | Update | UpdateFirstAgents | UpdateCullingConfig | Nop.type
+  case class Read(replyTo: ActorRef[ReadReply]) extends ControlMessage
+  case class Update(agent: ChartAgent)
   case class UpdateFirstAgents(agents: Seq[ChartAgent])
 
-  case class ReadReply(sortedAgents: Seq[CullingAgent]) extends AnyVal
+  case class ReadReply(orderedAgents: Seq[CullingAgent]) extends AnyVal
   case class CullingAgent(agent: ChartAgent, nearestDistance: Option[Double])
 
   def spawn(
@@ -48,10 +60,16 @@ object Chart:
     var cullingConfig = initCullingConfig
     val distances = mutable.Map[String, Double]()
     val orderedAgents = mutable.TreeMap[(Double, String), ChartAgent]()
-    var firstAgents = Seq[ChartAgent]()
+    var firstAgents = Option(Seq[ChartAgent]())
 
     Behaviors.receiveMessage:
-      case Catch(agent) =>
+      case Read(actorRef) =>
+        actorRef ! ReadReply(orderedAgents.toSeq.map:
+          case ((dist, _), agent) =>
+            CullingAgent(agent, Some(dist).filter(_.isFinite)))
+        Behaviors.same
+
+      case Update(agent) =>
         val oldDistance = distances.get(agent.agentId)
         val oldTimestamp = oldDistance
           .map(orderedAgents(_, agent.agentId).transform.timestamp.tagVirtual)
@@ -62,6 +80,7 @@ object Chart:
           // TODO consider relative coordinates
           // TODO extrapolate first agents based on previous transforms?
           val distance = firstAgents
+            .getOrElse(Seq())
             .map(a =>
               agent.transform.localTranslationMeter.distance(a.transform.localTranslationMeter)
             )
@@ -71,25 +90,20 @@ object Chart:
           orderedAgents += (distance, agent.agentId) -> agent
         Behaviors.same
 
-      case Get(actorRef) =>
-        actorRef ! ReadReply(orderedAgents.toSeq.map:
-          case ((dist, _), agent) =>
-            CullingAgent(agent, Some(dist).filter(_.isFinite)))
-        Behaviors.same
-
       case UpdateFirstAgents(newFirstAgents) =>
         if cullingConfig.edgeCulling then
-          if newFirstAgents.size <= cullingConfig.maxFirstAgents then firstAgents = newFirstAgents
+          if newFirstAgents.size <= cullingConfig.maxFirstAgents
+          then firstAgents = Some(newFirstAgents)
           else
-            if firstAgents.nonEmpty then
+            if firstAgents.isDefined then
               logger.warn(
                 "edge culling is disabled because first agents is greater than arktwin.edge.culling.maxFirstAgents"
               )
-            firstAgents = Seq()
-        else firstAgents = Seq()
+            firstAgents = None
+        else firstAgents = None
         Behaviors.same
 
-      case newCullingConfig: CullingConfig =>
+      case UpdateCullingConfig(newCullingConfig) =>
         cullingConfig = newCullingConfig
         Behaviors.same
 

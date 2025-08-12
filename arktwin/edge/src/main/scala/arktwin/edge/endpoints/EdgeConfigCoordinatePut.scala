@@ -6,6 +6,7 @@ import arktwin.common.data.TaggedTimestamp
 import arktwin.common.util.JsonDerivation
 import arktwin.common.util.JsonDerivation.given
 import arktwin.edge.actors.EdgeConfigurator
+import arktwin.edge.actors.EdgeConfigurator.UpdateCoordinateConfig
 import arktwin.edge.configs.AxisConfig.Direction
 import arktwin.edge.configs.CoordinateConfig.{LengthUnit, SpeedUnit}
 import arktwin.edge.configs.EulerAnglesConfig.{AngleUnit, RotationMode, RotationOrder}
@@ -73,7 +74,7 @@ object EdgeConfigCoordinatePut:
           case Invalid(errors) =>
             Future.successful(Left(BadRequest(errors.toChain.toVector)))
           case Valid(request) =>
-            configurator ! request
+            configurator ! UpdateCoordinateConfig(request)
             Future.successful(Right(()))
         ).andThen: _ =>
           requestNumCounter.increment()

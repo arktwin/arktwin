@@ -3,33 +3,91 @@
 package arktwin.edge.actors
 
 import arktwin.edge.actors.EdgeConfigurator.*
-import arktwin.edge.configs.{CoordinateConfig, CullingConfig, QuaternionConfig}
+import arktwin.edge.configs.{EdgeConfig, QuaternionConfig}
 import arktwin.edge.endpoints.EdgeConfigGet
 import arktwin.edge.test.ActorTestBase
+import org.apache.pekko.actor.testkit.typed.scaladsl.ActorTestKit
 import org.apache.pekko.actor.typed.receptionist.Receptionist
+
+import scala.util.Using
 
 class EdgeConfiguratorSpec extends ActorTestBase:
   describe("EdgeConfigurator"):
-    it("notifies observers when they register or when configuration changes"):
-      val config = EdgeConfigGet.outExample
-      val configurator = testKit.spawn(EdgeConfigurator(config))
-      val coordinateObserver = testKit.createTestProbe[CoordinateConfig]()
-      val cullingObserver = testKit.createTestProbe[CullingConfig]()
+    describe("Read"):
+      it("replies current edge configuration"):
+        Using(ActorTestKit()): testKit =>
+          val config = EdgeConfigGet.outExample
+          val configurator = testKit.spawn(EdgeConfigurator(config))
+          val probe = testKit.createTestProbe[EdgeConfig]()
 
-      testKit.system.receptionist ! Receptionist.register(
-        coordinateObserverKey,
-        coordinateObserver.ref
-      )
-      assert(coordinateObserver.receiveMessage() == config.dynamic.coordinate)
+          configurator ! Read(probe.ref)
 
-      testKit.system.receptionist ! Receptionist.register(cullingObserverKey, cullingObserver.ref)
-      assert(cullingObserver.receiveMessage() == config.dynamic.culling)
+          assert(probe.receiveMessage() == config)
 
-      configurator ! config.dynamic.coordinate.copy(rotation = QuaternionConfig)
-      assert(
-        coordinateObserver.receiveMessage() == config.dynamic.coordinate
-          .copy(rotation = QuaternionConfig)
-      )
+      it("replies updated configuration after coordinate config update"):
+        Using(ActorTestKit()): testKit =>
+          val config = EdgeConfigGet.outExample
+          val configurator = testKit.spawn(EdgeConfigurator(config))
+          val probe = testKit.createTestProbe[EdgeConfig]()
+          val newCoordinateConfig = config.dynamic.coordinate.copy(rotation = QuaternionConfig)
 
-      configurator ! config.dynamic.culling.copy(maxFirstAgents = 123)
-      assert(cullingObserver.receiveMessage() == config.dynamic.culling.copy(maxFirstAgents = 123))
+          configurator ! UpdateCoordinateConfig(newCoordinateConfig)
+          configurator ! Read(probe.ref)
+
+          val receivedConfig = probe.receiveMessage()
+          assert(receivedConfig.dynamic.coordinate == newCoordinateConfig)
+          assert(receivedConfig.dynamic.culling == config.dynamic.culling)
+
+      it("replies updated configuration after culling config update"):
+        Using(ActorTestKit()): testKit =>
+          val config = EdgeConfigGet.outExample
+          val configurator = testKit.spawn(EdgeConfigurator(config))
+          val probe = testKit.createTestProbe[EdgeConfig]()
+          val newCullingConfig = config.dynamic.culling.copy(maxFirstAgents = 999)
+
+          configurator ! UpdateCullingConfig(newCullingConfig)
+          configurator ! Read(probe.ref)
+
+          val receivedConfig = probe.receiveMessage()
+          assert(receivedConfig.dynamic.coordinate == config.dynamic.coordinate)
+          assert(receivedConfig.dynamic.culling == newCullingConfig)
+
+    describe("UpdateCoordinateConfig"):
+      it("distributes coordinate configuration to registered coordinate observers"):
+        Using(ActorTestKit()): testKit =>
+          val config = EdgeConfigGet.outExample
+          val configurator = testKit.spawn(EdgeConfigurator(config))
+          val observer1 = testKit.createTestProbe[UpdateCoordinateConfig]()
+          val observer2 = testKit.createTestProbe[UpdateCoordinateConfig]()
+
+          testKit.system.receptionist ! Receptionist.register(coordinateObserverKey, observer1.ref)
+          testKit.system.receptionist ! Receptionist.register(coordinateObserverKey, observer2.ref)
+
+          assert(observer1.receiveMessage().config == config.dynamic.coordinate)
+          assert(observer2.receiveMessage().config == config.dynamic.coordinate)
+
+          val newConfig = config.dynamic.coordinate.copy(rotation = QuaternionConfig)
+          configurator ! UpdateCoordinateConfig(newConfig)
+
+          assert(observer1.receiveMessage().config == newConfig)
+          assert(observer2.receiveMessage().config == newConfig)
+
+    describe("UpdateCullingConfig"):
+      it("distributes culling configuration to registered culling observers"):
+        Using(ActorTestKit()): testKit =>
+          val config = EdgeConfigGet.outExample
+          val configurator = testKit.spawn(EdgeConfigurator(config))
+          val observer1 = testKit.createTestProbe[UpdateCullingConfig]()
+          val observer2 = testKit.createTestProbe[UpdateCullingConfig]()
+
+          testKit.system.receptionist ! Receptionist.register(cullingObserverKey, observer1.ref)
+          testKit.system.receptionist ! Receptionist.register(cullingObserverKey, observer2.ref)
+
+          assert(observer1.receiveMessage() == UpdateCullingConfig(config.dynamic.culling))
+          assert(observer2.receiveMessage() == UpdateCullingConfig(config.dynamic.culling))
+
+          val newConfig = config.dynamic.culling.copy(maxFirstAgents = 456)
+          configurator ! UpdateCullingConfig(newConfig)
+
+          assert(observer1.receiveMessage() == UpdateCullingConfig(newConfig))
+          assert(observer2.receiveMessage() == UpdateCullingConfig(newConfig))

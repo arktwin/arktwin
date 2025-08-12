@@ -85,7 +85,7 @@ class TransformSpec extends AnyFunSpec with Matchers:
           withClue(
             s"axisConfig: $axisConfig, angleUnit: $angleUnit, order: $order, lengthUnit: $lengthUnit, speedUnit: $speedUnit"
           ) {
-            Transform(t.normalize(VirtualTimestamp(0, 0), None, config), config) shouldEqual t
+            assert(Transform(t.normalize(VirtualTimestamp(0, 0), None, config), config) === t)
           }
 
         for
@@ -118,7 +118,7 @@ class TransformSpec extends AnyFunSpec with Matchers:
           withClue(
             s"axisConfig: $axisConfig, angleUnit: $angleUnit, order: $order, lengthUnit: $lengthUnit, speedUnit: $speedUnit"
           ) {
-            Transform(t.normalize(VirtualTimestamp(0, 0), None, config), config) shouldEqual t
+            assert(Transform(t.normalize(VirtualTimestamp(0, 0), None, config), config) === t)
           }
 
       it("transforms correctly between different axis configurations"):
@@ -146,10 +146,12 @@ class TransformSpec extends AnyFunSpec with Matchers:
           None,
           None
         )
-        Transform(
-          t.normalize(VirtualTimestamp(0, 0), None, sourceSetting),
-          targetSetting
-        ).localTranslation shouldEqual Vector3(2, 1, -3)
+        assert(
+          Transform(
+            t.normalize(VirtualTimestamp(0, 0), None, sourceSetting),
+            targetSetting
+          ).localTranslation === Vector3(2, 1, -3)
+        )
 
       it("coordinate transformation between Unreal Engine and Unity - case 1"):
         val configUE = CoordinateConfig(
@@ -232,14 +234,18 @@ class TransformSpec extends AnyFunSpec with Matchers:
           Some(Vector3(-2, 3, -1)),
           None
         )
-        Transform(
-          transformUE.normalize(VirtualTimestamp(0, 0), None, configUE),
-          configUnity
-        ) shouldEqual transformUnity
-        Transform(
-          transformUnity.normalize(VirtualTimestamp(0, 0), None, configUnity),
-          configUE
-        ) shouldEqual transformUE
+        assert(
+          Transform(
+            transformUE.normalize(VirtualTimestamp(0, 0), None, configUE),
+            configUnity
+          ) === transformUnity
+        )
+        assert(
+          Transform(
+            transformUnity.normalize(VirtualTimestamp(0, 0), None, configUnity),
+            configUE
+          ) === transformUE
+        )
 
       it("coordinate transformation between Unreal Engine and Unity - case 2"):
         val configUnity = CoordinateConfig(
@@ -321,14 +327,18 @@ class TransformSpec extends AnyFunSpec with Matchers:
           Some(Vector3(-4.8, 12.1, 0.7)),
           None
         )
-        Transform(
-          transformUnity.normalize(VirtualTimestamp(0, 0), None, configUnity),
-          configUE
-        ) shouldEqual transformUE
-        Transform(
-          transformUE.normalize(VirtualTimestamp(0, 0), None, configUE),
-          configUnity
-        ) shouldEqual transformUnity
+        assert(
+          Transform(
+            transformUnity.normalize(VirtualTimestamp(0, 0), None, configUnity),
+            configUE
+          ) === transformUE
+        )
+        assert(
+          Transform(
+            transformUE.normalize(VirtualTimestamp(0, 0), None, configUE),
+            configUnity
+          ) === transformUnity
+        )
 
       it("coordinate transformation between Unreal Engine and Unity - case 3"):
         val configUE = CoordinateConfig(
@@ -411,14 +421,18 @@ class TransformSpec extends AnyFunSpec with Matchers:
           Some(Vector3(-6.7, -1.6, 3.1)),
           None
         )
-        Transform(
-          transformUE.normalize(VirtualTimestamp(0, 0), None, configUE),
-          configUnity
-        ) shouldEqual transformUnity
-        Transform(
-          transformUnity.normalize(VirtualTimestamp(0, 0), None, configUnity),
-          configUE
-        ) shouldEqual transformUE
+        assert(
+          Transform(
+            transformUE.normalize(VirtualTimestamp(0, 0), None, configUE),
+            configUnity
+          ) === transformUnity
+        )
+        assert(
+          Transform(
+            transformUnity.normalize(VirtualTimestamp(0, 0), None, configUnity),
+            configUE
+          ) === transformUE
+        )
 
       it("coordinate transformation between Unreal Engine and Unity - case 4"):
         val configUnity = CoordinateConfig(
@@ -500,11 +514,15 @@ class TransformSpec extends AnyFunSpec with Matchers:
           Some(Vector3(-0.5, -1.2, 0.05)),
           None
         )
-        Transform(
-          transformUnity.normalize(VirtualTimestamp(0, 0), None, configUnity),
-          configUE
-        ) shouldEqual transformUE
-        Transform(
-          transformUE.normalize(VirtualTimestamp(0, 0), None, configUE),
-          configUnity
-        ) shouldEqual transformUnity
+        assert(
+          Transform(
+            transformUnity.normalize(VirtualTimestamp(0, 0), None, configUnity),
+            configUE
+          ) === transformUE
+        )
+        assert(
+          Transform(
+            transformUE.normalize(VirtualTimestamp(0, 0), None, configUE),
+            configUnity
+          ) === transformUnity
+        )

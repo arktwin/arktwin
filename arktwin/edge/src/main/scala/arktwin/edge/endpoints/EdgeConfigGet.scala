@@ -76,7 +76,7 @@ object EdgeConfigGet:
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogicWithLog: _ =>
         val requestTime = TaggedTimestamp.machineNow()
-        (configurator ? EdgeConfigurator.Get.apply)
+        (configurator ? EdgeConfigurator.Read.apply)
           .map(Right.apply)
           .recover(throwable => Left(ErrorStatus(throwable)))
           .andThen: _ =>

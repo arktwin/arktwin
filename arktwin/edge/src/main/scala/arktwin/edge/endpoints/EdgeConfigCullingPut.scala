@@ -6,6 +6,7 @@ import arktwin.common.data.TaggedTimestamp
 import arktwin.common.util.JsonDerivation
 import arktwin.common.util.JsonDerivation.given
 import arktwin.edge.actors.EdgeConfigurator
+import arktwin.edge.actors.EdgeConfigurator.UpdateCullingConfig
 import arktwin.edge.configs.CullingConfig
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.ErrorStatus.BadRequest
@@ -55,7 +56,7 @@ object EdgeConfigCullingPut:
           case Invalid(errors) =>
             Future.successful(Left(BadRequest(errors.toChain.toVector)))
           case Valid(request) =>
-            configurator ! request
+            configurator ! UpdateCullingConfig(request)
             Future.successful(Right(()))
         ).andThen: _ =>
           requestNumCounter.increment()

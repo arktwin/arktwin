@@ -10,6 +10,7 @@ import arktwin.common.util.BehaviorsExtensions.*
 import arktwin.common.util.CommonMessages.Timeout
 import arktwin.common.util.{MailboxConfig, VirtualDurationHistogram}
 import arktwin.edge.actors.EdgeConfigurator
+import arktwin.edge.actors.EdgeConfigurator.UpdateCoordinateConfig
 import arktwin.edge.actors.sinks.Chart.CullingAgent
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
 import arktwin.edge.configs.{CoordinateConfig, StaticEdgeConfig}
@@ -27,7 +28,7 @@ import scala.concurrent.duration.FiniteDuration
 import scala.util.chaining.*
 
 object EdgeNeighborsQueryAdapter:
-  type Message = Query | CoordinateConfig | Report
+  type Message = Query | UpdateCoordinateConfig | Report
   case class Query(
       request: Request,
       replyTo: ActorRef[Either[ErrorStatus, Response]]
@@ -35,7 +36,7 @@ object EdgeNeighborsQueryAdapter:
   case class Report(previousAgents: Set[String])
 
   def spawn(
-      chart: ActorRef[Chart.Get],
+      chart: ActorRef[Chart.Read],
       clock: ActorRef[Clock.Get],
       register: ActorRef[Register.Get],
       staticConfig: StaticEdgeConfig,
@@ -50,7 +51,7 @@ object EdgeNeighborsQueryAdapter:
     )
 
   def apply(
-      chart: ActorRef[Chart.Get],
+      chart: ActorRef[Chart.Read],
       clock: ActorRef[Clock.Get],
       register: ActorRef[Register.Get],
       staticConfig: StaticEdgeConfig,
@@ -113,7 +114,7 @@ object EdgeNeighborsQueryAdapter:
         optionalPreviousAgents = Some(previousAgents)
         Behaviors.same
 
-      case newCoordinateConfig: CoordinateConfig =>
+      case UpdateCoordinateConfig(newCoordinateConfig) =>
         coordinateConfig = newCoordinateConfig
         Behaviors.same
 
@@ -124,7 +125,7 @@ object EdgeNeighborsQueryAdapter:
       optionalPreviousAgents: Option[Set[String]],
       replyTo: ActorRef[Either[ErrorStatus, Response]],
       parent: ActorRef[Report],
-      chart: ActorRef[Chart.Get],
+      chart: ActorRef[Chart.Read],
       clock: ActorRef[Clock.Get],
       register: ActorRef[Register.Get],
       virtualLatencyHistogram: VirtualDurationHistogram,
@@ -133,7 +134,7 @@ object EdgeNeighborsQueryAdapter:
   ): Behavior[SessionMessage] = Behaviors.setupWithLogger: (context, logger) =>
     context.setReceiveTimeout(timeout, Timeout)
 
-    chart ! Chart.Get(context.self)
+    chart ! Chart.Read(context.self)
     var chartWait = Option.empty[Seq[CullingAgent]]
 
     clock ! Clock.Get(context.self)

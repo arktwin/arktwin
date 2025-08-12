@@ -31,18 +31,18 @@ class TaggedDurationSpec extends AnyFunSpec with Matchers:
   describe("TaggedDuration"):
     describe("secondsDouble"):
       it("converts to double seconds"):
-        VirtualDuration(10, 500_000_000).secondsDouble shouldEqual 10.5
+        assert(VirtualDuration(10, 500_000_000).secondsDouble === 10.5)
 
       it("handles negative duration for secondsDouble"):
-        MachineDuration(-5, -250_000_000).secondsDouble shouldEqual -5.25
+        assert(MachineDuration(-5, -250_000_000).secondsDouble === -5.25)
 
     describe("millisDouble"):
       it("converts to double milliseconds"):
-        VirtualDuration(1, 500_000_000).millisDouble shouldEqual 1500.0
+        assert(VirtualDuration(1, 500_000_000).millisDouble === 1500.0)
 
     describe("millisLong"):
       it("converts to long milliseconds"):
-        MachineDuration(2, 750_000_000).millisLong shouldEqual 2750L
+        assert(MachineDuration(2, 750_000_000).millisLong === 2750L)
 
     describe("+"):
       it("adds two positive durations"):
@@ -116,7 +116,7 @@ class TaggedDurationSpec extends AnyFunSpec with Matchers:
         val d1 = MachineDuration(1, 0)
         val d2 = MachineDuration(2, 500_000_000)
 
-        d1 / d2 shouldEqual 0.4
+        assert(d1 / d2 === 0.4)
 
       it("handles division by zero duration"):
         val d1 = VirtualDuration(1, 0)
