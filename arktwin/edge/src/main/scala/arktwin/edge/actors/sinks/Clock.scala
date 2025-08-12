@@ -77,4 +77,5 @@ object Clock:
       case UpdateClockBase(newClockBase) =>
         observers.foreach(_ ! UpdateClockBase(newClockBase))
         clockBase = newClockBase
+        logger.info(clockBase.toString)
         Behaviors.same
