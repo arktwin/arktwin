@@ -139,7 +139,9 @@ class ChartSpec extends ActorTestBase:
         chart ! Read(reader.ref)
 
         val orderedNeighbors = reader.receiveMessage().orderedNeighbors
-        assert(orderedNeighbors.map(_.neighbor.agentId).toSet == Set("agent-1", "agent-2", "agent-3"))
+        assert(
+          orderedNeighbors.map(_.neighbor.agentId).toSet == Set("agent-1", "agent-2", "agent-3")
+        )
         assert(orderedNeighbors.forall(_.nearestDistance == None))
 
       it("updates existing agents with newer timestamp"):
