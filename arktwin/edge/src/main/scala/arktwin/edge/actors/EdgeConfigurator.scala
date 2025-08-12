@@ -5,6 +5,7 @@ package arktwin.edge.actors
 import arktwin.common.util.MailboxConfig
 import arktwin.edge.configs.{CoordinateConfig, CullingConfig, EdgeConfig}
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
+import org.apache.pekko.actor.typed.receptionist.Receptionist.Listing
 import org.apache.pekko.actor.typed.receptionist.{Receptionist, ServiceKey}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
@@ -12,15 +13,15 @@ import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 /** An actor that manages and distributes edge configuration.
   *
   * # Message Protocol
+  *   - `Listing`: Updates the list of registered observers
   *   - `Read`: Reads the current edge configuration
   *   - `UpdateCoordinateConfig`: Updates the coordinate configuration and distributes it to
   *     registered coordinate observers
   *   - `UpdateCullingConfig`: Updates the culling configuration and distributes it to registered
   *     culling observers
-  *   - `Receptionist.Listing`: Updates the list of registered observers
   */
 object EdgeConfigurator:
-  type Message = Read | UpdateCoordinateConfig | UpdateCullingConfig | Receptionist.Listing
+  type Message = Listing | Read | UpdateCoordinateConfig | UpdateCullingConfig
   case class Read(replyTo: ActorRef[EdgeConfig])
   case class UpdateCoordinateConfig(config: CoordinateConfig) extends AnyVal
   case class UpdateCullingConfig(config: CullingConfig) extends AnyVal
@@ -50,21 +51,6 @@ object EdgeConfigurator:
     var cullingObservers = Set[ActorRef[UpdateCullingConfig]]()
 
     Behaviors.receiveMessage:
-      case Read(replyTo) =>
-        replyTo ! edgeConfig
-        Behaviors.same
-
-      case UpdateCoordinateConfig(coordinateConfig) =>
-        edgeConfig =
-          edgeConfig.copy(dynamic = edgeConfig.dynamic.copy(coordinate = coordinateConfig))
-        coordinateObservers.foreach(_ ! UpdateCoordinateConfig(coordinateConfig))
-        Behaviors.same
-
-      case UpdateCullingConfig(cullingConfig) =>
-        edgeConfig = edgeConfig.copy(dynamic = edgeConfig.dynamic.copy(culling = cullingConfig))
-        cullingObservers.foreach(_ ! UpdateCullingConfig(cullingConfig))
-        Behaviors.same
-
       case coordinateObserverKey.Listing(newObservers) =>
         (newObservers &~ coordinateObservers).foreach(
           _ ! UpdateCoordinateConfig(edgeConfig.dynamic.coordinate)
@@ -79,5 +65,20 @@ object EdgeConfigurator:
         cullingObservers = newObservers
         Behaviors.same
 
-      case _: Receptionist.Listing =>
+      case _: Listing =>
         Behaviors.unhandled
+
+      case Read(replyTo) =>
+        replyTo ! edgeConfig
+        Behaviors.same
+
+      case UpdateCoordinateConfig(coordinateConfig) =>
+        coordinateObservers.foreach(_ ! UpdateCoordinateConfig(coordinateConfig))
+        edgeConfig =
+          edgeConfig.copy(dynamic = edgeConfig.dynamic.copy(coordinate = coordinateConfig))
+        Behaviors.same
+
+      case UpdateCullingConfig(cullingConfig) =>
+        cullingObservers.foreach(_ ! UpdateCullingConfig(cullingConfig))
+        edgeConfig = edgeConfig.copy(dynamic = edgeConfig.dynamic.copy(culling = cullingConfig))
+        Behaviors.same

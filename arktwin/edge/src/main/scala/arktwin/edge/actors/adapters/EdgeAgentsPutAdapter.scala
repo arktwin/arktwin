@@ -35,7 +35,7 @@ object EdgeAgentsPutAdapter:
       chart: ActorRef[Chart.UpdateFirstAgents],
       chartPublish: ActorRef[ChartConnector.Publish],
       registerPublish: ActorRef[RegisterConnector.Publish],
-      clock: ActorRef[Clock.Get],
+      clock: ActorRef[Clock.Read],
       staticConfig: StaticEdgeConfig,
       initCoordinateConfig: CoordinateConfig,
       kamon: EdgeKamon
@@ -51,7 +51,7 @@ object EdgeAgentsPutAdapter:
       chart: ActorRef[Chart.UpdateFirstAgents],
       chartPublish: ActorRef[ChartConnector.Publish],
       registerPublish: ActorRef[RegisterConnector.Publish],
-      clock: ActorRef[Clock.Get],
+      clock: ActorRef[Clock.Read],
       staticConfig: StaticEdgeConfig,
       initCoordinateConfig: CoordinateConfig,
       kamon: EdgeKamon
@@ -111,14 +111,14 @@ object EdgeAgentsPutAdapter:
       chart: ActorRef[Chart.UpdateFirstAgents],
       chartPublish: ActorRef[ChartConnector.Publish],
       registerPublish: ActorRef[RegisterConnector.Publish],
-      clock: ActorRef[Clock.Get],
+      clock: ActorRef[Clock.Read],
       virtualLatencyHistogram: VirtualDurationHistogram,
       staticConfig: StaticEdgeConfig,
       coordinateConfig: CoordinateConfig
   ): Behavior[SessionMessage] = Behaviors.setupWithLogger: (context, logger) =>
     context.setReceiveTimeout(staticConfig.actorTimeout, Timeout)
 
-    clock ! Clock.Get(context.self)
+    clock ! Clock.Read(context.self)
     var clockWait = Option.empty[ClockBase]
 
     def next(): Behavior[SessionMessage] = clockWait match

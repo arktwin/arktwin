@@ -23,22 +23,22 @@ import scala.collection.mutable
 /** An actor that manages transform data of neighbors.
   *
   * # Message Protocol
+  *   - `Nop`: No operation
   *   - `Read`: Reads transform data of neighbors sorted by distance from first agents when edge
   *     culling is enabled
-  *   - `Update`: Updates transform data of neighbors sorted by distance from first agents when edge
-  *     culling is enabled
-  *   - `UpdateFirstAgents`: Updates first agents used as reference points for distance calculations
   *   - `UpdateCullingConfig`: Updates the culling configuration
-  *   - `Nop`: No operation
+  *   - `UpdateFirstAgents`: Updates first agents used as reference points for distance calculations
+  *   - `UpdateNeighbor`: Updates neighbor and sorts neighbors by distance from first agents when
+  *     edge culling is enabled
   */
 object Chart:
-  type Message = Read | Update | UpdateFirstAgents | UpdateCullingConfig | Nop.type
+  type Message = Nop.type | Read | UpdateCullingConfig | UpdateFirstAgents | UpdateNeighbor
   case class Read(replyTo: ActorRef[ReadReply]) extends ControlMessage
-  case class Update(agent: ChartAgent)
-  case class UpdateFirstAgents(agents: Seq[ChartAgent])
+  case class UpdateFirstAgents(firstAgents: Seq[ChartAgent])
+  case class UpdateNeighbor(neighbor: ChartAgent)
 
-  case class ReadReply(orderedAgents: Seq[CullingAgent]) extends AnyVal
-  case class CullingAgent(agent: ChartAgent, nearestDistance: Option[Double])
+  case class ReadReply(orderedNeighbors: Seq[CullingNeighbor]) extends AnyVal
+  case class CullingNeighbor(neighbor: ChartAgent, nearestDistance: Option[Double])
 
   def spawn(
       initCullingConfig: CullingConfig
@@ -59,35 +59,21 @@ object Chart:
 
     var cullingConfig = initCullingConfig
     val distances = mutable.Map[String, Double]()
-    val orderedAgents = mutable.TreeMap[(Double, String), ChartAgent]()
+    val orderedNeighbors = mutable.TreeMap[(Double, String), ChartAgent]()
     var firstAgents = Option(Seq[ChartAgent]())
 
     Behaviors.receiveMessage:
-      case Read(actorRef) =>
-        actorRef ! ReadReply(orderedAgents.toSeq.map:
-          case ((dist, _), agent) =>
-            CullingAgent(agent, Some(dist).filter(_.isFinite)))
+      case Nop =>
         Behaviors.same
 
-      case Update(agent) =>
-        val oldDistance = distances.get(agent.agentId)
-        val oldTimestamp = oldDistance
-          .map(orderedAgents(_, agent.agentId).transform.timestamp.tagVirtual)
-          .getOrElse(TaggedTimestamp.minValue[VirtualTag])
-        if agent.transform.timestamp.tagVirtual >= oldTimestamp then
-          for od <- oldDistance do orderedAgents -= ((od, agent.agentId))
+      case Read(actorRef) =>
+        actorRef ! ReadReply(orderedNeighbors.toSeq.map:
+          case ((dist, _), agent) =>
+            CullingNeighbor(agent, Some(dist).filter(_.isFinite)))
+        Behaviors.same
 
-          // TODO consider relative coordinates
-          // TODO extrapolate first agents based on previous transforms?
-          val distance = firstAgents
-            .getOrElse(Seq())
-            .map(a =>
-              agent.transform.localTranslationMeter.distance(a.transform.localTranslationMeter)
-            )
-            .minOption
-            .getOrElse(Double.PositiveInfinity)
-          distances += agent.agentId -> distance
-          orderedAgents += (distance, agent.agentId) -> agent
+      case UpdateCullingConfig(newCullingConfig) =>
+        cullingConfig = newCullingConfig
         Behaviors.same
 
       case UpdateFirstAgents(newFirstAgents) =>
@@ -103,9 +89,23 @@ object Chart:
         else firstAgents = None
         Behaviors.same
 
-      case UpdateCullingConfig(newCullingConfig) =>
-        cullingConfig = newCullingConfig
-        Behaviors.same
+      case UpdateNeighbor(neighbor) =>
+        val oldDistance = distances.get(neighbor.agentId)
+        val oldTimestamp = oldDistance
+          .map(orderedNeighbors(_, neighbor.agentId).transform.timestamp.tagVirtual)
+          .getOrElse(TaggedTimestamp.minValue[VirtualTag])
+        if neighbor.transform.timestamp.tagVirtual >= oldTimestamp then
+          for od <- oldDistance do orderedNeighbors -= ((od, neighbor.agentId))
 
-      case Nop =>
+          // TODO consider relative coordinates
+          // TODO extrapolate first agents based on previous transforms?
+          val distance = firstAgents
+            .getOrElse(Seq())
+            .map(a =>
+              neighbor.transform.localTranslationMeter.distance(a.transform.localTranslationMeter)
+            )
+            .minOption
+            .getOrElse(Double.PositiveInfinity)
+          distances += neighbor.agentId -> distance
+          orderedNeighbors += (distance, neighbor.agentId) -> neighbor
         Behaviors.same

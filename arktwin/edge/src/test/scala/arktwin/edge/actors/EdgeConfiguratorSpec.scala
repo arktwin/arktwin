@@ -18,23 +18,23 @@ class EdgeConfiguratorSpec extends ActorTestBase:
         Using(ActorTestKit()): testKit =>
           val config = EdgeConfigGet.outExample
           val configurator = testKit.spawn(EdgeConfigurator(config))
-          val probe = testKit.createTestProbe[EdgeConfig]()
+          val reader = testKit.createTestProbe[EdgeConfig]()
 
-          configurator ! Read(probe.ref)
+          configurator ! Read(reader.ref)
 
-          assert(probe.receiveMessage() == config)
+          assert(reader.receiveMessage() == config)
 
       it("replies updated configuration after coordinate config update"):
         Using(ActorTestKit()): testKit =>
           val config = EdgeConfigGet.outExample
           val configurator = testKit.spawn(EdgeConfigurator(config))
-          val probe = testKit.createTestProbe[EdgeConfig]()
+          val reader = testKit.createTestProbe[EdgeConfig]()
           val newCoordinateConfig = config.dynamic.coordinate.copy(rotation = QuaternionConfig)
 
           configurator ! UpdateCoordinateConfig(newCoordinateConfig)
-          configurator ! Read(probe.ref)
+          configurator ! Read(reader.ref)
 
-          val receivedConfig = probe.receiveMessage()
+          val receivedConfig = reader.receiveMessage()
           assert(receivedConfig.dynamic.coordinate == newCoordinateConfig)
           assert(receivedConfig.dynamic.culling == config.dynamic.culling)
 
@@ -42,13 +42,13 @@ class EdgeConfiguratorSpec extends ActorTestBase:
         Using(ActorTestKit()): testKit =>
           val config = EdgeConfigGet.outExample
           val configurator = testKit.spawn(EdgeConfigurator(config))
-          val probe = testKit.createTestProbe[EdgeConfig]()
+          val reader = testKit.createTestProbe[EdgeConfig]()
           val newCullingConfig = config.dynamic.culling.copy(maxFirstAgents = 999)
 
           configurator ! UpdateCullingConfig(newCullingConfig)
-          configurator ! Read(probe.ref)
+          configurator ! Read(reader.ref)
 
-          val receivedConfig = probe.receiveMessage()
+          val receivedConfig = reader.receiveMessage()
           assert(receivedConfig.dynamic.coordinate == config.dynamic.coordinate)
           assert(receivedConfig.dynamic.culling == newCullingConfig)
 

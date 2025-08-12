@@ -8,14 +8,26 @@ import arktwin.common.util.CommonMessages.Nop
 import arktwin.common.util.MailboxConfig
 import arktwin.edge.configs.StaticEdgeConfig
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
+import org.apache.pekko.actor.typed.receptionist.Receptionist.Listing
+import org.apache.pekko.actor.typed.receptionist.{Receptionist, ServiceKey}
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import org.apache.pekko.dispatch.ControlMessage
 
+/** An actor that manages and distributes clock base.
+  *
+  * # Message Protocol
+  *   - `Listing`: Updates the list of registered observers
+  *   - `Nop`: No operation
+  *   - `Read`: Reads the current clock base
+  *   - `UpdateClockBase`: Updates the clock base and distributes it to registered clock observers
+  */
 object Clock:
-  type Message = Catch | Get | Nop.type
-  case class Catch(clockBase: ClockBase)
-  case class Get(replyTo: ActorRef[ClockBase]) extends ControlMessage
+  type Message = Listing | Nop.type | Read | UpdateClockBase
+  case class Read(replyTo: ActorRef[ClockBase]) extends ControlMessage
+  case class UpdateClockBase(clockBase: ClockBase) extends AnyVal
+
+  val observerKey: ServiceKey[UpdateClockBase] = ServiceKey(getClass.getName)
 
   def spawn(staticConfig: StaticEdgeConfig): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(staticConfig),
@@ -26,14 +38,17 @@ object Clock:
 
   def apply(
       staticConfig: StaticEdgeConfig
-  ): Behavior[Message] = Behaviors.withStash(staticConfig.clockInitialStashSize): buffer =>
-    Behaviors.receiveMessage:
-      case Catch(clockBase) =>
-        buffer.unstashAll(active(clockBase))
+  ): Behavior[Message] = Behaviors.setup: context =>
+    Behaviors.withStash(staticConfig.clockInitialStashSize): buffer =>
+      context.system.receptionist ! Receptionist.subscribe(observerKey, context.self)
 
-      case message =>
-        buffer.stash(message)
-        Behaviors.same
+      Behaviors.receiveMessage:
+        case UpdateClockBase(clockBase) =>
+          buffer.unstashAll(active(clockBase))
+
+        case message =>
+          buffer.stash(message)
+          Behaviors.same
 
   def active(
       initClockBase: ClockBase
@@ -41,15 +56,26 @@ object Clock:
     var clockBase = initClockBase
     logger.info(clockBase.toString)
 
+    var observers = Set[ActorRef[UpdateClockBase]]()
+
     Behaviors.receiveMessage:
-      case Catch(newClockBase) =>
-        clockBase = newClockBase
-        logger.info(clockBase.toString)
+      case observerKey.Listing(newObservers) =>
+        (newObservers &~ observers).foreach(_ ! UpdateClockBase(clockBase))
+        observers = newObservers
         Behaviors.same
 
-      case Get(replyTo) =>
+      case _: Listing =>
+        Behaviors.unhandled
+
+      case Nop =>
+        Behaviors.same
+
+      case Read(replyTo) =>
         replyTo ! clockBase
         Behaviors.same
 
-      case Nop =>
+      case UpdateClockBase(newClockBase) =>
+        observers.foreach(_ ! UpdateClockBase(newClockBase))
+        clockBase = newClockBase
+        logger.info(clockBase.toString)
         Behaviors.same
