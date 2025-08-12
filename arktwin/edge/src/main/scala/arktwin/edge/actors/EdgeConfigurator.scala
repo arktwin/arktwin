@@ -73,12 +73,12 @@ object EdgeConfigurator:
         Behaviors.same
 
       case UpdateCoordinateConfig(coordinateConfig) =>
+        coordinateObservers.foreach(_ ! UpdateCoordinateConfig(coordinateConfig))
         edgeConfig =
           edgeConfig.copy(dynamic = edgeConfig.dynamic.copy(coordinate = coordinateConfig))
-        coordinateObservers.foreach(_ ! UpdateCoordinateConfig(coordinateConfig))
         Behaviors.same
 
       case UpdateCullingConfig(cullingConfig) =>
-        edgeConfig = edgeConfig.copy(dynamic = edgeConfig.dynamic.copy(culling = cullingConfig))
         cullingObservers.foreach(_ ! UpdateCullingConfig(cullingConfig))
+        edgeConfig = edgeConfig.copy(dynamic = edgeConfig.dynamic.copy(culling = cullingConfig))
         Behaviors.same
