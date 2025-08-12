@@ -7,7 +7,7 @@ import arktwin.center.services.{ChartAgent, ClockBase, RegisterAgent}
 import arktwin.common.data.*
 import arktwin.edge.actors.EdgeConfigurator.UpdateCoordinateConfig
 import arktwin.edge.actors.adapters.EdgeNeighborsQueryAdapter.*
-import arktwin.edge.actors.sinks.Chart.CullingAgent
+import arktwin.edge.actors.sinks.Chart.CullingNeighbor
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
 import arktwin.edge.configs.AxisConfig.Direction.{East, North, Up}
 import arktwin.edge.configs.CoordinateConfig.LengthUnit.Meter
@@ -30,7 +30,7 @@ class EdgeNeighborsQueryAdapterSpec extends ActorTestBase:
   describe("EdgeNeighborsQueryAdapter"):
     it("queries neighbors and detects changes"):
       val config = EdgeConfigGet.outExample
-      val chartReadQueue = mutable.Queue[Seq[CullingAgent]]()
+      val chartReadQueue = mutable.Queue[Seq[CullingNeighbor]]()
       val chart = testKit.spawn[Chart.Read](Behaviors.receiveMessage:
         case Chart.Read(replyTo) =>
           replyTo ! Chart.ReadReply(chartReadQueue.dequeue())
@@ -69,11 +69,11 @@ class EdgeNeighborsQueryAdapterSpec extends ActorTestBase:
       )
 
       chartReadQueue += Seq(
-        CullingAgent(ChartAgent("a0", transformEnu()), Some(1)),
-        CullingAgent(ChartAgent("a1", transformEnu()), Some(2)),
-        CullingAgent(ChartAgent("a2", transformEnu()), Some(3)),
-        CullingAgent(ChartAgent("a3", transformEnu()), Some(4)),
-        CullingAgent(ChartAgent("a4", transformEnu()), Some(5))
+        CullingNeighbor(ChartAgent("a0", transformEnu()), Some(1)),
+        CullingNeighbor(ChartAgent("a1", transformEnu()), Some(2)),
+        CullingNeighbor(ChartAgent("a2", transformEnu()), Some(3)),
+        CullingNeighbor(ChartAgent("a3", transformEnu()), Some(4)),
+        CullingNeighbor(ChartAgent("a4", transformEnu()), Some(5))
       )
       clockReadQueue += ClockBase(MachineTimestamp(0, 0), VirtualTimestamp(0, 0), 1)
       registerReadQueue += Map(
@@ -123,8 +123,8 @@ class EdgeNeighborsQueryAdapterSpec extends ActorTestBase:
 
       // check NeighborChange
       chartReadQueue += Seq(
-        CullingAgent(ChartAgent("a0", transformEnu()), Some(1)),
-        CullingAgent(ChartAgent("a3", transformEnu()), None)
+        CullingNeighbor(ChartAgent("a0", transformEnu()), Some(1)),
+        CullingNeighbor(ChartAgent("a3", transformEnu()), None)
       )
       clockReadQueue += ClockBase(Timestamp(0, 0), Timestamp(0, 0), 1)
       registerReadQueue += Map(

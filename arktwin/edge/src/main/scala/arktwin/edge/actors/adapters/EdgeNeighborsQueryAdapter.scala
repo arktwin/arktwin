@@ -11,7 +11,7 @@ import arktwin.common.util.CommonMessages.Timeout
 import arktwin.common.util.{MailboxConfig, VirtualDurationHistogram}
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.EdgeConfigurator.UpdateCoordinateConfig
-import arktwin.edge.actors.sinks.Chart.CullingAgent
+import arktwin.edge.actors.sinks.Chart.CullingNeighbor
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
 import arktwin.edge.configs.{CoordinateConfig, StaticEdgeConfig}
 import arktwin.edge.data.Transform
@@ -135,7 +135,7 @@ object EdgeNeighborsQueryAdapter:
     context.setReceiveTimeout(timeout, Timeout)
 
     chart ! Chart.Read(context.self)
-    var chartWait = Option.empty[Seq[CullingAgent]]
+    var chartWait = Option.empty[Seq[CullingNeighbor]]
 
     clock ! Clock.Read(context.self)
     var clockWait = Option.empty[ClockBase]
@@ -149,15 +149,15 @@ object EdgeNeighborsQueryAdapter:
         val recognizedAgents = chartReply.view
           .flatMap: agent =>
             registerReply
-              .get(agent.agent.agentId)
+              .get(agent.neighbor.agentId)
               .map: registerAgent =>
                 virtualLatencyHistogram.record(
-                  requestTime - agent.agent.transform.timestamp.tagVirtual
+                  requestTime - agent.neighbor.transform.timestamp.tagVirtual
                 )
-                agent.agent.agentId -> ResponseAgent(
+                agent.neighbor.agentId -> ResponseAgent(
                   Some(
                     Transform(
-                      agent.agent.transform.extrapolate(requestTime),
+                      agent.neighbor.transform.extrapolate(requestTime),
                       coordinateConfig
                     )
                   ),
@@ -166,7 +166,7 @@ object EdgeNeighborsQueryAdapter:
                   Some(registerAgent.status),
                   Some(registerAgent.assets),
                   optionalPreviousAgents.map: previousAgents =>
-                    if previousAgents.contains(agent.agent.agentId)
+                    if previousAgents.contains(agent.neighbor.agentId)
                     then NeighborChange.Updated
                     else NeighborChange.Recognized
                 )

@@ -72,7 +72,7 @@ class EdgeAgentsPutAdapterSpec extends ActorTestBase:
         endpoint.ref
       )
       assert(
-        chart.receiveMessage().agents == Seq(
+        chart.receiveMessage().firstAgents == Seq(
           ChartAgent("a", transformEnu(Timestamp(1, 0), Vector3Enu(1, 2, 3), Vector3Enu(1, 1, 1))),
           ChartAgent("b", transformEnu(Timestamp(1, 0), Vector3Enu(1, 2, 3), Vector3Enu(0, 0, 0)))
         )
@@ -97,7 +97,7 @@ class EdgeAgentsPutAdapterSpec extends ActorTestBase:
         endpoint.ref
       )
       assert(
-        chart.receiveMessage().agents == Seq(
+        chart.receiveMessage().firstAgents == Seq(
           ChartAgent(
             "a",
             transformEnu(Timestamp(1, 500_000_000), Vector3Enu(4, 4, 4), Vector3Enu(6, 4, 2))

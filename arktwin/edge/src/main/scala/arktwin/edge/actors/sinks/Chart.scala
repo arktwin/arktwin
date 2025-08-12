@@ -28,17 +28,17 @@ import scala.collection.mutable
   *     culling is enabled
   *   - `UpdateCullingConfig`: Updates the culling configuration
   *   - `UpdateFirstAgents`: Updates first agents used as reference points for distance calculations
-  *   - `UpdateNeighbor`: Updates neighbors sorted by distance from first agents when edge culling
-  *     is enabled
+  *   - `UpdateNeighbor`: Updates neighbor and sorts neighbors by distance from first agents when
+  *     edge culling is enabled
   */
 object Chart:
   type Message = Nop.type | Read | UpdateCullingConfig | UpdateFirstAgents | UpdateNeighbor
   case class Read(replyTo: ActorRef[ReadReply]) extends ControlMessage
-  case class UpdateFirstAgents(agents: Seq[ChartAgent])
-  case class UpdateNeighbor(agent: ChartAgent)
+  case class UpdateFirstAgents(firstAgents: Seq[ChartAgent])
+  case class UpdateNeighbor(neighbor: ChartAgent)
 
-  case class ReadReply(orderedAgents: Seq[CullingAgent]) extends AnyVal
-  case class CullingAgent(agent: ChartAgent, nearestDistance: Option[Double])
+  case class ReadReply(orderedNeighbors: Seq[CullingNeighbor]) extends AnyVal
+  case class CullingNeighbor(neighbor: ChartAgent, nearestDistance: Option[Double])
 
   def spawn(
       initCullingConfig: CullingConfig
@@ -59,7 +59,7 @@ object Chart:
 
     var cullingConfig = initCullingConfig
     val distances = mutable.Map[String, Double]()
-    val orderedAgents = mutable.TreeMap[(Double, String), ChartAgent]()
+    val orderedNeighbors = mutable.TreeMap[(Double, String), ChartAgent]()
     var firstAgents = Option(Seq[ChartAgent]())
 
     Behaviors.receiveMessage:
@@ -67,9 +67,9 @@ object Chart:
         Behaviors.same
 
       case Read(actorRef) =>
-        actorRef ! ReadReply(orderedAgents.toSeq.map:
+        actorRef ! ReadReply(orderedNeighbors.toSeq.map:
           case ((dist, _), agent) =>
-            CullingAgent(agent, Some(dist).filter(_.isFinite)))
+            CullingNeighbor(agent, Some(dist).filter(_.isFinite)))
         Behaviors.same
 
       case UpdateCullingConfig(newCullingConfig) =>
@@ -89,23 +89,23 @@ object Chart:
         else firstAgents = None
         Behaviors.same
 
-      case UpdateNeighbor(agent) =>
-        val oldDistance = distances.get(agent.agentId)
+      case UpdateNeighbor(neighbor) =>
+        val oldDistance = distances.get(neighbor.agentId)
         val oldTimestamp = oldDistance
-          .map(orderedAgents(_, agent.agentId).transform.timestamp.tagVirtual)
+          .map(orderedNeighbors(_, neighbor.agentId).transform.timestamp.tagVirtual)
           .getOrElse(TaggedTimestamp.minValue[VirtualTag])
-        if agent.transform.timestamp.tagVirtual >= oldTimestamp then
-          for od <- oldDistance do orderedAgents -= ((od, agent.agentId))
+        if neighbor.transform.timestamp.tagVirtual >= oldTimestamp then
+          for od <- oldDistance do orderedNeighbors -= ((od, neighbor.agentId))
 
           // TODO consider relative coordinates
           // TODO extrapolate first agents based on previous transforms?
           val distance = firstAgents
             .getOrElse(Seq())
             .map(a =>
-              agent.transform.localTranslationMeter.distance(a.transform.localTranslationMeter)
+              neighbor.transform.localTranslationMeter.distance(a.transform.localTranslationMeter)
             )
             .minOption
             .getOrElse(Double.PositiveInfinity)
-          distances += agent.agentId -> distance
-          orderedAgents += (distance, agent.agentId) -> agent
+          distances += neighbor.agentId -> distance
+          orderedNeighbors += (distance, neighbor.agentId) -> neighbor
         Behaviors.same
