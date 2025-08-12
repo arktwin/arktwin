@@ -37,7 +37,7 @@ object EdgeNeighborsQueryAdapter:
 
   def spawn(
       chart: ActorRef[Chart.Read],
-      clock: ActorRef[Clock.Get],
+      clock: ActorRef[Clock.Read],
       register: ActorRef[Register.Get],
       staticConfig: StaticEdgeConfig,
       initCoordinateConfig: CoordinateConfig,
@@ -52,7 +52,7 @@ object EdgeNeighborsQueryAdapter:
 
   def apply(
       chart: ActorRef[Chart.Read],
-      clock: ActorRef[Clock.Get],
+      clock: ActorRef[Clock.Read],
       register: ActorRef[Register.Get],
       staticConfig: StaticEdgeConfig,
       initCoordinateConfig: CoordinateConfig,
@@ -126,7 +126,7 @@ object EdgeNeighborsQueryAdapter:
       replyTo: ActorRef[Either[ErrorStatus, Response]],
       parent: ActorRef[Report],
       chart: ActorRef[Chart.Read],
-      clock: ActorRef[Clock.Get],
+      clock: ActorRef[Clock.Read],
       register: ActorRef[Register.Get],
       virtualLatencyHistogram: VirtualDurationHistogram,
       timeout: FiniteDuration,
@@ -137,7 +137,7 @@ object EdgeNeighborsQueryAdapter:
     chart ! Chart.Read(context.self)
     var chartWait = Option.empty[Seq[CullingAgent]]
 
-    clock ! Clock.Get(context.self)
+    clock ! Clock.Read(context.self)
     var clockWait = Option.empty[ClockBase]
 
     register ! Register.Get(context.self)

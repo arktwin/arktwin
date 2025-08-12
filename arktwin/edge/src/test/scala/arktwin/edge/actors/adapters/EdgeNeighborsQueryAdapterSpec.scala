@@ -36,8 +36,8 @@ class EdgeNeighborsQueryAdapterSpec extends ActorTestBase:
           replyTo ! Chart.ReadReply(chartReadQueue.dequeue())
           Behaviors.same)
       val clockReadQueue = mutable.Queue[ClockBase]()
-      val clock = testKit.spawn[Clock.Get](Behaviors.receiveMessage:
-        case Clock.Get(replyTo) =>
+      val clock = testKit.spawn[Clock.Read](Behaviors.receiveMessage:
+        case Clock.Read(replyTo) =>
           replyTo ! clockReadQueue.dequeue()
           Behaviors.same)
       val registerReadQueue = mutable.Queue[Map[String, RegisterAgent]]()

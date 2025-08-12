@@ -20,6 +20,6 @@ case class ClockConnector(client: ClockClient, edgeId: String)(using Materialize
       .addHeader(GrpcHeaderKeys.edgeId, edgeId)
       .invoke(Empty())
       .wireTapLog("Clock.Subscribe")
-      .map(Clock.Catch.apply)
+      .map(Clock.UpdateClockBase.apply)
       .to(ActorSink.actorRef(clock, Nop, _ => Nop))
       .run()
