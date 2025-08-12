@@ -23,19 +23,19 @@ import scala.collection.mutable
 /** An actor that manages transform data of neighbors.
   *
   * # Message Protocol
+  *   - `Nop`: No operation
   *   - `Read`: Reads transform data of neighbors sorted by distance from first agents when edge
   *     culling is enabled
-  *   - `Update`: Updates transform data of neighbors sorted by distance from first agents when edge
-  *     culling is enabled
-  *   - `UpdateFirstAgents`: Updates first agents used as reference points for distance calculations
   *   - `UpdateCullingConfig`: Updates the culling configuration
-  *   - `Nop`: No operation
+  *   - `UpdateFirstAgents`: Updates first agents used as reference points for distance calculations
+  *   - `UpdateNeighbor`: Updates neighbors sorted by distance from first agents when edge culling
+  *     is enabled
   */
 object Chart:
-  type Message = Read | Update | UpdateFirstAgents | UpdateCullingConfig | Nop.type
+  type Message = Nop.type | Read | UpdateCullingConfig | UpdateFirstAgents | UpdateNeighbor
   case class Read(replyTo: ActorRef[ReadReply]) extends ControlMessage
-  case class Update(agent: ChartAgent)
   case class UpdateFirstAgents(agents: Seq[ChartAgent])
+  case class UpdateNeighbor(agent: ChartAgent)
 
   case class ReadReply(orderedAgents: Seq[CullingAgent]) extends AnyVal
   case class CullingAgent(agent: ChartAgent, nearestDistance: Option[Double])
@@ -63,13 +63,33 @@ object Chart:
     var firstAgents = Option(Seq[ChartAgent]())
 
     Behaviors.receiveMessage:
+      case Nop =>
+        Behaviors.same
+
       case Read(actorRef) =>
         actorRef ! ReadReply(orderedAgents.toSeq.map:
           case ((dist, _), agent) =>
             CullingAgent(agent, Some(dist).filter(_.isFinite)))
         Behaviors.same
 
-      case Update(agent) =>
+      case UpdateCullingConfig(newCullingConfig) =>
+        cullingConfig = newCullingConfig
+        Behaviors.same
+
+      case UpdateFirstAgents(newFirstAgents) =>
+        if cullingConfig.edgeCulling then
+          if newFirstAgents.size <= cullingConfig.maxFirstAgents
+          then firstAgents = Some(newFirstAgents)
+          else
+            if firstAgents.isDefined then
+              logger.warn(
+                "edge culling is disabled because first agents is greater than arktwin.edge.culling.maxFirstAgents"
+              )
+            firstAgents = None
+        else firstAgents = None
+        Behaviors.same
+
+      case UpdateNeighbor(agent) =>
         val oldDistance = distances.get(agent.agentId)
         val oldTimestamp = oldDistance
           .map(orderedAgents(_, agent.agentId).transform.timestamp.tagVirtual)
@@ -88,24 +108,4 @@ object Chart:
             .getOrElse(Double.PositiveInfinity)
           distances += agent.agentId -> distance
           orderedAgents += (distance, agent.agentId) -> agent
-        Behaviors.same
-
-      case UpdateFirstAgents(newFirstAgents) =>
-        if cullingConfig.edgeCulling then
-          if newFirstAgents.size <= cullingConfig.maxFirstAgents
-          then firstAgents = Some(newFirstAgents)
-          else
-            if firstAgents.isDefined then
-              logger.warn(
-                "edge culling is disabled because first agents is greater than arktwin.edge.culling.maxFirstAgents"
-              )
-            firstAgents = None
-        else firstAgents = None
-        Behaviors.same
-
-      case UpdateCullingConfig(newCullingConfig) =>
-        cullingConfig = newCullingConfig
-        Behaviors.same
-
-      case Nop =>
         Behaviors.same
