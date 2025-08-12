@@ -95,7 +95,7 @@ object Chart:
           if newFirstAgents.size <= cullingConfig.maxFirstAgents
           then firstAgents = Some(newFirstAgents)
           else
-            if firstAgents.nonEmpty then
+            if firstAgents.isDefined then
               logger.warn(
                 "edge culling is disabled because first agents is greater than arktwin.edge.culling.maxFirstAgents"
               )
