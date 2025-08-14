@@ -34,19 +34,19 @@ object EdgeConfigCoordinatePut:
   given JsonValueCodec[Request] = JsonDerivation.makeCodec
 
   val inExample: Request = Request(
-    AxisConfig(
-      Direction.East,
-      Direction.North,
-      Direction.Up
+    axis = AxisConfig(
+      xDirection = Direction.East,
+      yDirection = Direction.North,
+      zDirection = Direction.Up
     ),
-    Vector3(0, 0, 0),
-    EulerAnglesConfig(
-      AngleUnit.Degree,
-      RotationMode.Extrinsic,
-      RotationOrder.XYZ
+    centerOrigin = Vector3(0, 0, 0),
+    rotation = EulerAnglesConfig(
+      angleUnit = AngleUnit.Degree,
+      rotationMode = RotationMode.Extrinsic,
+      rotationOrder = RotationOrder.XYZ
     ),
-    LengthUnit.Meter,
-    SpeedUnit.MeterPerSecond
+    lengthUnit = LengthUnit.Meter,
+    speedUnit = SpeedUnit.MeterPerSecond
   )
 
   val endpoint: PublicEndpoint[Request, ErrorStatus, Response, Any] =

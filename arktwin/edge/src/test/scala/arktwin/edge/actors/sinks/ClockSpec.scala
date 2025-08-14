@@ -4,21 +4,38 @@ package arktwin.edge.actors.sinks
 
 import arktwin.center.services.ClockBase
 import arktwin.common.data.Timestamp
+import arktwin.common.util.LoggerConfigurator.LogLevel
 import arktwin.edge.actors.sinks.Clock.*
-import arktwin.edge.endpoints.EdgeConfigGet
+import arktwin.edge.configs.StaticEdgeConfig
 import arktwin.edge.test.ActorTestBase
 import org.apache.pekko.actor.testkit.typed.scaladsl.ActorTestKit
 import org.apache.pekko.actor.typed.receptionist.Receptionist
 
+import scala.concurrent.duration.DurationInt
 import scala.util.Using
 
 class ClockSpec extends ActorTestBase:
+  private val baseConfig = StaticEdgeConfig(
+    edgeIdPrefix = "edge",
+    host = "0.0.0.0",
+    port = 2237,
+    portAutoIncrement = true,
+    portAutoIncrementMax = 100,
+    logLevel = LogLevel.Info,
+    logLevelColor = true,
+    logSuppressionList = Seq(),
+    actorTimeout = 90.milliseconds,
+    endpointTimeout = 100.milliseconds,
+    clockInitialStashSize = 100,
+    publishBatchSize = 100,
+    publishBufferSize = 10000
+  )
+
   describe("Clock"):
     describe("Read"):
       it("replies current clock base"):
         Using(ActorTestKit()): testKit =>
-          val config = EdgeConfigGet.outExample.static.copy(clockInitialStashSize = 100)
-          val clock = testKit.spawn(Clock(config))
+          val clock = testKit.spawn(Clock(baseConfig))
           val reader = testKit.createTestProbe[ClockBase]()
 
           val clockBase = ClockBase(Timestamp(1, 2), Timestamp(3, 4), 5.6)
@@ -29,8 +46,7 @@ class ClockSpec extends ActorTestBase:
 
       it("replies a clock base after first update"):
         Using(ActorTestKit()): testKit =>
-          val config = EdgeConfigGet.outExample.static.copy(clockInitialStashSize = 100)
-          val clock = testKit.spawn(Clock(config))
+          val clock = testKit.spawn(Clock(baseConfig))
           val reader = testKit.createTestProbe[ClockBase]()
 
           clock ! Read(reader.ref)
@@ -42,8 +58,7 @@ class ClockSpec extends ActorTestBase:
     describe("UpdateClockBase"):
       it("distributes clock base to registered observers"):
         Using(ActorTestKit()): testKit =>
-          val config = EdgeConfigGet.outExample.static.copy(clockInitialStashSize = 100)
-          val clock = testKit.spawn(Clock(config))
+          val clock = testKit.spawn(Clock(baseConfig))
           val observer1 = testKit.createTestProbe[UpdateClockBase]()
           val observer2 = testKit.createTestProbe[UpdateClockBase]()
 

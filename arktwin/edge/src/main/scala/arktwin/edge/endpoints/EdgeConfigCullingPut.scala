@@ -29,7 +29,10 @@ object EdgeConfigCullingPut:
   val Request: CullingConfig.type = CullingConfig
   given JsonValueCodec[Request] = JsonDerivation.makeCodec
 
-  val inExample: Request = Request(edgeCulling = true, 9)
+  val inExample: Request = Request(
+    edgeCulling = true,
+    maxFirstAgents = 9
+  )
 
   val endpoint: PublicEndpoint[Request, ErrorStatus, Response, Any] =
     tapir.endpoint.put
