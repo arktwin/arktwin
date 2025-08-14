@@ -11,15 +11,33 @@ import arktwin.edge.test.ActorTestBase
 import org.scalactic.{Equality, TolerantNumerics}
 
 class ChartSpec extends ActorTestBase:
-  given Equality[Double] = TolerantNumerics.tolerantDoubleEquality(0.001)
+  private given Equality[Double] = TolerantNumerics.tolerantDoubleEquality(0.001)
 
-  given Equality[Option[Double]] =
+  private given Equality[Option[Double]] =
     case (Some(a), Some(b)) =>
       summon[Equality[Double]].areEqual(a, b)
     case (None, None) =>
       true
     case _ =>
       false
+
+  private def chartAgent(
+      agentId: String,
+      timestamp: Timestamp,
+      translation: Vector3Enu
+  ): ChartAgent =
+    ChartAgent(
+      agentId,
+      TransformEnu(
+        timestamp,
+        None,
+        Vector3Enu(0, 0, 0),
+        QuaternionEnu(0, 0, 0, 0),
+        translation,
+        Vector3Enu(0, 0, 0),
+        Map()
+      )
+    )
 
   describe("Chart"):
     describe("Read"):
@@ -241,21 +259,3 @@ class ChartSpec extends ActorTestBase:
             )
           )
         }
-
-  private def chartAgent(
-      agentId: String,
-      timestamp: Timestamp,
-      translation: Vector3Enu
-  ): ChartAgent =
-    ChartAgent(
-      agentId,
-      TransformEnu(
-        timestamp,
-        None,
-        Vector3Enu(0, 0, 0),
-        QuaternionEnu(0, 0, 0, 0),
-        translation,
-        Vector3Enu(0, 0, 0),
-        Map()
-      )
-    )
