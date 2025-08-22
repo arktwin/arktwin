@@ -17,7 +17,7 @@ class CenterConfigSpec extends AnyFunSpec:
           dynamic = DynamicCenterConfig(
             atlas = AtlasConfig(
               culling = AtlasConfig.Broadcast(),
-              routeTableUpdateInterval = 1.second
+              routeTableUpdateMachineInterval = 1.second
             )
           ),
           static = StaticCenterConfig(
@@ -36,16 +36,16 @@ class CenterConfigSpec extends AnyFunSpec:
             logLevel = LogLevel.Info,
             logLevelColor = true,
             logSuppressionList = Seq(),
-            actorTimeout = 30.seconds,
+            actorMachineTimeout = 30.seconds,
             subscribeBatchSize = 100,
-            subscribeBatchInterval = 100.millis,
+            subscribeBatchMachineInterval = 100.millis,
             subscribeBufferSize = 1000
           )
         )
         val json = config.toJson
 
         assert(
-          json == """{"dynamic":{"atlas":{"culling":{"type":"Broadcast"},"routeTableUpdateInterval":"1s"}},"static":{"actorTimeout":"30s","clock":{"start":{"clockSpeed":1.0,"condition":{"schedule":{"nanos":0,"seconds":0},"type":"Schedule"},"initialTime":{"relative":{"nanos":0,"seconds":0},"type":"Relative"}}},"host":"localhost","logLevel":{"type":"Info"},"logLevelColor":true,"logSuppressionList":[],"port":8080,"portAutoIncrement":false,"portAutoIncrementMax":0,"runIdPrefix":"test","subscribeBatchInterval":"100ms","subscribeBatchSize":100,"subscribeBufferSize":1000}}"""
+          json == """{"dynamic":{"atlas":{"culling":{"type":"Broadcast"},"routeTableUpdateMachineInterval":"1s"}},"static":{"actorMachineTimeout":"30s","clock":{"start":{"clockSpeed":1.0,"condition":{"schedule":{"nanos":0,"seconds":0},"type":"Schedule"},"initialTime":{"relative":{"nanos":0,"seconds":0},"type":"Relative"}}},"host":"localhost","logLevel":{"type":"Info"},"logLevelColor":true,"logSuppressionList":[],"port":8080,"portAutoIncrement":false,"portAutoIncrementMax":0,"runIdPrefix":"test","subscribeBatchMachineInterval":"100ms","subscribeBatchSize":100,"subscribeBufferSize":1000}}"""
         )
 
     describe("validated"):
@@ -54,7 +54,7 @@ class CenterConfigSpec extends AnyFunSpec:
           dynamic = DynamicCenterConfig(
             atlas = AtlasConfig(
               culling = AtlasConfig.GridCulling(Vector3Enu(1, 1, 1)),
-              routeTableUpdateInterval = 1.second
+              routeTableUpdateMachineInterval = 1.second
             )
           ),
           static = StaticCenterConfig(
@@ -73,9 +73,9 @@ class CenterConfigSpec extends AnyFunSpec:
             logLevel = LogLevel.Debug,
             logLevelColor = false,
             logSuppressionList = Seq("org.apache.pekko"),
-            actorTimeout = 60.seconds,
+            actorMachineTimeout = 60.seconds,
             subscribeBatchSize = 50,
-            subscribeBatchInterval = 200.millis,
+            subscribeBatchMachineInterval = 200.millis,
             subscribeBufferSize = 500
           )
         )
@@ -87,7 +87,7 @@ class CenterConfigSpec extends AnyFunSpec:
           dynamic = DynamicCenterConfig(
             atlas = AtlasConfig(
               culling = AtlasConfig.GridCulling(Vector3Enu(0, -1, 1)),
-              routeTableUpdateInterval = 0.seconds
+              routeTableUpdateMachineInterval = 0.seconds
             )
           ),
           static = StaticCenterConfig(
@@ -106,9 +106,9 @@ class CenterConfigSpec extends AnyFunSpec:
             logLevel = LogLevel.Error,
             logLevelColor = true,
             logSuppressionList = Seq(),
-            actorTimeout = 0.seconds,
+            actorMachineTimeout = 0.seconds,
             subscribeBatchSize = 0,
-            subscribeBatchInterval = 0.seconds,
+            subscribeBatchMachineInterval = 0.seconds,
             subscribeBufferSize = 0
           )
         )
@@ -118,16 +118,16 @@ class CenterConfigSpec extends AnyFunSpec:
         assert(
           result.swap.getOrElse(NonEmptyChain.one("")).toChain.toVector.toSet == Set(
             "test.dynamic.atlas.culling.gridCellSize.{x, y, z} must be > 0",
-            "test.dynamic.atlas.routeTableUpdateInterval must be > 0",
+            "test.dynamic.atlas.routeTableUpdateMachineInterval must be > 0",
             "test.static.clock.start.clockSpeed must be >= 0",
             "test.static.clock.start.condition.schedule must be >= 0",
             "test.static.runIdPrefix must not be empty",
             "test.static.host must not be empty",
             "test.static.port must be > 0",
             "test.static.portAutoIncrementMax must be >= 0",
-            "test.static.actorTimeout must be > 0",
+            "test.static.actorMachineTimeout must be > 0",
             "test.static.subscribeBatchSize must be > 0",
-            "test.static.subscribeBatchInterval must be > 0",
+            "test.static.subscribeBatchMachineInterval must be > 0",
             "test.static.subscribeBufferSize must be > 0"
           )
         )

@@ -116,7 +116,7 @@ object EdgeAgentsPutAdapter:
       staticConfig: StaticEdgeConfig,
       coordinateConfig: CoordinateConfig
   ): Behavior[SessionMessage] = Behaviors.setupWithLogger: (context, logger) =>
-    context.setReceiveTimeout(staticConfig.actorTimeout, Timeout)
+    context.setReceiveTimeout(staticConfig.actorMachineTimeout, Timeout)
 
     clock ! Clock.Read(context.self)
     var clockWait = Option.empty[ClockBase]

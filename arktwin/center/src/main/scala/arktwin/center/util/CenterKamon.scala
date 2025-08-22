@@ -64,7 +64,7 @@ object CenterKamon:
   inline val chartRouteAgentNumName = "arktwin_center_chart_3_route_agent_num"
   inline val chartRouteBatchNumName = "arktwin_center_chart_3_route_batch_num"
   inline val chartRouteMachineLatencyName =
-    "arktwin_center_chart_3_route_machine_from_publish_machine_latency"
+    "arktwin_center_chart_3_route_from_publish_machine_latency"
   inline val chartSubscribeAgentNumName = "arktwin_center_chart_4_subscribe_agent_num"
   inline val chartSubscribeBatchNumName = "arktwin_center_chart_4_subscribe_batch_num"
   inline val chartSubscribeMachineLatencyName =

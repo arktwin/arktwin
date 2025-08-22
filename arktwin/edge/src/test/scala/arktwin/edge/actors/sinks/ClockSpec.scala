@@ -24,8 +24,8 @@ class ClockSpec extends ActorTestBase:
     logLevel = LogLevel.Info,
     logLevelColor = true,
     logSuppressionList = Seq(),
-    actorTimeout = 90.milliseconds,
-    endpointTimeout = 100.milliseconds,
+    actorMachineTimeout = 90.milliseconds,
+    endpointMachineTimeout = 100.milliseconds,
     clockInitialStashSize = 100,
     publishBatchSize = 100,
     publishBufferSize = 10000

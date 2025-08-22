@@ -43,8 +43,8 @@ object EdgeConfigGet:
       logLevel = LogLevel.Info,
       logLevelColor = true,
       logSuppressionList = Seq(),
-      actorTimeout = 90.milliseconds,
-      endpointTimeout = 100.milliseconds,
+      actorMachineTimeout = 90.milliseconds,
+      endpointMachineTimeout = 100.milliseconds,
       clockInitialStashSize = 100,
       publishBatchSize = 100,
       publishBufferSize = 10000
@@ -72,7 +72,7 @@ object EdgeConfigGet:
     val requestNumCounter = kamon.restRequestNumCounter(endpoint.showShort)
     val processMachineTimeHistogram = kamon.restProcessMachineTimeHistogram(endpoint.showShort)
 
-    given Timeout = staticConfig.endpointTimeout
+    given Timeout = staticConfig.endpointMachineTimeout
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogicWithLog: _ =>
         val requestTime = TaggedTimestamp.machineNow()

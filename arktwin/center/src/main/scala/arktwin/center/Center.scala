@@ -42,7 +42,7 @@ object Center:
     )
     given ExecutionContextExecutor = actorSystem.executionContext
     given Scheduler = actorSystem.scheduler
-    given Timeout = config.static.actorTimeout
+    given Timeout = config.static.actorMachineTimeout
 
     scribe.info(BuildInfo.toString)
     scribe.info(config.toJson)
