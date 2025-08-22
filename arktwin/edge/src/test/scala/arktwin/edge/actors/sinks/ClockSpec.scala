@@ -16,7 +16,10 @@ import scala.util.Using
 
 class ClockSpec extends ActorTestBase:
   private val baseConfig = StaticEdgeConfig(
+    actorMachineTimeout = 90.milliseconds,
+    clockInitialStashSize = 100,
     edgeIdPrefix = "edge",
+    endpointMachineTimeout = 100.milliseconds,
     host = "0.0.0.0",
     port = 2237,
     portAutoIncrement = true,
@@ -24,9 +27,6 @@ class ClockSpec extends ActorTestBase:
     logLevel = LogLevel.Info,
     logLevelColor = true,
     logSuppressionList = Seq(),
-    actorMachineTimeout = 90.milliseconds,
-    endpointMachineTimeout = 100.milliseconds,
-    clockInitialStashSize = 100,
     publishBatchSize = 100,
     publishBufferSize = 10000
   )

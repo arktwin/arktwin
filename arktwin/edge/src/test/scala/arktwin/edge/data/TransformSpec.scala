@@ -70,8 +70,8 @@ class TransformSpec extends AnyFunSpec with Matchers:
           val config = CoordinateConfig(
             axisConfig,
             Vector3(1.1, 2.2, 3.3),
-            EulerAnglesConfig(angleUnit, mode, order),
             lengthUnit,
+            EulerAnglesConfig(angleUnit, mode, order),
             speedUnit
           )
           val t = Transform(
@@ -103,8 +103,8 @@ class TransformSpec extends AnyFunSpec with Matchers:
           val config = CoordinateConfig(
             axisConfig,
             Vector3(1.1, 2.2, 3.3),
-            QuaternionConfig,
             lengthUnit,
+            QuaternionConfig,
             speedUnit
           )
           val t = Transform(
@@ -126,16 +126,16 @@ class TransformSpec extends AnyFunSpec with Matchers:
           CoordinateConfig(
             AxisConfig(East, North, Up),
             Vector3(0, 0, 0),
-            QuaternionConfig,
             Meter,
+            QuaternionConfig,
             MeterPerSecond
           )
         val targetSetting =
           CoordinateConfig(
             AxisConfig(North, East, Down),
             Vector3(0, 0, 0),
-            QuaternionConfig,
             Meter,
+            QuaternionConfig,
             MeterPerSecond
           )
         val t = Transform(
@@ -157,15 +157,15 @@ class TransformSpec extends AnyFunSpec with Matchers:
         val configUE = CoordinateConfig(
           AxisConfig(East, South, Up),
           Vector3(400, -500, 200),
-          EulerAnglesConfig(Degree, Extrinsic, XYZ),
           Centimeter,
+          EulerAnglesConfig(Degree, Extrinsic, XYZ),
           MeterPerSecond
         )
         val configUnity = CoordinateConfig(
           AxisConfig(South, Up, East),
           Vector3(3, -7, -9),
-          QuaternionConfig,
           Meter,
+          QuaternionConfig,
           MeterPerSecond
         )
         val transformUE = Transform(
@@ -251,15 +251,15 @@ class TransformSpec extends AnyFunSpec with Matchers:
         val configUnity = CoordinateConfig(
           AxisConfig(East, Up, North),
           Vector3(-13.4, -25.2, 9.3),
-          QuaternionConfig,
           Meter,
+          QuaternionConfig,
           MeterPerSecond
         )
         val configUE = CoordinateConfig(
           AxisConfig(South, West, Up),
           Vector3(1230, -460, 950),
-          EulerAnglesConfig(Degree, Extrinsic, XYZ),
           Centimeter,
+          EulerAnglesConfig(Degree, Extrinsic, XYZ),
           MeterPerSecond
         )
         val transformUnity = Transform(
@@ -344,15 +344,15 @@ class TransformSpec extends AnyFunSpec with Matchers:
         val configUE = CoordinateConfig(
           AxisConfig(South, West, Up),
           Vector3(-3260, -4225, 12),
-          EulerAnglesConfig(Degree, Extrinsic, XYZ),
           Centimeter,
+          EulerAnglesConfig(Degree, Extrinsic, XYZ),
           MeterPerSecond
         )
         val configUnity = CoordinateConfig(
           AxisConfig(North, Up, West),
           Vector3(21.4, -0.2, -2.9),
-          QuaternionConfig,
           Meter,
+          QuaternionConfig,
           MeterPerSecond
         )
         val transformUE = Transform(
@@ -438,15 +438,15 @@ class TransformSpec extends AnyFunSpec with Matchers:
         val configUnity = CoordinateConfig(
           AxisConfig(South, Up, East),
           Vector3(9.5, 0.4, -7.3),
-          QuaternionConfig,
           Meter,
+          QuaternionConfig,
           MeterPerSecond
         )
         val configUE = CoordinateConfig(
           AxisConfig(North, East, Up),
           Vector3(4.7, 3.2, 0.1),
-          EulerAnglesConfig(Degree, Extrinsic, XYZ),
           Meter,
+          EulerAnglesConfig(Degree, Extrinsic, XYZ),
           MeterPerSecond
         )
         val transformUnity = Transform(

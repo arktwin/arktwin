@@ -9,34 +9,37 @@ import cats.data.ValidatedNec
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
 case class StaticCenterConfig(
+    actorMachineTimeout: FiniteDuration,
     clock: ClockConfig,
-    runIdPrefix: String,
     host: String,
-    port: Int,
-    portAutoIncrement: Boolean,
-    portAutoIncrementMax: Int,
     logLevel: LogLevel,
     logLevelColor: Boolean,
     logSuppressionList: Seq[String],
-    actorMachineTimeout: FiniteDuration,
-    subscribeBatchSize: Int,
+    port: Int,
+    portAutoIncrement: Boolean,
+    portAutoIncrementMax: Int,
+    runIdPrefix: String,
     subscribeBatchMachineInterval: FiniteDuration,
+    subscribeBatchSize: Int,
     subscribeBufferSize: Int
 ):
   def validated(path: String): ValidatedNec[String, StaticCenterConfig] =
     import cats.syntax.apply.*
     (
-      clock.validated(s"$path.clock"),
       condNec(
-        runIdPrefix.nonEmpty,
-        runIdPrefix,
-        s"$path.runIdPrefix must not be empty"
+        actorMachineTimeout > 0.second,
+        actorMachineTimeout,
+        s"$path.actorMachineTimeout must be > 0"
       ),
+      clock.validated(s"$path.clock"),
       condNec(
         host.nonEmpty,
         host,
         s"$path.host must not be empty"
       ),
+      valid(logLevel),
+      valid(logLevelColor),
+      valid(logSuppressionList),
       condNec(
         port > 0,
         port,
@@ -48,23 +51,20 @@ case class StaticCenterConfig(
         portAutoIncrementMax,
         s"$path.portAutoIncrementMax must be >= 0"
       ),
-      valid(logLevel),
-      valid(logLevelColor),
-      valid(logSuppressionList),
       condNec(
-        actorMachineTimeout > 0.second,
-        actorMachineTimeout,
-        s"$path.actorMachineTimeout must be > 0"
-      ),
-      condNec(
-        subscribeBatchSize > 0,
-        subscribeBatchSize,
-        s"$path.subscribeBatchSize must be > 0"
+        runIdPrefix.nonEmpty,
+        runIdPrefix,
+        s"$path.runIdPrefix must not be empty"
       ),
       condNec(
         subscribeBatchMachineInterval > 0.second,
         subscribeBatchMachineInterval,
         s"$path.subscribeBatchMachineInterval must be > 0"
+      ),
+      condNec(
+        subscribeBatchSize > 0,
+        subscribeBatchSize,
+        s"$path.subscribeBatchSize must be > 0"
       ),
       condNec(
         subscribeBufferSize > 0,

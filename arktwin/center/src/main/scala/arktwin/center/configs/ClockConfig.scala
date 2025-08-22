@@ -14,20 +14,20 @@ case class ClockConfig(
 
 object ClockConfig:
   case class Start(
-      initialTime: Start.InitialTime,
       clockSpeed: Double,
-      condition: Start.Condition
+      condition: Start.Condition,
+      initialTime: Start.InitialTime
   ):
     def validated(path: String): ValidatedNec[String, Start] =
       import cats.syntax.apply.*
       (
-        initialTime.validated(s"$path.initialTime"),
         condNec(
           clockSpeed >= 0,
           clockSpeed,
           s"$path.clockSpeed must be >= 0"
         ),
-        condition.validated(s"$path.condition")
+        condition.validated(s"$path.condition"),
+        initialTime.validated(s"$path.initialTime")
       ).mapN(Start.apply)
 
   object Start:
