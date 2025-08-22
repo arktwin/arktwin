@@ -6,7 +6,7 @@ import arktwin.center.services.ClockBase
 import arktwin.common.util.BehaviorsExtensions.*
 import arktwin.common.util.CommonMessages.Nop
 import arktwin.common.util.MailboxConfig
-import arktwin.edge.configs.StaticEdgeConfig
+import arktwin.edge.configs.EdgeStaticConfig
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.Receptionist.Listing
 import org.apache.pekko.actor.typed.receptionist.{Receptionist, ServiceKey}
@@ -29,7 +29,7 @@ object Clock:
 
   val observerKey: ServiceKey[UpdateClockBase] = ServiceKey(getClass.getName)
 
-  def spawn(staticConfig: StaticEdgeConfig): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
+  def spawn(staticConfig: EdgeStaticConfig): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(staticConfig),
     getClass.getSimpleName,
     MailboxConfig(this),
@@ -37,7 +37,7 @@ object Clock:
   )
 
   def apply(
-      staticConfig: StaticEdgeConfig
+      staticConfig: EdgeStaticConfig
   ): Behavior[Message] = Behaviors.setup: context =>
     Behaviors.withStash(staticConfig.clockInitialStashSize): buffer =>
       context.system.receptionist ! Receptionist.subscribe(observerKey, context.self)

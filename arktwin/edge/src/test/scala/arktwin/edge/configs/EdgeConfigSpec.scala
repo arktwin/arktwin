@@ -14,7 +14,7 @@ class EdgeConfigSpec extends AnyFunSpec:
     describe("toJson"):
       it("converts config to JSON string"):
         val config = EdgeConfig(
-          dynamic = DynamicEdgeConfig(
+          dynamic = EdgeDynamicConfig(
             coordinate = CoordinateConfig(
               axis = AxisConfig(
                 xDirection = AxisConfig.Direction.East,
@@ -31,7 +31,7 @@ class EdgeConfigSpec extends AnyFunSpec:
               maxFirstAgents = 100
             )
           ),
-          static = StaticEdgeConfig(
+          static = EdgeStaticConfig(
             actorMachineTimeout = 30.seconds,
             clockInitialStashSize = 100,
             edgeIdPrefix = "test",
@@ -56,7 +56,7 @@ class EdgeConfigSpec extends AnyFunSpec:
     describe("validated"):
       it("returns valid config when all fields are valid"):
         val config = EdgeConfig(
-          dynamic = DynamicEdgeConfig(
+          dynamic = EdgeDynamicConfig(
             coordinate = CoordinateConfig(
               axis = AxisConfig(
                 xDirection = AxisConfig.Direction.East,
@@ -77,7 +77,7 @@ class EdgeConfigSpec extends AnyFunSpec:
               maxFirstAgents = 50
             )
           ),
-          static = StaticEdgeConfig(
+          static = EdgeStaticConfig(
             actorMachineTimeout = 60.seconds,
             clockInitialStashSize = 200,
             edgeIdPrefix = "valid",
@@ -98,7 +98,7 @@ class EdgeConfigSpec extends AnyFunSpec:
 
       it("returns invalid with error messages when fields are invalid"):
         val config = EdgeConfig(
-          dynamic = DynamicEdgeConfig(
+          dynamic = EdgeDynamicConfig(
             coordinate = CoordinateConfig(
               axis = AxisConfig(
                 xDirection = AxisConfig.Direction.East,
@@ -115,7 +115,7 @@ class EdgeConfigSpec extends AnyFunSpec:
               maxFirstAgents = -1
             )
           ),
-          static = StaticEdgeConfig(
+          static = EdgeStaticConfig(
             actorMachineTimeout = 0.seconds,
             clockInitialStashSize = 0,
             edgeIdPrefix = "",

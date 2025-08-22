@@ -7,7 +7,7 @@ import arktwin.common.util.JsonDerivation
 import arktwin.common.util.JsonDerivation.given
 import arktwin.common.util.LoggerConfigurator.LogLevel
 import arktwin.edge.actors.EdgeConfigurator
-import arktwin.edge.configs.{DynamicEdgeConfig, EdgeConfig, StaticEdgeConfig}
+import arktwin.edge.configs.{EdgeConfig, EdgeDynamicConfig, EdgeStaticConfig}
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.{EdgeKamon, ErrorStatus}
 import com.github.plokhotnyuk.jsoniter_scala.core.JsonValueCodec
@@ -30,11 +30,11 @@ object EdgeConfigGet:
   given JsonValueCodec[Response] = JsonDerivation.makeCodec
 
   val outExample: Response = Response(
-    dynamic = DynamicEdgeConfig(
+    dynamic = EdgeDynamicConfig(
       coordinate = EdgeConfigCoordinatePut.inExample,
       culling = EdgeConfigCullingPut.inExample
     ),
-    static = StaticEdgeConfig(
+    static = EdgeStaticConfig(
       actorMachineTimeout = 90.milliseconds,
       clockInitialStashSize = 100,
       edgeIdPrefix = "edge",
@@ -63,7 +63,7 @@ object EdgeConfigGet:
 
   def route(
       configurator: ActorRef[EdgeConfigurator.Message],
-      staticConfig: StaticEdgeConfig,
+      staticConfig: EdgeStaticConfig,
       kamon: EdgeKamon
   )(using
       ExecutionContext,

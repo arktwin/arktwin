@@ -9,7 +9,7 @@ import arktwin.common.util.CommonMessages.Nop
 import arktwin.common.util.GrpcHeaderKeys
 import arktwin.common.util.SourceExtensions.*
 import arktwin.edge.actors.sinks.Chart
-import arktwin.edge.configs.StaticEdgeConfig
+import arktwin.edge.configs.EdgeStaticConfig
 import arktwin.edge.util.EdgeKamon
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.actor.typed.ActorRef
@@ -19,7 +19,7 @@ import org.apache.pekko.stream.{Materializer, OverflowStrategy}
 // TODO retry connection in actor?
 case class ChartConnector(
     client: ChartClient,
-    staticConfig: StaticEdgeConfig,
+    staticConfig: EdgeStaticConfig,
     edgeId: String,
     kamon: EdgeKamon
 )(using

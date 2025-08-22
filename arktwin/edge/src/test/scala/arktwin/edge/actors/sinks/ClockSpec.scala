@@ -6,7 +6,7 @@ import arktwin.center.services.ClockBase
 import arktwin.common.data.Timestamp
 import arktwin.common.util.LoggerConfigurator.LogLevel
 import arktwin.edge.actors.sinks.Clock.*
-import arktwin.edge.configs.StaticEdgeConfig
+import arktwin.edge.configs.EdgeStaticConfig
 import arktwin.edge.test.ActorTestBase
 import org.apache.pekko.actor.testkit.typed.scaladsl.ActorTestKit
 import org.apache.pekko.actor.typed.receptionist.Receptionist
@@ -15,7 +15,7 @@ import scala.concurrent.duration.DurationInt
 import scala.util.Using
 
 class ClockSpec extends ActorTestBase:
-  private val baseConfig = StaticEdgeConfig(
+  private val baseConfig = EdgeStaticConfig(
     actorMachineTimeout = 90.milliseconds,
     clockInitialStashSize = 100,
     edgeIdPrefix = "edge",

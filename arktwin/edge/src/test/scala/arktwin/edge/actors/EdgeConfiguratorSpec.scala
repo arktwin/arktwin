@@ -18,7 +18,7 @@ import scala.util.Using
 
 class EdgeConfiguratorSpec extends ActorTestBase:
   private val baseConfig = EdgeConfig(
-    dynamic = DynamicEdgeConfig(
+    dynamic = EdgeDynamicConfig(
       coordinate = CoordinateConfig(
         axis = AxisConfig(
           xDirection = Direction.East,
@@ -39,7 +39,7 @@ class EdgeConfiguratorSpec extends ActorTestBase:
         maxFirstAgents = 9
       )
     ),
-    static = StaticEdgeConfig(
+    static = EdgeStaticConfig(
       actorMachineTimeout = 90.milliseconds,
       clockInitialStashSize = 100,
       edgeIdPrefix = "edge",

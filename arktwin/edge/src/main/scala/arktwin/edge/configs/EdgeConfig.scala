@@ -14,8 +14,8 @@ import pureconfig.generic.semiauto.{deriveReader, deriveWriter}
 import scala.concurrent.duration.FiniteDuration
 
 case class EdgeConfig(
-    dynamic: DynamicEdgeConfig,
-    static: StaticEdgeConfig
+    dynamic: EdgeDynamicConfig,
+    static: EdgeStaticConfig
 ) derives ConfigReader:
   def toJson: String =
     given ConfigWriter[EdgeConfig] = deriveWriter

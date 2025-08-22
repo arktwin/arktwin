@@ -3,7 +3,7 @@
 package arktwin.center.services
 
 import arktwin.center.actors.Clock
-import arktwin.center.configs.StaticCenterConfig
+import arktwin.center.configs.CenterStaticConfig
 import arktwin.common.util.GrpcHeaderKeys
 import arktwin.common.util.SourceExtensions.*
 import com.google.protobuf.empty.Empty
@@ -16,7 +16,7 @@ import org.apache.pekko.stream.{Materializer, OverflowStrategy}
 
 class ClockService(
     clock: ActorRef[Clock.Message],
-    config: StaticCenterConfig
+    config: CenterStaticConfig
 )(using
     Materializer
 ) extends ClockPowerApi:

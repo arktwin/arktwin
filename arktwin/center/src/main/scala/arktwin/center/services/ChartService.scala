@@ -3,7 +3,7 @@
 package arktwin.center.services
 
 import arktwin.center.actors.*
-import arktwin.center.configs.StaticCenterConfig
+import arktwin.center.configs.CenterStaticConfig
 import arktwin.center.util.CenterKamon
 import arktwin.common.data.TaggedTimestamp
 import arktwin.common.data.TimestampExtensions.*
@@ -24,7 +24,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ChartService(
     atlas: ActorRef[Atlas.Message],
-    config: StaticCenterConfig,
+    config: CenterStaticConfig,
     kamon: CenterKamon
 )(using
     Materializer,

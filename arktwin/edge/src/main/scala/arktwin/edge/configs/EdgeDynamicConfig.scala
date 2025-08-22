@@ -4,13 +4,13 @@ package arktwin.edge.configs
 
 import cats.data.ValidatedNec
 
-case class DynamicEdgeConfig(
+case class EdgeDynamicConfig(
     coordinate: CoordinateConfig,
     culling: CullingConfig
 ):
-  def validated(path: String): ValidatedNec[String, DynamicEdgeConfig] =
+  def validated(path: String): ValidatedNec[String, EdgeDynamicConfig] =
     import cats.syntax.apply.*
     (
       coordinate.validated(s"$path.coordinate"),
       culling.validated(s"$path.culling")
-    ).mapN(DynamicEdgeConfig.apply)
+    ).mapN(EdgeDynamicConfig.apply)

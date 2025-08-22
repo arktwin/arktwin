@@ -6,7 +6,7 @@ import arktwin.common.data.{TaggedTimestamp, VirtualTimestamp}
 import arktwin.common.util.JsonDerivation
 import arktwin.common.util.JsonDerivation.given
 import arktwin.edge.actors.adapters.EdgeAgentsPutAdapter
-import arktwin.edge.configs.StaticEdgeConfig
+import arktwin.edge.configs.EdgeStaticConfig
 import arktwin.edge.data.*
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.{EdgeKamon, ErrorStatus}
@@ -92,7 +92,7 @@ object EdgeAgentsPut:
 
   def route(
       adapter: ActorRef[EdgeAgentsPutAdapter.Message],
-      staticConfig: StaticEdgeConfig,
+      staticConfig: EdgeStaticConfig,
       kamon: EdgeKamon
   )(using
       ExecutionContext,

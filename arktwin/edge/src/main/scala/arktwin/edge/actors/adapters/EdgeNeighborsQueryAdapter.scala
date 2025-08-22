@@ -13,7 +13,7 @@ import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.EdgeConfigurator.UpdateCoordinateConfig
 import arktwin.edge.actors.sinks.Chart.CullingNeighbor
 import arktwin.edge.actors.sinks.{Chart, Clock, Register}
-import arktwin.edge.configs.{CoordinateConfig, StaticEdgeConfig}
+import arktwin.edge.configs.{CoordinateConfig, EdgeStaticConfig}
 import arktwin.edge.data.Transform
 import arktwin.edge.endpoints.EdgeNeighborsQuery.{Request, Response, ResponseAgent}
 import arktwin.edge.endpoints.{EdgeNeighborsQuery, NeighborChange}
@@ -39,7 +39,7 @@ object EdgeNeighborsQueryAdapter:
       chart: ActorRef[Chart.Read],
       clock: ActorRef[Clock.Read],
       register: ActorRef[Register.Get],
-      staticConfig: StaticEdgeConfig,
+      staticConfig: EdgeStaticConfig,
       initCoordinateConfig: CoordinateConfig,
       kamon: EdgeKamon
   ): ActorRef[ActorRef[Message]] => Spawn[Message] =
@@ -54,7 +54,7 @@ object EdgeNeighborsQueryAdapter:
       chart: ActorRef[Chart.Read],
       clock: ActorRef[Clock.Read],
       register: ActorRef[Register.Get],
-      staticConfig: StaticEdgeConfig,
+      staticConfig: EdgeStaticConfig,
       initCoordinateConfig: CoordinateConfig,
       kamon: EdgeKamon
   ): Behavior[Message] = Behaviors.setup: context =>

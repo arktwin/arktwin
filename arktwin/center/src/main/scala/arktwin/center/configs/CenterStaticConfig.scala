@@ -8,7 +8,7 @@ import cats.data.ValidatedNec
 
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
-case class StaticCenterConfig(
+case class CenterStaticConfig(
     actorMachineTimeout: FiniteDuration,
     clock: ClockConfig,
     host: String,
@@ -23,7 +23,7 @@ case class StaticCenterConfig(
     subscribeBatchSize: Int,
     subscribeBufferSize: Int
 ):
-  def validated(path: String): ValidatedNec[String, StaticCenterConfig] =
+  def validated(path: String): ValidatedNec[String, CenterStaticConfig] =
     import cats.syntax.apply.*
     (
       condNec(
@@ -71,4 +71,4 @@ case class StaticCenterConfig(
         subscribeBufferSize,
         s"$path.subscribeBufferSize must be > 0"
       )
-    ).mapN(StaticCenterConfig.apply)
+    ).mapN(CenterStaticConfig.apply)
