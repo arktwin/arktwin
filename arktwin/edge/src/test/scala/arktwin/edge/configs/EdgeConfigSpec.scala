@@ -32,7 +32,10 @@ class EdgeConfigSpec extends AnyFunSpec:
             )
           ),
           static = StaticEdgeConfig(
+            actorMachineTimeout = 30.seconds,
+            clockInitialStashSize = 100,
             edgeIdPrefix = "test",
+            endpointMachineTimeout = 10.seconds,
             host = "localhost",
             port = 8081,
             portAutoIncrement = false,
@@ -40,9 +43,6 @@ class EdgeConfigSpec extends AnyFunSpec:
             logLevel = LogLevel.Info,
             logLevelColor = true,
             logSuppressionList = Seq(),
-            actorMachineTimeout = 30.seconds,
-            endpointMachineTimeout = 10.seconds,
-            clockInitialStashSize = 100,
             publishBatchSize = 50,
             publishBufferSize = 500
           )
@@ -78,7 +78,10 @@ class EdgeConfigSpec extends AnyFunSpec:
             )
           ),
           static = StaticEdgeConfig(
+            actorMachineTimeout = 60.seconds,
+            clockInitialStashSize = 200,
             edgeIdPrefix = "valid",
+            endpointMachineTimeout = 20.seconds,
             host = "0.0.0.0",
             port = 9090,
             portAutoIncrement = true,
@@ -86,9 +89,6 @@ class EdgeConfigSpec extends AnyFunSpec:
             logLevel = LogLevel.Debug,
             logLevelColor = false,
             logSuppressionList = Seq("org.apache.pekko"),
-            actorMachineTimeout = 60.seconds,
-            endpointMachineTimeout = 20.seconds,
-            clockInitialStashSize = 200,
             publishBatchSize = 100,
             publishBufferSize = 1000
           )
@@ -116,7 +116,10 @@ class EdgeConfigSpec extends AnyFunSpec:
             )
           ),
           static = StaticEdgeConfig(
+            actorMachineTimeout = 0.seconds,
+            clockInitialStashSize = 0,
             edgeIdPrefix = "",
+            endpointMachineTimeout = 0.seconds,
             host = "",
             port = 0,
             portAutoIncrement = false,
@@ -124,9 +127,6 @@ class EdgeConfigSpec extends AnyFunSpec:
             logLevel = LogLevel.Error,
             logLevelColor = true,
             logSuppressionList = Seq(),
-            actorMachineTimeout = 0.seconds,
-            endpointMachineTimeout = 0.seconds,
-            clockInitialStashSize = 0,
             publishBatchSize = 0,
             publishBufferSize = 0
           )

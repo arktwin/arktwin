@@ -21,14 +21,14 @@ class CenterConfigSpec extends AnyFunSpec:
             )
           ),
           static = StaticCenterConfig(
+            actorMachineTimeout = 30.seconds,
             clock = ClockConfig(
               start = ClockConfig.Start(
-                initialTime = ClockConfig.Start.Relative(VirtualDuration(0, 0)),
                 clockSpeed = 1.0,
-                condition = ClockConfig.Start.Schedule(MachineDuration(0, 0))
+                condition = ClockConfig.Start.Schedule(MachineDuration(0, 0)),
+                initialTime = ClockConfig.Start.Relative(VirtualDuration(0, 0))
               )
             ),
-            runIdPrefix = "test",
             host = "localhost",
             port = 8080,
             portAutoIncrement = false,
@@ -36,9 +36,9 @@ class CenterConfigSpec extends AnyFunSpec:
             logLevel = LogLevel.Info,
             logLevelColor = true,
             logSuppressionList = Seq(),
-            actorMachineTimeout = 30.seconds,
-            subscribeBatchSize = 100,
+            runIdPrefix = "test",
             subscribeBatchMachineInterval = 100.millis,
+            subscribeBatchSize = 100,
             subscribeBufferSize = 1000
           )
         )
@@ -58,14 +58,14 @@ class CenterConfigSpec extends AnyFunSpec:
             )
           ),
           static = StaticCenterConfig(
+            actorMachineTimeout = 60.seconds,
             clock = ClockConfig(
               start = ClockConfig.Start(
-                initialTime = ClockConfig.Start.Absolute(VirtualTimestamp(0, 0)),
                 clockSpeed = 1.0,
-                condition = ClockConfig.Start.Schedule(MachineDuration(100, 0))
+                condition = ClockConfig.Start.Schedule(MachineDuration(100, 0)),
+                initialTime = ClockConfig.Start.Absolute(VirtualTimestamp(0, 0))
               )
             ),
-            runIdPrefix = "valid",
             host = "localhost",
             port = 8080,
             portAutoIncrement = true,
@@ -73,9 +73,9 @@ class CenterConfigSpec extends AnyFunSpec:
             logLevel = LogLevel.Debug,
             logLevelColor = false,
             logSuppressionList = Seq("org.apache.pekko"),
-            actorMachineTimeout = 60.seconds,
-            subscribeBatchSize = 50,
+            runIdPrefix = "valid",
             subscribeBatchMachineInterval = 200.millis,
+            subscribeBatchSize = 50,
             subscribeBufferSize = 500
           )
         )
@@ -91,14 +91,14 @@ class CenterConfigSpec extends AnyFunSpec:
             )
           ),
           static = StaticCenterConfig(
+            actorMachineTimeout = 0.seconds,
             clock = ClockConfig(
               start = ClockConfig.Start(
-                initialTime = ClockConfig.Start.Relative(VirtualDuration(0, 0)),
                 clockSpeed = -1.0,
-                condition = ClockConfig.Start.Schedule(MachineDuration(-1, 0))
+                condition = ClockConfig.Start.Schedule(MachineDuration(-1, 0)),
+                initialTime = ClockConfig.Start.Relative(VirtualDuration(0, 0))
               )
             ),
-            runIdPrefix = "",
             host = "",
             port = 0,
             portAutoIncrement = false,
@@ -106,9 +106,9 @@ class CenterConfigSpec extends AnyFunSpec:
             logLevel = LogLevel.Error,
             logLevelColor = true,
             logSuppressionList = Seq(),
-            actorMachineTimeout = 0.seconds,
-            subscribeBatchSize = 0,
+            runIdPrefix = "",
             subscribeBatchMachineInterval = 0.seconds,
+            subscribeBatchSize = 0,
             subscribeBufferSize = 0
           )
         )

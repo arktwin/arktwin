@@ -16,10 +16,10 @@ case class CoordinateConfig(
     axis: AxisConfig,
     @description("center's origin in the edge's coordinate system")
     centerOrigin: Vector3,
-    @description("rotation configuration")
-    rotation: RotationConfig,
     @description("length unit")
     lengthUnit: CoordinateConfig.LengthUnit,
+    @description("rotation configuration")
+    rotation: RotationConfig,
     @description("speed unit")
     speedUnit: CoordinateConfig.SpeedUnit
 ):
@@ -28,8 +28,8 @@ case class CoordinateConfig(
     (
       axis.validated(s"$path.axis"),
       valid(centerOrigin),
-      rotation.validated(s"$path.rotation"),
       valid(lengthUnit),
+      rotation.validated(s"$path.rotation"),
       valid(speedUnit)
     ).mapN(CoordinateConfig.apply)
 

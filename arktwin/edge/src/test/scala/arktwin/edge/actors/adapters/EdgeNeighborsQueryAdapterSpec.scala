@@ -62,8 +62,8 @@ class EdgeNeighborsQueryAdapterSpec extends ActorTestBase:
         CoordinateConfig(
           AxisConfig(East, North, Up),
           Vector3(0, 0, 0),
-          EulerAnglesConfig(Degree, Extrinsic, XYZ),
           Meter,
+          EulerAnglesConfig(Degree, Extrinsic, XYZ),
           MeterPerSecond
         )
       )

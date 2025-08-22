@@ -51,8 +51,8 @@ class EdgeAgentsPutAdapterSpec extends ActorTestBase:
         CoordinateConfig(
           AxisConfig(East, North, Up),
           Vector3(0, 0, 0),
-          QuaternionConfig,
           Meter,
+          QuaternionConfig,
           MeterPerSecond
         )
       )

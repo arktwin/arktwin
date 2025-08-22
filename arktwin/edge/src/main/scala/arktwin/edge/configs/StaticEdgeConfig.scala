@@ -11,23 +11,33 @@ import scalapb.validate.{Failure, Success, Validator}
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
 case class StaticEdgeConfig(
+    actorMachineTimeout: FiniteDuration,
+    clockInitialStashSize: Int,
     edgeIdPrefix: String,
+    endpointMachineTimeout: FiniteDuration,
     host: String,
-    port: Int,
-    portAutoIncrement: Boolean,
-    portAutoIncrementMax: Int,
     logLevel: LogLevel,
     logLevelColor: Boolean,
     logSuppressionList: Seq[String],
-    actorMachineTimeout: FiniteDuration,
-    endpointMachineTimeout: FiniteDuration,
-    clockInitialStashSize: Int,
+    port: Int,
+    portAutoIncrement: Boolean,
+    portAutoIncrementMax: Int,
     publishBatchSize: Int,
     publishBufferSize: Int
 ):
   def validated(path: String): ValidatedNec[String, StaticEdgeConfig] =
     import cats.syntax.apply.*
     (
+      condNec(
+        actorMachineTimeout > 0.second,
+        actorMachineTimeout,
+        s"$path.actorMachineTimeout must be > 0"
+      ),
+      condNec(
+        clockInitialStashSize > 0,
+        clockInitialStashSize,
+        s"$path.clockInitialStashSize must be > 0"
+      ),
       Validator[CreateEdgeRequest].validate(CreateEdgeRequest(edgeIdPrefix)) match
         case Success             => valid(edgeIdPrefix)
         case Failure(violations) =>
@@ -37,10 +47,18 @@ case class StaticEdgeConfig(
               .mkString(", ")
           ),
       condNec(
+        endpointMachineTimeout > 0.second,
+        endpointMachineTimeout,
+        s"$path.endpointMachineTimeout must be > 0"
+      ),
+      condNec(
         host.nonEmpty,
         host,
         s"$path.host must not be empty"
       ),
+      valid(logLevel),
+      valid(logLevelColor),
+      valid(logSuppressionList),
       condNec(
         port > 0,
         port,
@@ -51,24 +69,6 @@ case class StaticEdgeConfig(
         portAutoIncrementMax >= 0,
         portAutoIncrementMax,
         s"$path.portAutoIncrementMax must be >= 0"
-      ),
-      valid(logLevel),
-      valid(logLevelColor),
-      valid(logSuppressionList),
-      condNec(
-        actorMachineTimeout > 0.second,
-        actorMachineTimeout,
-        s"$path.actorMachineTimeout must be > 0"
-      ),
-      condNec(
-        endpointMachineTimeout > 0.second,
-        endpointMachineTimeout,
-        s"$path.endpointMachineTimeout must be > 0"
-      ),
-      condNec(
-        clockInitialStashSize > 0,
-        clockInitialStashSize,
-        s"$path.clockInitialStashSize must be > 0"
       ),
       condNec(
         publishBatchSize > 0,
