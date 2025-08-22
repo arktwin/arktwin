@@ -22,6 +22,7 @@ object EdgeConfigCoordinatePutScenario:
       |    "y": 2.3,
       |    "z": 4.5
       |  },
+      |  "lengthUnit": "Millimeter",
       |  "rotation": {
       |    "EulerAnglesConfig": {
       |      "angleUnit": "Degree",
@@ -29,7 +30,6 @@ object EdgeConfigCoordinatePutScenario:
       |      "rotationOrder": "ZXY"
       |    }
       |  },
-      |  "lengthUnit": "Millimeter",
       |  "speedUnit": "KilometerPerHour"
       |}""".stripMargin.filterNot(_.isWhitespace)
 
