@@ -40,8 +40,8 @@ class EdgeConfigSpec extends AnyFunSpec:
             logLevel = LogLevel.Info,
             logLevelColor = true,
             logSuppressionList = Seq(),
-            actorTimeout = 30.seconds,
-            endpointTimeout = 10.seconds,
+            actorMachineTimeout = 30.seconds,
+            endpointMachineTimeout = 10.seconds,
             clockInitialStashSize = 100,
             publishBatchSize = 50,
             publishBufferSize = 500
@@ -50,7 +50,7 @@ class EdgeConfigSpec extends AnyFunSpec:
         val json = config.toJson
 
         assert(
-          json == """{"dynamic":{"coordinate":{"axis":{"xDirection":{"type":"East"},"yDirection":{"type":"North"},"zDirection":{"type":"Up"}},"centerOrigin":{"x":0.0,"y":0.0,"z":0.0},"lengthUnit":{"type":"Meter"},"rotation":{"type":"QuaternionConfig"},"speedUnit":{"type":"MeterPerSecond"}},"culling":{"edgeCulling":true,"maxFirstAgents":100}},"static":{"actorTimeout":"30s","clockInitialStashSize":100,"edgeIdPrefix":"test","endpointTimeout":"10s","host":"localhost","logLevel":{"type":"Info"},"logLevelColor":true,"logSuppressionList":[],"port":8081,"portAutoIncrement":false,"portAutoIncrementMax":0,"publishBatchSize":50,"publishBufferSize":500}}"""
+          json == """{"dynamic":{"coordinate":{"axis":{"xDirection":{"type":"East"},"yDirection":{"type":"North"},"zDirection":{"type":"Up"}},"centerOrigin":{"x":0.0,"y":0.0,"z":0.0},"lengthUnit":{"type":"Meter"},"rotation":{"type":"QuaternionConfig"},"speedUnit":{"type":"MeterPerSecond"}},"culling":{"edgeCulling":true,"maxFirstAgents":100}},"static":{"actorMachineTimeout":"30s","clockInitialStashSize":100,"edgeIdPrefix":"test","endpointMachineTimeout":"10s","host":"localhost","logLevel":{"type":"Info"},"logLevelColor":true,"logSuppressionList":[],"port":8081,"portAutoIncrement":false,"portAutoIncrementMax":0,"publishBatchSize":50,"publishBufferSize":500}}"""
         )
 
     describe("validated"):
@@ -86,8 +86,8 @@ class EdgeConfigSpec extends AnyFunSpec:
             logLevel = LogLevel.Debug,
             logLevelColor = false,
             logSuppressionList = Seq("org.apache.pekko"),
-            actorTimeout = 60.seconds,
-            endpointTimeout = 20.seconds,
+            actorMachineTimeout = 60.seconds,
+            endpointMachineTimeout = 20.seconds,
             clockInitialStashSize = 200,
             publishBatchSize = 100,
             publishBufferSize = 1000
@@ -124,8 +124,8 @@ class EdgeConfigSpec extends AnyFunSpec:
             logLevel = LogLevel.Error,
             logLevelColor = true,
             logSuppressionList = Seq(),
-            actorTimeout = 0.seconds,
-            endpointTimeout = 0.seconds,
+            actorMachineTimeout = 0.seconds,
+            endpointMachineTimeout = 0.seconds,
             clockInitialStashSize = 0,
             publishBatchSize = 0,
             publishBufferSize = 0
@@ -142,8 +142,8 @@ class EdgeConfigSpec extends AnyFunSpec:
             "test.static.host must not be empty",
             "test.static.port must be > 0",
             "test.static.portAutoIncrementMax must be >= 0",
-            "test.static.actorTimeout must be > 0",
-            "test.static.endpointTimeout must be > 0",
+            "test.static.actorMachineTimeout must be > 0",
+            "test.static.endpointMachineTimeout must be > 0",
             "test.static.clockInitialStashSize must be > 0",
             "test.static.publishBatchSize must be > 0",
             "test.static.publishBufferSize must be > 0"

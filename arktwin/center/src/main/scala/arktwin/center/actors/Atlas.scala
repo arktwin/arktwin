@@ -50,7 +50,7 @@ object Atlas:
       kamon: CenterKamon
   ): Behavior[Message] = Behaviors.setupWithLogger: (context, logger) =>
     Behaviors.withTimers: timer =>
-      timer.startSingleTimer(SpawnUpdateRouteTable, config.routeTableUpdateInterval)
+      timer.startSingleTimer(SpawnUpdateRouteTable, config.routeTableUpdateMachineInterval)
 
       var chartRecorders = Map[String, ActorRef[ChartRecorder.Message]]()
       var charts = Map[String, ActorRef[Chart.Message]]()
@@ -100,7 +100,7 @@ object Atlas:
           Behaviors.same
 
         case UpdateRouteTableTerminated =>
-          timer.startSingleTimer(SpawnUpdateRouteTable, config.routeTableUpdateInterval)
+          timer.startSingleTimer(SpawnUpdateRouteTable, config.routeTableUpdateMachineInterval)
           Behaviors.same
 
         case SpawnUpdateRouteTable =>
@@ -129,7 +129,7 @@ object Atlas:
           Behaviors.stopped
 
         case AtlasConfig.GridCulling(gridCellSize) =>
-          timer.startSingleTimer(Timeout, config.routeTableUpdateInterval)
+          timer.startSingleTimer(Timeout, config.routeTableUpdateMachineInterval)
 
           for (_, chartRecorder) <- chartRecorders do
             chartRecorder ! ChartRecorder.Get(config, context.self)

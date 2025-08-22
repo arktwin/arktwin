@@ -10,16 +10,16 @@ import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
 case class AtlasConfig(
     culling: AtlasConfig.Culling,
-    routeTableUpdateInterval: FiniteDuration
+    routeTableUpdateMachineInterval: FiniteDuration
 ):
   def validated(path: String): ValidatedNec[String, AtlasConfig] =
     import cats.syntax.apply.*
     (
       culling.validated(s"$path.culling"),
       condNec(
-        routeTableUpdateInterval > 0.second,
-        routeTableUpdateInterval,
-        s"$path.routeTableUpdateInterval must be > 0"
+        routeTableUpdateMachineInterval > 0.second,
+        routeTableUpdateMachineInterval,
+        s"$path.routeTableUpdateMachineInterval must be > 0"
       )
     ).mapN(AtlasConfig.apply)
 

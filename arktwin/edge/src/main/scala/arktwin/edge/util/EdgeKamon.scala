@@ -61,4 +61,4 @@ object EdgeKamon:
   inline val restRequestNumName = "arktwin_edge_rest_request_num"
   inline val restAgentNumName = "arktwin_edge_rest_agent_num"
   inline val restProcessMachineTimeName = "arktwin_edge_rest_process_machine_time"
-  inline val restVirtualLatencyName = "arktwin_edge_rest_virtual_latency"
+  inline val restVirtualLatencyName = "arktwin_edge_rest_latency"

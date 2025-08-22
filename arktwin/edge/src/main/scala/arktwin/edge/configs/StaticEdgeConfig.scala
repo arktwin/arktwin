@@ -19,8 +19,8 @@ case class StaticEdgeConfig(
     logLevel: LogLevel,
     logLevelColor: Boolean,
     logSuppressionList: Seq[String],
-    actorTimeout: FiniteDuration,
-    endpointTimeout: FiniteDuration,
+    actorMachineTimeout: FiniteDuration,
+    endpointMachineTimeout: FiniteDuration,
     clockInitialStashSize: Int,
     publishBatchSize: Int,
     publishBufferSize: Int
@@ -56,14 +56,14 @@ case class StaticEdgeConfig(
       valid(logLevelColor),
       valid(logSuppressionList),
       condNec(
-        actorTimeout > 0.second,
-        actorTimeout,
-        s"$path.actorTimeout must be > 0"
+        actorMachineTimeout > 0.second,
+        actorMachineTimeout,
+        s"$path.actorMachineTimeout must be > 0"
       ),
       condNec(
-        endpointTimeout > 0.second,
-        endpointTimeout,
-        s"$path.endpointTimeout must be > 0"
+        endpointMachineTimeout > 0.second,
+        endpointMachineTimeout,
+        s"$path.endpointMachineTimeout must be > 0"
       ),
       condNec(
         clockInitialStashSize > 0,

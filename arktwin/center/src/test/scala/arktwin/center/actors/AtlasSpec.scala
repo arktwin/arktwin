@@ -27,7 +27,7 @@ class AtlasSpec extends ActorTestBase:
       val atlas = testKit.spawn(Atlas(atlasConfig, CenterKamon("")))
 
       val (publisherA, subscriberA) = createPubSub("A", atlas)
-      Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
+      Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
 
       val a1 = chartAgent("a1", Timestamp(0, 0), Vector3Enu(1, 2, 3))
       val a2 = chartAgent("a2", Timestamp(0, 0), Vector3Enu(1, 2, 3))
@@ -35,7 +35,7 @@ class AtlasSpec extends ActorTestBase:
       subscriberA.expectNoMessage()
 
       val (publisherB, subscriberB) = createPubSub("B", atlas)
-      Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
+      Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
 
       val b1 = chartAgent("b1", Timestamp(0, 0), Vector3Enu(1, 2, 3))
       val b2 = chartAgent("b2", Timestamp(0, 0), Vector3Enu(1, 2, 3))
@@ -48,7 +48,7 @@ class AtlasSpec extends ActorTestBase:
       subscriberB.expectNoMessage()
 
       val (publisherC, subscriberC) = createPubSub("C", atlas)
-      Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
+      Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
 
       val c1 = chartAgent("c1", Timestamp(0, 0), Vector3Enu(1, 2, 3))
       val c2 = chartAgent("c2", Timestamp(0, 0), Vector3Enu(1, 2, 3))
@@ -79,7 +79,7 @@ class AtlasSpec extends ActorTestBase:
 
       publisherB ! Terminate
       subscriberB.stop()
-      Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
+      Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
 
       publisherA ! Chart.PublishBatch(Seq(a1, a2), MachineTimestamp(0, 0))
       publisherB ! Chart.PublishBatch(Seq(b1, b2), MachineTimestamp(0, 0))
@@ -95,7 +95,7 @@ class AtlasSpec extends ActorTestBase:
       val atlas = testKit.spawn(Atlas(atlasConfig, CenterKamon("")))
 
       val (publisherA, subscriberA) = createPubSub("A", atlas)
-      Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
+      Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
 
       val a1_0 = chartAgent("a1", Timestamp(0, 0), Vector3Enu(1, 1, 1)) // [0, 0, 0]
       val a2_0 = chartAgent("a2", Timestamp(0, 0), Vector3Enu(1, 1, 1)) // [0, 0, 0]
@@ -103,7 +103,7 @@ class AtlasSpec extends ActorTestBase:
       subscriberA.expectNoMessage()
 
       val (publisherB, subscriberB) = createPubSub("B", atlas)
-      Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
+      Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
 
       val b1_0 = chartAgent("b1", Timestamp(0, 0), Vector3Enu(1, 1, 1)) // [0, 0, 0]
       val b2_0 = chartAgent("b2", Timestamp(0, 0), Vector3Enu(21, 1, 1)) // [2, 0, 0]
@@ -113,7 +113,7 @@ class AtlasSpec extends ActorTestBase:
       subscriberB.expectNoMessage()
 
       val (publisherC, subscriberC) = createPubSub("C", atlas)
-      Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
+      Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
 
       val c1_0 = chartAgent("c1", Timestamp(0, 0), Vector3Enu(11, 1, 1)) // [1, 0, 0]
       val c2_0 = chartAgent("c2", Timestamp(0, 0), Vector3Enu(31, 1, 1001)) // [3, 0, 1]
@@ -124,7 +124,7 @@ class AtlasSpec extends ActorTestBase:
       subscriberB.expectNoMessage()
       subscriberC.expectNoMessage()
 
-      Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
+      Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
 
       val a1_1 = chartAgent("a1", Timestamp(1, 0), Vector3Enu(41, 101, 1001)) // [4, 1, 1]
       val a2_1 = chartAgent("a2", Timestamp(1, 0), Vector3Enu(41, 201, -1)) // [4, 2, -1]
@@ -136,7 +136,7 @@ class AtlasSpec extends ActorTestBase:
 
       publisherB ! Terminate
       subscriberB.stop()
-      Thread.sleep(atlasConfig.routeTableUpdateInterval.toMillis * 2)
+      Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
 
       publisherC ! Chart.PublishBatch(Seq(c1_0, c2_0), MachineTimestamp(0, 0))
       assert(subscriberA.receiveMessage().agents.sorted == Seq(c2_0))

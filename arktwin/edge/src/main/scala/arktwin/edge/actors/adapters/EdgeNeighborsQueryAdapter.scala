@@ -82,7 +82,7 @@ object EdgeNeighborsQueryAdapter:
                 clock,
                 register,
                 virtualLatencyHistogram,
-                staticConfig.actorTimeout,
+                staticConfig.actorMachineTimeout,
                 coordinateConfig
               )
             )
@@ -99,7 +99,7 @@ object EdgeNeighborsQueryAdapter:
                 clock,
                 register,
                 virtualLatencyHistogram,
-                staticConfig.actorTimeout,
+                staticConfig.actorMachineTimeout,
                 coordinateConfig
               )
             )

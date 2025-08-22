@@ -84,7 +84,7 @@ object EdgeNeighborsQuery:
     val requestNumCounter = kamon.restRequestNumCounter(endpoint.showShort)
     val processMachineTimeHistogram = kamon.restProcessMachineTimeHistogram(endpoint.showShort)
 
-    given Timeout = staticConfig.endpointTimeout
+    given Timeout = staticConfig.endpointMachineTimeout
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogicWithLog: request =>
         val requestTime = TaggedTimestamp.machineNow()

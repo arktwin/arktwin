@@ -83,7 +83,7 @@ class ChartService(
         config.subscribeBufferSize,
         OverflowStrategy.dropHead
       )
-      .groupedWeightedWithin(config.subscribeBatchSize, config.subscribeBatchInterval)(
+      .groupedWeightedWithin(config.subscribeBatchSize, config.subscribeBatchMachineInterval)(
         _.agents.size
       )
       .map: subscribeBatch =>

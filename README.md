@@ -221,7 +221,7 @@ Some configuration can be overridden using environment variables.
   - arktwin_center_chart_2_publish_from_edge_machine_latency {edge_id, run_id}
   - arktwin_center_chart_3_route_agent_num {edge_id, run_id}
   - arktwin_center_chart_3_route_batch_num {edge_id, run_id}
-  - arktwin_center_chart_3_route_machine_from_publish_machine_latency {edge_id, run_id}
+  - arktwin_center_chart_3_route_from_publish_machine_latency {edge_id, run_id}
   - arktwin_center_chart_4_subscribe_agent_num {edge_id, run_id}
   - arktwin_center_chart_4_subscribe_batch_num {edge_id, run_id}
   - arktwin_center_chart_4_subscribe_from_route_machine_latency {edge_id, run_id}
@@ -231,7 +231,7 @@ Some configuration can be overridden using environment variables.
   - arktwin_edge_rest_agent_num {endpoint, edge_id, run_id}
   - arktwin_edge_rest_request_num {endpoint, edge_id, run_id}
   - arktwin_edge_rest_process_machine_time {endpoint, edge_id, run_id}
-  - arktwin_edge_rest_virtual_latency {endpoint, edge_id, run_id}
+  - arktwin_edge_rest_latency {endpoint, edge_id, run_id}
 - Other metrics
   - arktwin_center_dead_letter_num {recipient, edge_id, run_id}
   - arktwin_edge_dead_letter_num {recipient, edge_id, run_id}

@@ -18,9 +18,9 @@ case class StaticCenterConfig(
     logLevel: LogLevel,
     logLevelColor: Boolean,
     logSuppressionList: Seq[String],
-    actorTimeout: FiniteDuration,
+    actorMachineTimeout: FiniteDuration,
     subscribeBatchSize: Int,
-    subscribeBatchInterval: FiniteDuration,
+    subscribeBatchMachineInterval: FiniteDuration,
     subscribeBufferSize: Int
 ):
   def validated(path: String): ValidatedNec[String, StaticCenterConfig] =
@@ -52,9 +52,9 @@ case class StaticCenterConfig(
       valid(logLevelColor),
       valid(logSuppressionList),
       condNec(
-        actorTimeout > 0.second,
-        actorTimeout,
-        s"$path.actorTimeout must be > 0"
+        actorMachineTimeout > 0.second,
+        actorMachineTimeout,
+        s"$path.actorMachineTimeout must be > 0"
       ),
       condNec(
         subscribeBatchSize > 0,
@@ -62,9 +62,9 @@ case class StaticCenterConfig(
         s"$path.subscribeBatchSize must be > 0"
       ),
       condNec(
-        subscribeBatchInterval > 0.second,
-        subscribeBatchInterval,
-        s"$path.subscribeBatchInterval must be > 0"
+        subscribeBatchMachineInterval > 0.second,
+        subscribeBatchMachineInterval,
+        s"$path.subscribeBatchMachineInterval must be > 0"
       ),
       condNec(
         subscribeBufferSize > 0,
