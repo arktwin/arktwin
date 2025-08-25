@@ -6,8 +6,8 @@ import arktwin.common.data.TaggedTimestamp
 import arktwin.common.util.JsonDerivation
 import arktwin.common.util.JsonDerivation.given
 import arktwin.edge.actors.EdgeConfigurator
-import arktwin.edge.actors.EdgeConfigurator.UpdateCullingConfig
-import arktwin.edge.configs.CullingConfig
+import arktwin.edge.actors.EdgeConfigurator.UpdateChartConfig
+import arktwin.edge.configs.ChartConfig
 import arktwin.edge.util.EndpointExtensions.serverLogicWithLog
 import arktwin.edge.util.ErrorStatus.BadRequest
 import arktwin.edge.util.{EdgeKamon, ErrorStatus}
@@ -23,10 +23,10 @@ import sttp.tapir.server.pekkohttp.PekkoHttpServerInterpreter
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object EdgeConfigCullingPut:
-  type Request = CullingConfig
+object EdgeConfigChartPut:
+  type Request = ChartConfig
   type Response = Unit
-  val Request: CullingConfig.type = CullingConfig
+  val Request: ChartConfig.type = ChartConfig
   given JsonValueCodec[Request] = JsonDerivation.makeCodec
 
   val inExample: Request = Request(
@@ -36,7 +36,7 @@ object EdgeConfigCullingPut:
 
   val endpoint: PublicEndpoint[Request, ErrorStatus, Response, Any] =
     tapir.endpoint.put
-      .in("api" / "edge" / "config" / "culling")
+      .in("api" / "edge" / "config" / "chart")
       .in(jsonBody[Request].example(inExample))
       .out(statusCode(Accepted))
       .errorOut(
@@ -59,7 +59,7 @@ object EdgeConfigCullingPut:
           case Invalid(errors) =>
             Future.successful(Left(BadRequest(errors.toChain.toVector)))
           case Valid(request) =>
-            configurator ! UpdateCullingConfig(request)
+            configurator ! UpdateChartConfig(request)
             Future.successful(Right(()))
         ).andThen: _ =>
           requestNumCounter.increment()

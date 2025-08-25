@@ -10,8 +10,8 @@ import arktwin.common.util.BehaviorsExtensions.*
 import arktwin.common.util.CommonMessages.Nop
 import arktwin.common.util.{MailboxConfig, VirtualTag}
 import arktwin.edge.actors.EdgeConfigurator
-import arktwin.edge.actors.EdgeConfigurator.UpdateCullingConfig
-import arktwin.edge.configs.CullingConfig
+import arktwin.edge.actors.EdgeConfigurator.UpdateChartConfig
+import arktwin.edge.configs.ChartConfig
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.Receptionist
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
@@ -26,13 +26,13 @@ import scala.collection.mutable
   *   - `Nop`: No operation
   *   - `Read`: Reads transform data of neighbors sorted by distance from first agents when edge
   *     culling is enabled
-  *   - `UpdateCullingConfig`: Updates the culling configuration
+  *   - `UpdateChartConfig`: Updates the chart configuration
   *   - `UpdateFirstAgents`: Updates first agents used as reference points for distance calculations
   *   - `UpdateNeighbor`: Updates neighbor and sorts neighbors by distance from first agents when
   *     edge culling is enabled
   */
 object Chart:
-  type Message = Nop.type | Read | UpdateCullingConfig | UpdateFirstAgents | UpdateNeighbor
+  type Message = Nop.type | Read | UpdateChartConfig | UpdateFirstAgents | UpdateNeighbor
   case class Read(replyTo: ActorRef[ReadReply]) extends ControlMessage
   case class UpdateFirstAgents(firstAgents: Seq[ChartAgent])
   case class UpdateNeighbor(neighbor: ChartAgent)
@@ -41,23 +41,23 @@ object Chart:
   case class CullingNeighbor(neighbor: ChartAgent, nearestDistance: Option[Double])
 
   def spawn(
-      initCullingConfig: CullingConfig
+      initChartConfig: ChartConfig
   ): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
-    apply(initCullingConfig),
+    apply(initChartConfig),
     getClass.getSimpleName,
     MailboxConfig(this),
     _
   )
 
   def apply(
-      initCullingConfig: CullingConfig
+      initChartConfig: ChartConfig
   ): Behavior[Message] = Behaviors.setupWithLogger: (context, logger) =>
     context.system.receptionist ! Receptionist.Register(
-      EdgeConfigurator.cullingObserverKey,
+      EdgeConfigurator.chartObserverKey,
       context.self
     )
 
-    var cullingConfig = initCullingConfig
+    var chartConfig = initChartConfig
     val distances = mutable.Map[String, Double]()
     val orderedNeighbors = mutable.TreeMap[(Double, String), ChartAgent]()
     var firstAgents = Option(Seq[ChartAgent]())
@@ -72,18 +72,18 @@ object Chart:
             CullingNeighbor(agent, Some(dist).filter(_.isFinite)))
         Behaviors.same
 
-      case UpdateCullingConfig(newCullingConfig) =>
-        cullingConfig = newCullingConfig
+      case UpdateChartConfig(newChartConfig) =>
+        chartConfig = newChartConfig
         Behaviors.same
 
       case UpdateFirstAgents(newFirstAgents) =>
-        if cullingConfig.edgeCulling then
-          if newFirstAgents.size <= cullingConfig.maxFirstAgents
+        if chartConfig.edgeCulling then
+          if newFirstAgents.size <= chartConfig.maxFirstAgents
           then firstAgents = Some(newFirstAgents)
           else
             if firstAgents.isDefined then
               logger.warn(
-                "edge culling is disabled because first agents is greater than arktwin.edge.culling.maxFirstAgents"
+                "edge culling is disabled because first agents is greater than arktwin.edge.dynamic.chart.maxFirstAgents"
               )
             firstAgents = None
         else firstAgents = None

@@ -31,8 +31,8 @@ object EdgeConfigGet:
 
   val outExample: Response = Response(
     dynamic = EdgeDynamicConfig(
-      coordinate = EdgeConfigCoordinatePut.inExample,
-      culling = EdgeConfigCullingPut.inExample
+      chart = EdgeConfigChartPut.inExample,
+      coordinate = EdgeConfigCoordinatePut.inExample
     ),
     static = EdgeStaticConfig(
       actorMachineTimeout = 90.milliseconds,

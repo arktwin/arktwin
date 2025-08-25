@@ -15,6 +15,10 @@ class EdgeConfigSpec extends AnyFunSpec:
       it("converts config to JSON string"):
         val config = EdgeConfig(
           dynamic = EdgeDynamicConfig(
+            chart = ChartConfig(
+              edgeCulling = true,
+              maxFirstAgents = 100
+            ),
             coordinate = CoordinateConfig(
               axis = AxisConfig(
                 xDirection = AxisConfig.Direction.East,
@@ -25,10 +29,6 @@ class EdgeConfigSpec extends AnyFunSpec:
               rotation = QuaternionConfig,
               lengthUnit = CoordinateConfig.LengthUnit.Meter,
               speedUnit = CoordinateConfig.SpeedUnit.MeterPerSecond
-            ),
-            culling = CullingConfig(
-              edgeCulling = true,
-              maxFirstAgents = 100
             )
           ),
           static = EdgeStaticConfig(
@@ -50,13 +50,17 @@ class EdgeConfigSpec extends AnyFunSpec:
         val json = config.toJson
 
         assert(
-          json == """{"dynamic":{"coordinate":{"axis":{"xDirection":{"type":"East"},"yDirection":{"type":"North"},"zDirection":{"type":"Up"}},"centerOrigin":{"x":0.0,"y":0.0,"z":0.0},"lengthUnit":{"type":"Meter"},"rotation":{"type":"QuaternionConfig"},"speedUnit":{"type":"MeterPerSecond"}},"culling":{"edgeCulling":true,"maxFirstAgents":100}},"static":{"actorMachineTimeout":"30s","clockInitialStashSize":100,"edgeIdPrefix":"test","endpointMachineTimeout":"10s","host":"localhost","logLevel":{"type":"Info"},"logLevelColor":true,"logSuppressionList":[],"port":8081,"portAutoIncrement":false,"portAutoIncrementMax":0,"publishBatchSize":50,"publishBufferSize":500}}"""
+          json == """{"dynamic":{"chart":{"edgeCulling":true,"maxFirstAgents":100},"coordinate":{"axis":{"xDirection":{"type":"East"},"yDirection":{"type":"North"},"zDirection":{"type":"Up"}},"centerOrigin":{"x":0.0,"y":0.0,"z":0.0},"lengthUnit":{"type":"Meter"},"rotation":{"type":"QuaternionConfig"},"speedUnit":{"type":"MeterPerSecond"}}},"static":{"actorMachineTimeout":"30s","clockInitialStashSize":100,"edgeIdPrefix":"test","endpointMachineTimeout":"10s","host":"localhost","logLevel":{"type":"Info"},"logLevelColor":true,"logSuppressionList":[],"port":8081,"portAutoIncrement":false,"portAutoIncrementMax":0,"publishBatchSize":50,"publishBufferSize":500}}"""
         )
 
     describe("validated"):
       it("returns valid config when all fields are valid"):
         val config = EdgeConfig(
           dynamic = EdgeDynamicConfig(
+            chart = ChartConfig(
+              edgeCulling = false,
+              maxFirstAgents = 50
+            ),
             coordinate = CoordinateConfig(
               axis = AxisConfig(
                 xDirection = AxisConfig.Direction.East,
@@ -71,10 +75,6 @@ class EdgeConfigSpec extends AnyFunSpec:
               ),
               lengthUnit = CoordinateConfig.LengthUnit.Millimeter,
               speedUnit = CoordinateConfig.SpeedUnit.KilometerPerHour
-            ),
-            culling = CullingConfig(
-              edgeCulling = false,
-              maxFirstAgents = 50
             )
           ),
           static = EdgeStaticConfig(
@@ -99,6 +99,10 @@ class EdgeConfigSpec extends AnyFunSpec:
       it("returns invalid with error messages when fields are invalid"):
         val config = EdgeConfig(
           dynamic = EdgeDynamicConfig(
+            chart = ChartConfig(
+              edgeCulling = true,
+              maxFirstAgents = -1
+            ),
             coordinate = CoordinateConfig(
               axis = AxisConfig(
                 xDirection = AxisConfig.Direction.East,
@@ -109,10 +113,6 @@ class EdgeConfigSpec extends AnyFunSpec:
               rotation = QuaternionConfig,
               lengthUnit = CoordinateConfig.LengthUnit.Meter,
               speedUnit = CoordinateConfig.SpeedUnit.MeterPerSecond
-            ),
-            culling = CullingConfig(
-              edgeCulling = true,
-              maxFirstAgents = -1
             )
           ),
           static = EdgeStaticConfig(
@@ -137,7 +137,7 @@ class EdgeConfigSpec extends AnyFunSpec:
         assert(
           result.swap.getOrElse(NonEmptyChain.one("")).toChain.toVector.toSet == Set(
             "test.dynamic.coordinate.axis.{x, y, z} must contain (East or West) and (North or South) and (Up or Down)",
-            "test.dynamic.culling.maxFirstAgents must be >= 0",
+            "test.dynamic.chart.maxFirstAgents must be >= 0",
             "test.static.edgeIdPrefix: must match pattern [0-9a-zA-Z\\-_]+",
             "test.static.host must not be empty",
             "test.static.port must be > 0",

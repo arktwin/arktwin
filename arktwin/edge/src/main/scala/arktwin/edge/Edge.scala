@@ -48,8 +48,8 @@ object Edge:
         EdgeAgentsPost.endpoint,
         EdgeAgentsPut.endpoint,
         EdgeBulk.endpoint,
+        EdgeConfigChartPut.endpoint,
         EdgeConfigCoordinatePut.endpoint,
-        EdgeConfigCullingPut.endpoint,
         EdgeConfigGet.endpoint,
         EdgeNeighborsQuery.endpoint
       ),
@@ -163,7 +163,7 @@ object Edge:
       for
         clock <- actorSystem ? Clock.spawn(config.static)
         register <- actorSystem ? Register.spawn()
-        chart <- actorSystem ? Chart.spawn(config.dynamic.culling)
+        chart <- actorSystem ? Chart.spawn(config.dynamic.chart)
         configurator <- actorSystem ? EdgeConfigurator.spawn(config)
         chartPublish = chartConnector.publish()
         registerPublish = registerConnector.publish()
@@ -215,8 +215,8 @@ object Edge:
                 EdgeAgentsPut.route(edgeAgentsTransformAdapter, config.static, kamon) ~
                 EdgeBulk
                   .route(edgeAgentsTransformAdapter, edgeNeighborsAdapter, config.static, kamon) ~
+                EdgeConfigChartPut.route(configurator, kamon) ~
                 EdgeConfigCoordinatePut.route(configurator, kamon) ~
-                EdgeConfigCullingPut.route(configurator, kamon) ~
                 EdgeConfigGet.route(configurator, config.static, kamon) ~
                 EdgeNeighborsQuery.route(edgeNeighborsAdapter, config.static, kamon) ~
                 path("metrics")(complete(PrometheusReporter.latestScrapeData())) ~

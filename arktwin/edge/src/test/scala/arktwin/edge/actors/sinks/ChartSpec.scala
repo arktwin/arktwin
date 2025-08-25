@@ -4,9 +4,9 @@ package arktwin.edge.actors.sinks
 
 import arktwin.center.services.ChartAgent
 import arktwin.common.data.*
-import arktwin.edge.actors.EdgeConfigurator.UpdateCullingConfig
+import arktwin.edge.actors.EdgeConfigurator.UpdateChartConfig
 import arktwin.edge.actors.sinks.Chart.*
-import arktwin.edge.configs.CullingConfig
+import arktwin.edge.configs.ChartConfig
 import arktwin.edge.test.ActorTestBase
 import org.scalactic.{Equality, TolerantNumerics}
 
@@ -42,7 +42,7 @@ class ChartSpec extends ActorTestBase:
   describe("Chart"):
     describe("Read"):
       it("replies empty sequence when no agents are registered"):
-        val chart = testKit.spawn(Chart(CullingConfig(edgeCulling = true, maxFirstAgents = 1)))
+        val chart = testKit.spawn(Chart(ChartConfig(edgeCulling = true, maxFirstAgents = 1)))
         val reader = testKit.createTestProbe[ReadReply]()
 
         chart ! Read(reader.ref)
@@ -50,9 +50,9 @@ class ChartSpec extends ActorTestBase:
         val orderedNeighbors = reader.receiveMessage().orderedNeighbors
         assert(orderedNeighbors == Seq())
 
-    describe("UpdateCullingConfig"):
-      it("updates culling configuration dynamically"):
-        val chart = testKit.spawn(Chart(CullingConfig(edgeCulling = false, maxFirstAgents = 0)))
+    describe("UpdateChartConfig"):
+      it("updates chart configuration dynamically"):
+        val chart = testKit.spawn(Chart(ChartConfig(edgeCulling = false, maxFirstAgents = 0)))
         val reader = testKit.createTestProbe[ReadReply]()
 
         chart ! UpdateFirstAgents(Seq(chartAgent("first-1", Timestamp(0, 0), Vector3Enu(0, 0, 0))))
@@ -65,7 +65,7 @@ class ChartSpec extends ActorTestBase:
           assert(orderedNeighbors(0).nearestDistance == None)
         }
 
-        chart ! UpdateCullingConfig(CullingConfig(edgeCulling = true, maxFirstAgents = 10))
+        chart ! UpdateChartConfig(ChartConfig(edgeCulling = true, maxFirstAgents = 10))
         chart ! UpdateFirstAgents(Seq(chartAgent("first-1", Timestamp(0, 0), Vector3Enu(0, 0, 0))))
         chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(1, 0), Vector3Enu(3, 4, 0)))
         chart ! Read(reader.ref)
@@ -78,7 +78,7 @@ class ChartSpec extends ActorTestBase:
 
     describe("UpdateFirstAgents"):
       it("updates first agents when culling is enabled"):
-        val chart = testKit.spawn(Chart(CullingConfig(edgeCulling = true, maxFirstAgents = 10)))
+        val chart = testKit.spawn(Chart(ChartConfig(edgeCulling = true, maxFirstAgents = 10)))
         val reader = testKit.createTestProbe[ReadReply]()
 
         chart ! UpdateFirstAgents(
@@ -96,7 +96,7 @@ class ChartSpec extends ActorTestBase:
         assert(orderedNeighbors(0).nearestDistance === Some(1.0)) // (0,0,0) to (1,0,0)
 
       it("ignores first agents when culling is disabled"):
-        val chart = testKit.spawn(Chart(CullingConfig(edgeCulling = false, maxFirstAgents = 0)))
+        val chart = testKit.spawn(Chart(ChartConfig(edgeCulling = false, maxFirstAgents = 0)))
         val reader = testKit.createTestProbe[ReadReply]()
 
         chart ! UpdateFirstAgents(
@@ -114,7 +114,7 @@ class ChartSpec extends ActorTestBase:
         assert(orderedNeighbors(0).nearestDistance == None)
 
       it("ignores first agents when exceeding maxFirstAgents"):
-        val chart = testKit.spawn(Chart(CullingConfig(edgeCulling = true, maxFirstAgents = 2)))
+        val chart = testKit.spawn(Chart(ChartConfig(edgeCulling = true, maxFirstAgents = 2)))
         val reader = testKit.createTestProbe[ReadReply]()
 
         chart ! UpdateFirstAgents(
@@ -149,7 +149,7 @@ class ChartSpec extends ActorTestBase:
 
     describe("UpdateNeighbor"):
       it("adds new agents"):
-        val chart = testKit.spawn(Chart(CullingConfig(edgeCulling = true, maxFirstAgents = 1)))
+        val chart = testKit.spawn(Chart(ChartConfig(edgeCulling = true, maxFirstAgents = 1)))
         val reader = testKit.createTestProbe[ReadReply]()
 
         for i <- 1 to 3 do
@@ -163,7 +163,7 @@ class ChartSpec extends ActorTestBase:
         assert(orderedNeighbors.forall(_.nearestDistance == None))
 
       it("updates existing agents with newer timestamp"):
-        val chart = testKit.spawn(Chart(CullingConfig(edgeCulling = true, maxFirstAgents = 1)))
+        val chart = testKit.spawn(Chart(ChartConfig(edgeCulling = true, maxFirstAgents = 1)))
         val reader = testKit.createTestProbe[ReadReply]()
 
         chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(0, 0), Vector3Enu(1, 1, 1)))
@@ -177,7 +177,7 @@ class ChartSpec extends ActorTestBase:
         assert(orderedNeighbors(0).nearestDistance == None)
 
       it("ignores existing agents with older timestamp"):
-        val chart = testKit.spawn(Chart(CullingConfig(edgeCulling = true, maxFirstAgents = 1)))
+        val chart = testKit.spawn(Chart(ChartConfig(edgeCulling = true, maxFirstAgents = 1)))
         val reader = testKit.createTestProbe[ReadReply]()
 
         chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(2, 0), Vector3Enu(2, 2, 2)))
@@ -191,7 +191,7 @@ class ChartSpec extends ActorTestBase:
         assert(orderedNeighbors(0).nearestDistance == None)
 
       it("sorts neighbors by distance from nearest first agent"):
-        val chart = testKit.spawn(Chart(CullingConfig(edgeCulling = true, maxFirstAgents = 10)))
+        val chart = testKit.spawn(Chart(ChartConfig(edgeCulling = true, maxFirstAgents = 10)))
         val reader = testKit.createTestProbe[ReadReply]()
 
         chart ! UpdateFirstAgents(
