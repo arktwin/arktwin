@@ -21,6 +21,7 @@ import sttp.tapir.*
 import sttp.tapir.json.jsoniter.jsonBody
 import sttp.tapir.server.pekkohttp.PekkoHttpServerInterpreter
 
+import scala.concurrent.duration.{DurationInt, FiniteDuration}
 import scala.concurrent.{ExecutionContext, Future}
 
 object EdgeConfigChartPut:
@@ -30,8 +31,11 @@ object EdgeConfigChartPut:
   given JsonValueCodec[Request] = JsonDerivation.makeCodec
 
   val inExample: Request = Request(
-    edgeCulling = true,
-    maxFirstAgents = 9
+    culling = true,
+    cullingMaxFirstAgents = 9,
+    expiration = false,
+    expirationCheckMachineInterval = 1.second,
+    expirationTimeout = 3.seconds
   )
 
   val endpoint: PublicEndpoint[Request, ErrorStatus, Response, Any] =

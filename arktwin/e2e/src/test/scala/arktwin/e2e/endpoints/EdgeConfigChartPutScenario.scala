@@ -12,9 +12,12 @@ object EdgeConfigChartPutScenario:
   val builder: ScenarioBuilder =
     val chartConfig =
       """{
-        |  "edgeCulling": true,
-        |  "maxFirstAgents": 123
-        |}""".stripMargin.filterNot(_.isWhitespace)
+        |"culling":true,
+        |"cullingMaxFirstAgents":123,
+        |"expiration":true,
+        |"expirationCheckMachineInterval":"10 seconds",
+        |"expirationTimeout":"20 seconds"
+        |}""".stripMargin.linesIterator.mkString
 
     scenario(getClass.getSimpleName)
       .exec(

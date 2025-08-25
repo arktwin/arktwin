@@ -77,13 +77,13 @@ object Chart:
         Behaviors.same
 
       case UpdateFirstAgents(newFirstAgents) =>
-        if chartConfig.edgeCulling then
-          if newFirstAgents.size <= chartConfig.maxFirstAgents
+        if chartConfig.culling then
+          if newFirstAgents.size <= chartConfig.cullingMaxFirstAgents
           then firstAgents = Some(newFirstAgents)
           else
             if firstAgents.isDefined then
               logger.warn(
-                "edge culling is disabled because first agents is greater than arktwin.edge.dynamic.chart.maxFirstAgents"
+                "edge culling is disabled because first agents is greater than arktwin.edge.dynamic.chart.cullingMaxFirstAgents"
               )
             firstAgents = None
         else firstAgents = None
