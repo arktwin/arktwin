@@ -84,6 +84,7 @@ lazy val common = (project in file("common"))
       "org.apache.pekko" %% "pekko-actor-typed" % pekkoVersion,
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test
     ),
+    Compile / managedSourceDirectories += (Compile / pekkoGrpcCodeGeneratorSettings / target).value,
     Compile / PB.targets +=
       scalapb.validate
         .gen(FlatPackage) -> (Compile / pekkoGrpcCodeGeneratorSettings / target).value,
