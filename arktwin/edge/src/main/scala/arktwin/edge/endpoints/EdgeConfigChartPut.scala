@@ -31,11 +31,15 @@ object EdgeConfigChartPut:
   given JsonValueCodec[Request] = JsonDerivation.makeCodec
 
   val inExample: Request = Request(
-    culling = true,
-    cullingMaxFirstAgents = 9,
-    expiration = false,
-    expirationCheckMachineInterval = 1.second,
-    expirationTimeout = 3.seconds
+    culling = Request.Culling(
+      enabled = true,
+      maxFirstAgents = 9
+    ),
+    expiration = Request.Expiration(
+      enabled = false,
+      checkMachineInterval = 1.second,
+      timeout = 3.seconds
+    )
   )
 
   val endpoint: PublicEndpoint[Request, ErrorStatus, Response, Any] =

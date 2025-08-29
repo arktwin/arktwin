@@ -20,11 +20,15 @@ class EdgeConfiguratorSpec extends ActorTestBase:
   private val baseConfig = EdgeConfig(
     dynamic = EdgeDynamicConfig(
       chart = ChartConfig(
-        culling = true,
-        cullingMaxFirstAgents = 9,
-        expiration = false,
-        expirationCheckMachineInterval = 1.second,
-        expirationTimeout = 3.seconds
+        culling = ChartConfig.Culling(
+          enabled = true,
+          maxFirstAgents = 9
+        ),
+        expiration = ChartConfig.Expiration(
+          enabled = false,
+          checkMachineInterval = 1.second,
+          timeout = 3.seconds
+        )
       ),
       coordinate = CoordinateConfig(
         axis = AxisConfig(
@@ -86,7 +90,8 @@ class EdgeConfiguratorSpec extends ActorTestBase:
         Using(ActorTestKit()): testKit =>
           val configurator = testKit.spawn(EdgeConfigurator(baseConfig))
           val reader = testKit.createTestProbe[EdgeConfig]()
-          val newChartConfig = baseConfig.dynamic.chart.copy(cullingMaxFirstAgents = 999)
+          val newChartConfig = baseConfig.dynamic.chart
+            .copy(culling = baseConfig.dynamic.chart.culling.copy(maxFirstAgents = 999))
 
           configurator ! UpdateChartConfig(newChartConfig)
           configurator ! Read(reader.ref)
@@ -127,7 +132,8 @@ class EdgeConfiguratorSpec extends ActorTestBase:
           assert(observer1.receiveMessage() == UpdateChartConfig(baseConfig.dynamic.chart))
           assert(observer2.receiveMessage() == UpdateChartConfig(baseConfig.dynamic.chart))
 
-          val newConfig = baseConfig.dynamic.chart.copy(cullingMaxFirstAgents = 456)
+          val newConfig = baseConfig.dynamic.chart
+            .copy(culling = baseConfig.dynamic.chart.culling.copy(maxFirstAgents = 456))
           configurator ! UpdateChartConfig(newConfig)
 
           assert(observer1.receiveMessage() == UpdateChartConfig(newConfig))

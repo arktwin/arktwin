@@ -167,7 +167,7 @@ object Edge:
       for
         clock <- actorSystem ? Clock.spawn(initClockBase)
         register <- actorSystem ? Register.spawn()
-        chart <- actorSystem ? Chart.spawn(config.dynamic.chart)
+        chart <- actorSystem ? Chart.spawn(initClockBase, config.dynamic.chart)
         configurator <- actorSystem ? EdgeConfigurator.spawn(config)
         chartPublish = chartConnector.publish()
         registerPublish = registerConnector.publish()

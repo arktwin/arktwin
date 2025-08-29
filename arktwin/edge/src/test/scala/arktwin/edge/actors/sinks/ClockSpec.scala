@@ -4,32 +4,14 @@ package arktwin.edge.actors.sinks
 
 import arktwin.center.services.ClockBase
 import arktwin.common.data.Timestamp
-import arktwin.common.util.LoggerConfigurator.LogLevel
 import arktwin.edge.actors.sinks.Clock.*
-import arktwin.edge.configs.EdgeStaticConfig
 import arktwin.edge.test.ActorTestBase
 import org.apache.pekko.actor.testkit.typed.scaladsl.ActorTestKit
 import org.apache.pekko.actor.typed.receptionist.Receptionist
 
-import scala.concurrent.duration.DurationInt
 import scala.util.Using
 
 class ClockSpec extends ActorTestBase:
-  private val baseConfig = EdgeStaticConfig(
-    actorMachineTimeout = 90.milliseconds,
-    edgeIdPrefix = "edge",
-    endpointMachineTimeout = 100.milliseconds,
-    host = "0.0.0.0",
-    port = 2237,
-    portAutoIncrement = true,
-    portAutoIncrementMax = 100,
-    logLevel = LogLevel.Info,
-    logLevelColor = true,
-    logSuppressionList = Seq(),
-    publishBatchSize = 100,
-    publishBufferSize = 10000
-  )
-
   describe("Clock"):
     describe("Read"):
       it("replies current clock base"):

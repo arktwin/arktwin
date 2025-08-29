@@ -16,11 +16,15 @@ class EdgeConfigSpec extends AnyFunSpec:
         val config = EdgeConfig(
           dynamic = EdgeDynamicConfig(
             chart = ChartConfig(
-              culling = true,
-              cullingMaxFirstAgents = 100,
-              expiration = false,
-              expirationCheckMachineInterval = 1.second,
-              expirationTimeout = 3.seconds
+              culling = ChartConfig.Culling(
+                enabled = true,
+                maxFirstAgents = 100
+              ),
+              expiration = ChartConfig.Expiration(
+                enabled = false,
+                checkMachineInterval = 1.second,
+                timeout = 3.seconds
+              )
             ),
             coordinate = CoordinateConfig(
               axis = AxisConfig(
@@ -52,7 +56,7 @@ class EdgeConfigSpec extends AnyFunSpec:
         val json = config.toJson
 
         assert(
-          json == """{"dynamic":{"chart":{"culling":true,"cullingMaxFirstAgents":100,"expiration":false,"expirationCheckMachineInterval":"1s","expirationTimeout":"3s"},"coordinate":{"axis":{"xDirection":{"type":"East"},"yDirection":{"type":"North"},"zDirection":{"type":"Up"}},"centerOrigin":{"x":0.0,"y":0.0,"z":0.0},"lengthUnit":{"type":"Meter"},"rotation":{"type":"QuaternionConfig"},"speedUnit":{"type":"MeterPerSecond"}}},"static":{"actorMachineTimeout":"30s","edgeIdPrefix":"test","endpointMachineTimeout":"10s","host":"localhost","logLevel":{"type":"Info"},"logLevelColor":true,"logSuppressionList":[],"port":8081,"portAutoIncrement":false,"portAutoIncrementMax":0,"publishBatchSize":50,"publishBufferSize":500}}"""
+          json == """{"dynamic":{"chart":{"culling":{"enabled":true,"maxFirstAgents":100},"expiration":{"checkMachineInterval":"1s","enabled":false,"timeout":"3s"}},"coordinate":{"axis":{"xDirection":{"type":"East"},"yDirection":{"type":"North"},"zDirection":{"type":"Up"}},"centerOrigin":{"x":0.0,"y":0.0,"z":0.0},"lengthUnit":{"type":"Meter"},"rotation":{"type":"QuaternionConfig"},"speedUnit":{"type":"MeterPerSecond"}}},"static":{"actorMachineTimeout":"30s","edgeIdPrefix":"test","endpointMachineTimeout":"10s","host":"localhost","logLevel":{"type":"Info"},"logLevelColor":true,"logSuppressionList":[],"port":8081,"portAutoIncrement":false,"portAutoIncrementMax":0,"publishBatchSize":50,"publishBufferSize":500}}"""
         )
 
     describe("validated"):
@@ -60,11 +64,15 @@ class EdgeConfigSpec extends AnyFunSpec:
         val config = EdgeConfig(
           dynamic = EdgeDynamicConfig(
             chart = ChartConfig(
-              culling = false,
-              cullingMaxFirstAgents = 50,
-              expiration = true,
-              expirationCheckMachineInterval = 10.second,
-              expirationTimeout = 20.seconds
+              culling = ChartConfig.Culling(
+                enabled = false,
+                maxFirstAgents = 50
+              ),
+              expiration = ChartConfig.Expiration(
+                enabled = true,
+                checkMachineInterval = 10.second,
+                timeout = 20.seconds
+              )
             ),
             coordinate = CoordinateConfig(
               axis = AxisConfig(
@@ -104,11 +112,15 @@ class EdgeConfigSpec extends AnyFunSpec:
         val config = EdgeConfig(
           dynamic = EdgeDynamicConfig(
             chart = ChartConfig(
-              culling = true,
-              cullingMaxFirstAgents = -1,
-              expiration = false,
-              expirationCheckMachineInterval = -1.second,
-              expirationTimeout = -3.seconds
+              culling = ChartConfig.Culling(
+                enabled = true,
+                maxFirstAgents = -1
+              ),
+              expiration = ChartConfig.Expiration(
+                enabled = false,
+                checkMachineInterval = -1.second,
+                timeout = -3.seconds
+              )
             ),
             coordinate = CoordinateConfig(
               axis = AxisConfig(
@@ -142,9 +154,9 @@ class EdgeConfigSpec extends AnyFunSpec:
         assert(result.isInvalid)
         assert(
           result.swap.getOrElse(NonEmptyChain.one("")).toChain.toVector.toSet == Set(
-            "test.dynamic.chart.cullingMaxFirstAgents must be >= 0",
-            "test.dynamic.chart.expirationCheckMachineInterval must be > 0",
-            "test.dynamic.chart.expirationTimeout must be > 0",
+            "test.dynamic.chart.culling.maxFirstAgents must be >= 0",
+            "test.dynamic.chart.expiration.checkMachineInterval must be > 0",
+            "test.dynamic.chart.expiration.timeout must be > 0",
             "test.dynamic.coordinate.axis.{x, y, z} must contain (East or West) and (North or South) and (Up or Down)",
             "test.static.actorMachineTimeout must be > 0",
             "test.static.edgeIdPrefix: must match pattern [0-9a-zA-Z\\-_]+",
