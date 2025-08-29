@@ -44,7 +44,6 @@ class EdgeConfiguratorSpec extends ActorTestBase:
     ),
     static = EdgeStaticConfig(
       actorMachineTimeout = 90.milliseconds,
-      clockInitialStashSize = 100,
       edgeIdPrefix = "edge",
       endpointMachineTimeout = 100.milliseconds,
       host = "0.0.0.0",

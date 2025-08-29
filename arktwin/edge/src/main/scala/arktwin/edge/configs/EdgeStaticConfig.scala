@@ -12,7 +12,6 @@ import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
 case class EdgeStaticConfig(
     actorMachineTimeout: FiniteDuration,
-    clockInitialStashSize: Int,
     edgeIdPrefix: String,
     endpointMachineTimeout: FiniteDuration,
     host: String,
@@ -32,11 +31,6 @@ case class EdgeStaticConfig(
         actorMachineTimeout > 0.second,
         actorMachineTimeout,
         s"$path.actorMachineTimeout must be > 0"
-      ),
-      condNec(
-        clockInitialStashSize > 0,
-        clockInitialStashSize,
-        s"$path.clockInitialStashSize must be > 0"
       ),
       Validator[CreateEdgeRequest].validate(CreateEdgeRequest(edgeIdPrefix)) match
         case Success             => valid(edgeIdPrefix)
