@@ -13,8 +13,8 @@ import pureconfig.error.ConfigReaderFailures
 import pureconfig.generic.semiauto.{deriveReader, deriveWriter}
 
 case class CenterConfig(
-    dynamic: DynamicCenterConfig,
-    static: StaticCenterConfig
+    dynamic: CenterDynamicConfig,
+    static: CenterStaticConfig
 ) derives ConfigReader:
   def toJson: String =
     given ConfigWriter[CenterConfig] = deriveWriter

@@ -11,7 +11,7 @@ import arktwin.common.util.{MailboxConfig, VirtualDurationHistogram}
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.EdgeConfigurator.UpdateCoordinateConfig
 import arktwin.edge.actors.sinks.{Chart, Clock}
-import arktwin.edge.configs.{CoordinateConfig, StaticEdgeConfig}
+import arktwin.edge.configs.{CoordinateConfig, EdgeStaticConfig}
 import arktwin.edge.connectors.{ChartConnector, RegisterConnector}
 import arktwin.edge.endpoints.EdgeAgentsPut
 import arktwin.edge.endpoints.EdgeAgentsPut.{Request, Response}
@@ -36,7 +36,7 @@ object EdgeAgentsPutAdapter:
       chartPublish: ActorRef[ChartConnector.Publish],
       registerPublish: ActorRef[RegisterConnector.Publish],
       clock: ActorRef[Clock.Read],
-      staticConfig: StaticEdgeConfig,
+      staticConfig: EdgeStaticConfig,
       initCoordinateConfig: CoordinateConfig,
       kamon: EdgeKamon
   ): ActorRef[ActorRef[Message]] => Spawn[Message] =
@@ -52,7 +52,7 @@ object EdgeAgentsPutAdapter:
       chartPublish: ActorRef[ChartConnector.Publish],
       registerPublish: ActorRef[RegisterConnector.Publish],
       clock: ActorRef[Clock.Read],
-      staticConfig: StaticEdgeConfig,
+      staticConfig: EdgeStaticConfig,
       initCoordinateConfig: CoordinateConfig,
       kamon: EdgeKamon
   ): Behavior[Message] = Behaviors.setup: context =>
@@ -113,7 +113,7 @@ object EdgeAgentsPutAdapter:
       registerPublish: ActorRef[RegisterConnector.Publish],
       clock: ActorRef[Clock.Read],
       virtualLatencyHistogram: VirtualDurationHistogram,
-      staticConfig: StaticEdgeConfig,
+      staticConfig: EdgeStaticConfig,
       coordinateConfig: CoordinateConfig
   ): Behavior[SessionMessage] = Behaviors.setupWithLogger: (context, logger) =>
     context.setReceiveTimeout(staticConfig.actorMachineTimeout, Timeout)

@@ -5,8 +5,8 @@ package arktwin.center.configs
 import cats.data.ValidatedNec
 
 // TODO changeable via Admin API
-case class DynamicCenterConfig(
+case class CenterDynamicConfig(
     atlas: AtlasConfig
 ):
-  def validated(path: String): ValidatedNec[String, DynamicCenterConfig] =
-    atlas.validated(s"$path.atlas").map(DynamicCenterConfig.apply)
+  def validated(path: String): ValidatedNec[String, CenterDynamicConfig] =
+    atlas.validated(s"$path.atlas").map(CenterDynamicConfig.apply)

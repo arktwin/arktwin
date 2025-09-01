@@ -3,7 +3,7 @@
 package arktwin.center.services
 
 import arktwin.center.actors.Register
-import arktwin.center.configs.StaticCenterConfig
+import arktwin.center.configs.CenterStaticConfig
 import arktwin.common.util.CommonMessages.Nop
 import arktwin.common.util.GrpcHeaderKeys
 import arktwin.common.util.SourceExtensions.*
@@ -21,7 +21,7 @@ import scala.concurrent.Future
 
 class RegisterService(
     register: ActorRef[Register.Message],
-    config: StaticCenterConfig
+    config: CenterStaticConfig
 )(using
     Materializer,
     Scheduler,

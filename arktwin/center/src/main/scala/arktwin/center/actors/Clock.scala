@@ -17,10 +17,11 @@ import org.apache.pekko.actor.typed.{ActorRef, Behavior}
 import scala.concurrent.duration.DurationDouble
 
 object Clock:
-  type Message = UpdateSpeed | AddSubscriber | RemoveSubscriber
-  case class UpdateSpeed(clockSpeed: Double)
+  type Message = AddSubscriber | Read | RemoveSubscriber | UpdateSpeed
   case class AddSubscriber(edgeId: String, subscriber: ActorRef[ClockBase])
+  case class Read(replyTo: ActorRef[ClockBase])
   case class RemoveSubscriber(edgeId: String)
+  case class UpdateSpeed(clockSpeed: Double)
 
   def spawn(config: ClockConfig): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
     apply(config),
@@ -55,6 +56,20 @@ object Clock:
       var initialUpdateSpeedTimerFlag = true
 
       Behaviors.receiveMessage:
+        case AddSubscriber(edgeId, subscriber) =>
+          subscriber ! clockBase
+          context.watchWith(subscriber, RemoveSubscriber(edgeId))
+          subscribers += edgeId -> subscriber
+          Behaviors.same
+
+        case Read(replyTo) =>
+          replyTo ! clockBase
+          Behaviors.same
+
+        case RemoveSubscriber(edgeId) =>
+          subscribers -= edgeId
+          Behaviors.same
+
         case UpdateSpeed(clockSpeed) =>
           if initialUpdateSpeedTimerFlag then
             initialUpdateSpeedTimer.cancelAll()
@@ -67,14 +82,4 @@ object Clock:
           )
           for subscriber <- subscribers.values do subscriber ! clockBase
           logger.info(clockBase.toString)
-          Behaviors.same
-
-        case AddSubscriber(edgeId, subscriber) =>
-          subscriber ! clockBase
-          context.watchWith(subscriber, RemoveSubscriber(edgeId))
-          subscribers += edgeId -> subscriber
-          Behaviors.same
-
-        case RemoveSubscriber(edgeId) =>
-          subscribers -= edgeId
           Behaviors.same

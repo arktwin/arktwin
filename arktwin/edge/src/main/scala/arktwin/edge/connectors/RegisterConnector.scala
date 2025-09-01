@@ -7,7 +7,7 @@ import arktwin.common.util.CommonMessages.Nop
 import arktwin.common.util.GrpcHeaderKeys
 import arktwin.common.util.SourceExtensions.*
 import arktwin.edge.actors.sinks.Register
-import arktwin.edge.configs.StaticEdgeConfig
+import arktwin.edge.configs.EdgeStaticConfig
 import com.google.protobuf.empty.Empty
 import org.apache.pekko.actor.typed.ActorRef
 import org.apache.pekko.stream.typed.scaladsl.{ActorSink, ActorSource}
@@ -16,7 +16,7 @@ import org.apache.pekko.stream.{Materializer, OverflowStrategy}
 // TODO retry connect in actor?
 case class RegisterConnector(
     client: RegisterClient,
-    staticConfig: StaticEdgeConfig,
+    staticConfig: EdgeStaticConfig,
     edgeId: String
 )(using
     Materializer

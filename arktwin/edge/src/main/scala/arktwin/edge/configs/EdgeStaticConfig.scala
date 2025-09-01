@@ -10,9 +10,8 @@ import scalapb.validate.{Failure, Success, Validator}
 
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
-case class StaticEdgeConfig(
+case class EdgeStaticConfig(
     actorMachineTimeout: FiniteDuration,
-    clockInitialStashSize: Int,
     edgeIdPrefix: String,
     endpointMachineTimeout: FiniteDuration,
     host: String,
@@ -25,18 +24,13 @@ case class StaticEdgeConfig(
     publishBatchSize: Int,
     publishBufferSize: Int
 ):
-  def validated(path: String): ValidatedNec[String, StaticEdgeConfig] =
+  def validated(path: String): ValidatedNec[String, EdgeStaticConfig] =
     import cats.syntax.apply.*
     (
       condNec(
         actorMachineTimeout > 0.second,
         actorMachineTimeout,
         s"$path.actorMachineTimeout must be > 0"
-      ),
-      condNec(
-        clockInitialStashSize > 0,
-        clockInitialStashSize,
-        s"$path.clockInitialStashSize must be > 0"
       ),
       Validator[CreateEdgeRequest].validate(CreateEdgeRequest(edgeIdPrefix)) match
         case Success             => valid(edgeIdPrefix)
@@ -80,4 +74,4 @@ case class StaticEdgeConfig(
         publishBufferSize,
         s"$path.publishBufferSize must be > 0"
       )
-    ).mapN(StaticEdgeConfig.apply)
+    ).mapN(EdgeStaticConfig.apply)

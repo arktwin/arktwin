@@ -12,6 +12,7 @@ import arktwin.edge.connectors.{ChartConnector, ClockConnector, RegisterConnecto
 import arktwin.edge.endpoints.*
 import arktwin.edge.util.{EdgeKamon, EdgeReporter}
 import buildinfo.BuildInfo
+import com.google.protobuf.empty.Empty
 import kamon.Kamon
 import kamon.prometheus.PrometheusReporter
 import org.apache.pekko.actor.typed.*
@@ -48,8 +49,8 @@ object Edge:
         EdgeAgentsPost.endpoint,
         EdgeAgentsPut.endpoint,
         EdgeBulk.endpoint,
+        EdgeConfigChartPut.endpoint,
         EdgeConfigCoordinatePut.endpoint,
-        EdgeConfigCullingPut.endpoint,
         EdgeConfigGet.endpoint,
         EdgeNeighborsQuery.endpoint
       ),
@@ -141,29 +142,32 @@ object Edge:
 
       val grpcSettings = GrpcClientSettings.fromConfig("arktwin")
       val adminClient = AdminClient(grpcSettings)
+      val chartClient = ChartClient(grpcSettings)
+      val clockClient = ClockClient(grpcSettings)
       val registerClient = RegisterClient(grpcSettings)
 
-      val CreateEdgeResponse(edgeId, runId) =
-        Await.result(
-          registerClient.createEdge(CreateEdgeRequest(config.static.edgeIdPrefix)),
-          1.minute
-        )
+      val createEdgeResponseFuture =
+        registerClient.createEdge(CreateEdgeRequest(config.static.edgeIdPrefix))
+      val initClockBaseFuture = clockClient.read(Empty())
+      val CreateEdgeResponse(edgeId, runId) = Await.result(createEdgeResponseFuture, 1.minute)
+      val initClockBase = Await.result(initClockBaseFuture, 1.minute)
       scribe.info(s"Run ID: $runId")
       scribe.info(s"Edge ID: $edgeId")
+      scribe.info(initClockBase.toString)
 
       val kamon = EdgeKamon(runId, edgeId)
       val reporter = EdgeReporter()
       Kamon.addReporter(reporter.getClass.getSimpleName(), reporter)
 
-      val chartConnector = ChartConnector(ChartClient(grpcSettings), config.static, edgeId, kamon)
-      val clockConnector = ClockConnector(ClockClient(grpcSettings), edgeId)
+      val chartConnector = ChartConnector(chartClient, config.static, edgeId, kamon)
+      val clockConnector = ClockConnector(clockClient, edgeId)
       val registerConnector = RegisterConnector(registerClient, config.static, edgeId)
 
       actorSystem ? DeadLetterListener.spawn(kamon)
       for
-        clock <- actorSystem ? Clock.spawn(config.static)
+        clock <- actorSystem ? Clock.spawn(initClockBase)
         register <- actorSystem ? Register.spawn()
-        chart <- actorSystem ? Chart.spawn(config.dynamic.culling)
+        chart <- actorSystem ? Chart.spawn(initClockBase, config.dynamic.chart)
         configurator <- actorSystem ? EdgeConfigurator.spawn(config)
         chartPublish = chartConnector.publish()
         registerPublish = registerConnector.publish()
@@ -215,8 +219,8 @@ object Edge:
                 EdgeAgentsPut.route(edgeAgentsTransformAdapter, config.static, kamon) ~
                 EdgeBulk
                   .route(edgeAgentsTransformAdapter, edgeNeighborsAdapter, config.static, kamon) ~
+                EdgeConfigChartPut.route(configurator, kamon) ~
                 EdgeConfigCoordinatePut.route(configurator, kamon) ~
-                EdgeConfigCullingPut.route(configurator, kamon) ~
                 EdgeConfigGet.route(configurator, config.static, kamon) ~
                 EdgeNeighborsQuery.route(edgeNeighborsAdapter, config.static, kamon) ~
                 path("metrics")(complete(PrometheusReporter.latestScrapeData())) ~

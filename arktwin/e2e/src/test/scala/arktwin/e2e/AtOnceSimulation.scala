@@ -11,8 +11,8 @@ class AtOnceSimulation extends Simulation:
     Seq(
       CenterClockSpeedPutScenario.builder,
       EdgeAgentsPostScenario.builder,
-      EdgeConfigCoordinatePutScenario.builder,
-      EdgeConfigCullingPutScenario.builder
+      EdgeConfigChartPutScenario.builder,
+      EdgeConfigCoordinatePutScenario.builder
     ).map(_.inject(atOnceUsers(1))).reduceRight(_ andThen _)
   ).protocols(http.baseUrl("http://localhost:2237"))
     .assertions(global.failedRequests.count.is(0))

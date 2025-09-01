@@ -8,19 +8,26 @@ import io.gatling.http.Predef.*
 
 import scala.concurrent.duration.DurationInt
 
-object EdgeConfigCullingPutScenario:
+object EdgeConfigChartPutScenario:
   val builder: ScenarioBuilder =
-    val cullingConfig =
+    val chartConfig =
       """{
-        |  "edgeCulling": true,
-        |  "maxFirstAgents": 123
-        |}""".stripMargin.filterNot(_.isWhitespace)
+        |"culling":{
+        |"enabled":true,
+        |"maxFirstAgents":123
+        |},
+        |"expiration":{
+        |"enabled":true,
+        |"checkMachineInterval":"10 seconds",
+        |"timeout":"20 seconds"
+        |}
+        |}""".stripMargin.linesIterator.mkString
 
     scenario(getClass.getSimpleName)
       .exec(
         http(_.scenario)
-          .put("/api/edge/config/culling")
-          .body(StringBody(cullingConfig))
+          .put("/api/edge/config/chart")
+          .body(StringBody(chartConfig))
           .check(status.is(202))
       )
       .pause(10.millis)
@@ -28,5 +35,5 @@ object EdgeConfigCullingPutScenario:
         http(_.scenario)
           .get("/api/edge/config")
           .check(status.is(200))
-          .check(jsonPath("$.dynamic.culling").find.is(cullingConfig))
+          .check(jsonPath("$.dynamic.chart").find.is(chartConfig))
       )

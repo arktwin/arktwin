@@ -11,11 +11,11 @@ object EdgeAgentsPostScenario:
   val builder: ScenarioBuilder =
     def requests(n: Int)(agentIdPrefix: String, kind: String): String = Seq
       .fill(n)(s"""{
-        |  "agentIdPrefix": "$agentIdPrefix",
-        |  "kind": "$kind",
-        |  "status": {},
-        |  "assets": {}
-        |}""".stripMargin.filterNot(_.isWhitespace))
+        |"agentIdPrefix":"$agentIdPrefix",
+        |"kind":"$kind",
+        |"status":{},
+        |"assets":{}
+        |}""".stripMargin.linesIterator.mkString)
       .mkString("[", ",", "]")
 
     scenario(getClass.getSimpleName)

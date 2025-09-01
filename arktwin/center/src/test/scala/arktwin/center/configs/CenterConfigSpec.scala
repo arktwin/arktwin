@@ -14,13 +14,13 @@ class CenterConfigSpec extends AnyFunSpec:
     describe("toJson"):
       it("converts config to JSON string"):
         val config = CenterConfig(
-          dynamic = DynamicCenterConfig(
+          dynamic = CenterDynamicConfig(
             atlas = AtlasConfig(
               culling = AtlasConfig.Broadcast(),
               routeTableUpdateMachineInterval = 1.second
             )
           ),
-          static = StaticCenterConfig(
+          static = CenterStaticConfig(
             actorMachineTimeout = 30.seconds,
             clock = ClockConfig(
               start = ClockConfig.Start(
@@ -51,13 +51,13 @@ class CenterConfigSpec extends AnyFunSpec:
     describe("validated"):
       it("returns valid config when all fields are valid"):
         val config = CenterConfig(
-          dynamic = DynamicCenterConfig(
+          dynamic = CenterDynamicConfig(
             atlas = AtlasConfig(
               culling = AtlasConfig.GridCulling(Vector3Enu(1, 1, 1)),
               routeTableUpdateMachineInterval = 1.second
             )
           ),
-          static = StaticCenterConfig(
+          static = CenterStaticConfig(
             actorMachineTimeout = 60.seconds,
             clock = ClockConfig(
               start = ClockConfig.Start(
@@ -84,13 +84,13 @@ class CenterConfigSpec extends AnyFunSpec:
 
       it("returns invalid with error messages when fields are invalid"):
         val config = CenterConfig(
-          dynamic = DynamicCenterConfig(
+          dynamic = CenterDynamicConfig(
             atlas = AtlasConfig(
               culling = AtlasConfig.GridCulling(Vector3Enu(0, -1, 1)),
               routeTableUpdateMachineInterval = 0.seconds
             )
           ),
-          static = StaticCenterConfig(
+          static = CenterStaticConfig(
             actorMachineTimeout = 0.seconds,
             clock = ClockConfig(
               start = ClockConfig.Start(

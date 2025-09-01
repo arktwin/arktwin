@@ -3,7 +3,7 @@
 package arktwin.edge.actors
 
 import arktwin.common.util.MailboxConfig
-import arktwin.edge.configs.{CoordinateConfig, CullingConfig, EdgeConfig}
+import arktwin.edge.configs.{ChartConfig, CoordinateConfig, EdgeConfig}
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.receptionist.Receptionist.Listing
 import org.apache.pekko.actor.typed.receptionist.{Receptionist, ServiceKey}
@@ -17,20 +17,20 @@ import org.apache.pekko.actor.typed.{ActorRef, Behavior}
   *   - `Read`: Reads the current edge configuration
   *   - `UpdateCoordinateConfig`: Updates the coordinate configuration and distributes it to
   *     registered coordinate observers
-  *   - `UpdateCullingConfig`: Updates the culling configuration and distributes it to registered
-  *     culling observers
+  *   - `UpdateChartConfig`: Updates the chart configuration and distributes it to registered chart
+  *     observers
   */
 object EdgeConfigurator:
-  type Message = Listing | Read | UpdateCoordinateConfig | UpdateCullingConfig
+  type Message = Listing | Read | UpdateCoordinateConfig | UpdateChartConfig
   case class Read(replyTo: ActorRef[EdgeConfig])
   case class UpdateCoordinateConfig(config: CoordinateConfig) extends AnyVal
-  case class UpdateCullingConfig(config: CullingConfig) extends AnyVal
+  case class UpdateChartConfig(config: ChartConfig) extends AnyVal
 
   val coordinateObserverKey: ServiceKey[UpdateCoordinateConfig] = ServiceKey(
     getClass.getName + "/" + UpdateCoordinateConfig.getClass.getName
   )
-  val cullingObserverKey: ServiceKey[UpdateCullingConfig] = ServiceKey(
-    getClass.getName + "/" + UpdateCullingConfig.getClass.getName
+  val chartObserverKey: ServiceKey[UpdateChartConfig] = ServiceKey(
+    getClass.getName + "/" + UpdateChartConfig.getClass.getName
   )
 
   def spawn(initEdgeConfig: EdgeConfig): ActorRef[ActorRef[Message]] => Spawn[Message] = Spawn(
@@ -44,11 +44,11 @@ object EdgeConfigurator:
       initEdgeConfig: EdgeConfig
   ): Behavior[Message] = Behaviors.setup: context =>
     context.system.receptionist ! Receptionist.subscribe(coordinateObserverKey, context.self)
-    context.system.receptionist ! Receptionist.subscribe(cullingObserverKey, context.self)
+    context.system.receptionist ! Receptionist.subscribe(chartObserverKey, context.self)
 
     var edgeConfig = initEdgeConfig
     var coordinateObservers = Set[ActorRef[UpdateCoordinateConfig]]()
-    var cullingObservers = Set[ActorRef[UpdateCullingConfig]]()
+    var chartObservers = Set[ActorRef[UpdateChartConfig]]()
 
     Behaviors.receiveMessage:
       case coordinateObserverKey.Listing(newObservers) =>
@@ -58,11 +58,11 @@ object EdgeConfigurator:
         coordinateObservers = newObservers
         Behaviors.same
 
-      case cullingObserverKey.Listing(newObservers) =>
-        (newObservers &~ cullingObservers).foreach(
-          _ ! UpdateCullingConfig(edgeConfig.dynamic.culling)
+      case chartObserverKey.Listing(newObservers) =>
+        (newObservers &~ chartObservers).foreach(
+          _ ! UpdateChartConfig(edgeConfig.dynamic.chart)
         )
-        cullingObservers = newObservers
+        chartObservers = newObservers
         Behaviors.same
 
       case _: Listing =>
@@ -78,7 +78,7 @@ object EdgeConfigurator:
           edgeConfig.copy(dynamic = edgeConfig.dynamic.copy(coordinate = coordinateConfig))
         Behaviors.same
 
-      case UpdateCullingConfig(cullingConfig) =>
-        cullingObservers.foreach(_ ! UpdateCullingConfig(cullingConfig))
-        edgeConfig = edgeConfig.copy(dynamic = edgeConfig.dynamic.copy(culling = cullingConfig))
+      case UpdateChartConfig(chartConfig) =>
+        chartObservers.foreach(_ ! UpdateChartConfig(chartConfig))
+        edgeConfig = edgeConfig.copy(dynamic = edgeConfig.dynamic.copy(chart = chartConfig))
         Behaviors.same
