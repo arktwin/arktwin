@@ -24,24 +24,24 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.0.0
         with:
           path: arktwin
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v5.0.0
         with:
           java-version: 21
           distribution: temurin
           cache: sbt
           cache-dependency-path: arktwin/arktwin/build.sbt
 
-      - uses: sbt/setup-sbt@v1
+      - uses: sbt/setup-sbt@v1.1.12
 
       - name: Generate OpenAPI YAML files
         working-directory: arktwin/arktwin
         run: sbt "edge/run generate-openapi-center ../../pages/dist/swagger-ui/center/arktwin-center.yaml" "edge/run generate-openapi-edge ../../pages/dist/swagger-ui/edge/arktwin-edge.yaml"
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.0.0
         with:
           repository: swagger-api/swagger-ui
           ref: v5.17.14
@@ -53,11 +53,11 @@ jobs:
           cp swagger-ui/dist/* arktwin/pages/dist/swagger-ui/bundle
           rm arktwin/pages/dist/swagger-ui/bundle/index.html
 
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v5.0.0
 
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@v4.0.0
         with:
           path: arktwin/pages/dist
 
-      - uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@v4.0.5
         id: deployment
