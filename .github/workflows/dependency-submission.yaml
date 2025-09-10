@@ -12,10 +12,10 @@ jobs:
   dependency-submission:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       
-      - uses: sbt/setup-sbt@v1.1.12
+      - uses: sbt/setup-sbt@f20dc1bc1f8be605c44ffbcec6f17f708a4af9d1 # v1.1.12
 
-      - uses: scalacenter/sbt-dependency-submission@v3.1.0
+      - uses: scalacenter/sbt-dependency-submission@64084844d2b0a9b6c3765f33acde2fbe3f5ae7d3 # v3.1.0
         with:
           working-directory: arktwin
