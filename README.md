@@ -259,9 +259,25 @@ The default settings for mailboxes are defined by the following rules:
 
 For more details on mailboxes, see [Pekko Mailboxes documentation](https://pekko.apache.org/docs/pekko/current/typed/mailboxes.html).
 
-### Center Culling Algorithm
+### Center Culling
 
 ![](docs/center-culling.png)
+
+Configuration path: `arktwin.center.dynamic.atlas.culling`
+
+### Edge Culling
+
+This Edge feature sorts neighbors by distance from first agents and enables prioritized neighbor selection.
+When enabled, the Chart actor maintains neighbors ordered by their nearest distance to any first agent, allowing efficient retrieval of the closest neighbors.
+
+Configuration path: `arktwin.edge.dynamic.chart.culling`
+
+### Neighbor Expiration
+
+This Edge feature automatically removes neighbors whose last transform data is older than the specified timeout.
+This feature prevents deleted or culled neighbors from being endlessly extrapolated in position calculations.
+
+Configuration path: `arktwin.edge.dynamic.chart.expiration`
 
 ## Presentations
 
