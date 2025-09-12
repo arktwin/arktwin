@@ -86,11 +86,10 @@ object Chart:
       Behaviors.receiveMessage:
         case DeleteExpiredNeighbors =>
           val now = clockBase.now()
+          val timeout = TaggedDuration.from[VirtualTag](chartConfig.expiration.timeout)
           orderedNeighbors.filterInPlace:
             case (_, agent) =>
-              if now > agent.transform.timestamp.tagVirtual + TaggedDuration.from(
-                  chartConfig.expiration.timeout
-                )
+              if now > agent.transform.timestamp.tagVirtual + timeout
               then
                 distances -= agent.agentId
                 logger.trace(
