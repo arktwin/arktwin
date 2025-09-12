@@ -263,6 +263,13 @@ For more details on mailboxes, see [Pekko Mailboxes documentation](https://pekko
 
 ![](docs/center-culling.png)
 
+### Neighbor Expiration
+
+This Edge feature automatically removes neighbors whose last transform data is older than the specified timeout.
+This feature prevents deleted or culled neighbors from being endlessly extrapolated in position calculations.
+
+Configuration path: `arktwin.edge.dynamic.chart.expiration`
+
 ## Presentations
 
 - Takatomo Torigoe. [The Future of Distributed Simulation with the Typed Actor Model (Japanese)](https://speakerdeck.com/piyo7/the-future-of-distributed-simulation-with-the-typed-actor-model). FP Matsuri 2025.

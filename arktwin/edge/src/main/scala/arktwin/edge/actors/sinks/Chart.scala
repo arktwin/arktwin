@@ -85,11 +85,17 @@ object Chart:
 
       Behaviors.receiveMessage:
         case DeleteExpiredNeighbors =>
+          val now = clockBase.now()
           orderedNeighbors.filterInPlace:
             case (_, agent) =>
-              val age = clockBase.now() - agent.transform.timestamp.tagVirtual
-              if age > TaggedDuration.from(chartConfig.expiration.timeout) then
+              if now > agent.transform.timestamp.tagVirtual + TaggedDuration.from(
+                  chartConfig.expiration.timeout
+                )
+              then
                 distances -= agent.agentId
+                logger.trace(
+                  s"expired neighbor: ${agent.agentId}, timestamp: ${agent.transform.timestamp}, now: $now"
+                )
                 false
               else true
           if chartConfig.expiration.enabled then
