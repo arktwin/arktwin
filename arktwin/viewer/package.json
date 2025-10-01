@@ -21,7 +21,7 @@
     "@vitejs/plugin-react-swc": "4.0.1",
     "license-checker": "25.0.1",
     "typescript": "5.9.2",
-    "vite": "7.1.4"
+    "vite": "7.1.7"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
