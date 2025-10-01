@@ -7,10 +7,10 @@ import sbtassembly.AssemblyPlugin.autoImport.assembly
 
 val catsVersion = "2.13.0"
 val gatlingVersion = "3.14.5"
-val jsoniterScalaVersion = "2.37.11"
+val jsoniterScalaVersion = "2.38.2"
 val kamonVersion = "2.7.7"
 val pekkoHttpVersion = "1.2.0"
-val pekkoVersion = "1.2.0"
+val pekkoVersion = "1.2.1"
 val pureConfigVersion = "0.17.9"
 val scalaTestVersion = "3.2.19"
 val scribeVersion = "3.17.0"
