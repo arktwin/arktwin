@@ -18,7 +18,7 @@
     "@types/react": "19.1.12",
     "@types/react-dom": "19.1.9",
     "@types/three": "0.179.0",
-    "@vitejs/plugin-react-swc": "4.0.1",
+    "@vitejs/plugin-react-swc": "4.1.0",
     "license-checker": "25.0.1",
     "typescript": "5.9.2",
     "vite": "7.1.4"
