@@ -14,7 +14,7 @@
     "node": "24.x"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.2",
+    "@biomejs/biome": "2.2.4",
     "@types/react": "19.1.12",
     "@types/react-dom": "19.1.9",
     "@types/three": "0.179.0",
