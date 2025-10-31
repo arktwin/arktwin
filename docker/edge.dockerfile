@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21 AS jre-build
+FROM eclipse-temurin:25 AS jre-build
 RUN $JAVA_HOME/bin/jlink \
         --add-modules java.se,jdk.httpserver,jdk.jcmd,jdk.unsupported \
         --strip-debug \
@@ -7,7 +7,7 @@ RUN $JAVA_HOME/bin/jlink \
         --compress=zip-9 \
         --output /javaruntime
 
-FROM sbtscala/scala-sbt:eclipse-temurin-21.0.8_9_1.11.6_3.7.3 AS jar-build
+FROM sbtscala/scala-sbt:eclipse-temurin-25_36_1.11.7_3.7.3 AS jar-build
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x -o nodesource_setup.sh && \
     bash nodesource_setup.sh && \
     apt-get install -y nodejs
