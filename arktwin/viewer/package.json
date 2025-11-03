@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.0",
-    "@types/react": "19.1.13",
+    "@types/react": "19.2.2",
     "@types/react-dom": "19.1.9",
     "@types/three": "0.180.0",
     "@vitejs/plugin-react-swc": "4.2.0",
@@ -32,7 +32,7 @@
     "@react-three/drei": "10.7.6",
     "@react-three/fiber": "9.3.0",
     "material-react-table": "3.2.1",
-    "react": "19.1.1",
+    "react": "19.2.0",
     "react-dom": "19.1.1",
     "three": "0.180.0"
   },
