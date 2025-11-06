@@ -8,7 +8,7 @@ addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.6.4")
 addSbtPlugin("com.github.sbt" % "sbt-header" % "5.11.0")
 addSbtPlugin("io.gatling" % "gatling-sbt" % "4.17.8")
 addSbtPlugin("org.apache.pekko" % "pekko-grpc-sbt-plugin" % "1.2.0")
-addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.5")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.6")
 
 libraryDependencies ++= Seq(
   "com.thesamet.scalapb" %% "scalapb-validate-codegen" % "0.3.6"
