@@ -49,8 +49,8 @@ However, each agent-based software can connect to ArkTwin via local REST API pro
 
 ### JAR
 
-- `java [-Dconfig.file=center.conf] -XX:+UseZGC -XX:+ZGenerational -jar arktwin-center.jar`
-- `ARKTWIN_CENTER_STATIC_HOST=<CENTER_HOST> java [-Dconfig.file=edge.conf] -XX:+UseZGC -XX:+ZGenerational -jar arktwin-edge.jar [arg]...`
+- `java [-Dconfig.file=center.conf] -XX:+UseZGC -jar arktwin-center.jar`
+- `ARKTWIN_CENTER_STATIC_HOST=<CENTER_HOST> java [-Dconfig.file=edge.conf] -XX:+UseZGC -jar arktwin-edge.jar [arg]...`
 
 ### Edge Optional Command Arguments
 
