@@ -24,4 +24,4 @@ RUN mkdir /opt/arktwin/ && \
     touch /etc/opt/arktwin/center.conf
 COPY --from=jre-build /javaruntime $JAVA_HOME
 COPY --from=jar-build /arktwin/center/target/scala-3.7.3/arktwin-center.jar /opt/arktwin/arktwin-center.jar
-ENTRYPOINT ["java", "-Dconfig.file=/etc/opt/arktwin/center.conf", "-XX:MaxRAMPercentage=75", "-XX:+UseZGC", "-XX:+ZGenerational", "-jar", "/opt/arktwin/arktwin-center.jar"]
+ENTRYPOINT ["java", "-Dconfig.file=/etc/opt/arktwin/center.conf", "-XX:MaxRAMPercentage=75", "-XX:+UseZGC", "-jar", "/opt/arktwin/arktwin-center.jar"]
