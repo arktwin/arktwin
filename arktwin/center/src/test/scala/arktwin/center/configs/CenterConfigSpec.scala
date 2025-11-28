@@ -53,7 +53,7 @@ class CenterConfigSpec extends AnyFunSpec:
         val config = CenterConfig(
           dynamic = CenterDynamicConfig(
             atlas = AtlasConfig(
-              culling = AtlasConfig.GridCulling(Vector3Enu(1, 1, 1)),
+              culling = AtlasConfig.GridCulling(Seq(Vector3Enu(1, 1, 1)), 100),
               routeTableUpdateMachineInterval = 1.second
             )
           ),
@@ -86,7 +86,7 @@ class CenterConfigSpec extends AnyFunSpec:
         val config = CenterConfig(
           dynamic = CenterDynamicConfig(
             atlas = AtlasConfig(
-              culling = AtlasConfig.GridCulling(Vector3Enu(0, -1, 1)),
+              culling = AtlasConfig.GridCulling(Seq(Vector3Enu(0, -1, 1)), 0),
               routeTableUpdateMachineInterval = 0.seconds
             )
           ),
@@ -117,7 +117,8 @@ class CenterConfigSpec extends AnyFunSpec:
         assert(result.isInvalid)
         assert(
           result.swap.getOrElse(NonEmptyChain.one("")).toChain.toVector.toSet == Set(
-            "test.dynamic.atlas.culling.gridCellSize.{x, y, z} must be > 0",
+            "test.dynamic.atlas.culling.gridCellSizeCandidates elements.{x,y,z} must be > 0",
+            "test.dynamic.atlas.culling.cellAgentNumUpperLimit must be >= 1",
             "test.dynamic.atlas.routeTableUpdateMachineInterval must be > 0",
             "test.static.clock.start.clockSpeed must be >= 0",
             "test.static.clock.start.condition.schedule must be >= 0",
@@ -129,6 +130,26 @@ class CenterConfigSpec extends AnyFunSpec:
             "test.static.subscribeBatchSize must be > 0",
             "test.static.subscribeBatchMachineInterval must be > 0",
             "test.static.subscribeBufferSize must be > 0"
+          )
+        )
+
+      it("returns invalid when gridCellSizeCandidates is empty"):
+        val config = AtlasConfig.GridCulling(Seq(), 100)
+        val result = config.validated("test")
+        assert(result.isInvalid)
+        assert(
+          result.swap.getOrElse(NonEmptyChain.one("")).toChain.toVector.toSet == Set(
+            "test.gridCellSizeCandidates must not be empty"
+          )
+        )
+
+      it("returns invalid when gridCellSizeCandidates has duplicates"):
+        val config = AtlasConfig.GridCulling(Seq(Vector3Enu(1, 1, 1), Vector3Enu(1, 1, 1)), 100)
+        val result = config.validated("test")
+        assert(result.isInvalid)
+        assert(
+          result.swap.getOrElse(NonEmptyChain.one("")).toChain.toVector.toSet == Set(
+            "test.gridCellSizeCandidates elements must be unique"
           )
         )
 
