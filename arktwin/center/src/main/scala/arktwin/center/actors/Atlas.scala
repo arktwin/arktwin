@@ -59,8 +59,8 @@ object Atlas:
       Behaviors.receiveMessage:
         case SpawnChart(edgeId, replyTo) =>
           val initialRouteTable: Chart.RouteTable = config.culling match
-            case AtlasConfig.Broadcast()               => _ => chartSubscribers
-            case AtlasConfig.GridCulling(gridCellSize) => _ => Map()
+            case AtlasConfig.Broadcast()       => _ => chartSubscribers
+            case AtlasConfig.GridCulling(_, _) => _ => Map()
           val chart = context.spawnAnonymous(
             Chart(edgeId, initialRouteTable, kamon),
             MailboxConfig(Chart)
@@ -128,7 +128,7 @@ object Atlas:
           for (_, chart) <- charts do chart ! updateRouteTable
           Behaviors.stopped
 
-        case AtlasConfig.GridCulling(gridCellSize) =>
+        case AtlasConfig.GridCulling(gridCellSizeCandidates, cellAgentNumUpperLimit) =>
           timer.startSingleTimer(Timeout, config.routeTableUpdateMachineInterval)
 
           for (_, chartRecorder) <- chartRecorders do
@@ -142,18 +142,34 @@ object Atlas:
 
             case record: ChartRecord =>
               records.addOne(record)
+
+              val selectedGridCellSize =
+                gridCellSizeCandidates
+                  .filter(gridCellSize =>
+                    records
+                      .flatMap(_.cellAgentCounts.get(gridCellSize))
+                      .flatMap(_.toSeq)
+                      .groupMapReduce(_._1)(_._2)(_ + _)
+                      .values
+                      .forall(_ <= cellAgentNumUpperLimit)
+                  )
+                  .maxByOption(a => (a.x * a.y * a.z, a.x, a.y, a.z))
+                  .getOrElse(gridCellSizeCandidates.minBy(a => (a.x * a.y * a.z, a.x, a.y, a.z)))
+
               val partitionToSubscriber =
                 records
                   .flatMap(record =>
                     chartSubscribers
                       .get(record.edgeId)
-                      .toSeq
-                      .flatMap(chartSubscriber =>
-                        record.indexes
+                      .map(chartSubscriber =>
+                        record.cellAgentCounts
+                          .get(selectedGridCellSize)
+                          .map(_.keySet)
+                          .getOrElse(Set.empty)
                           .flatMap(_.neighbors)
-                          .toSet
                           .map((_, (record.edgeId, chartSubscriber)))
                       )
+                      .getOrElse(Set.empty)
                   )
                   .groupMap(_._1)(_._2)
                   .view
@@ -164,9 +180,9 @@ object Atlas:
                 partitionToSubscriber
                   .getOrElse(
                     PartitionIndex(
-                      math.floor(vector3.x / gridCellSize.x).toInt,
-                      math.floor(vector3.y / gridCellSize.y).toInt,
-                      math.floor(vector3.z / gridCellSize.z).toInt
+                      math.floor(vector3.x / selectedGridCellSize.x).toInt,
+                      math.floor(vector3.y / selectedGridCellSize.y).toInt,
+                      math.floor(vector3.z / selectedGridCellSize.z).toInt
                     ),
                     Map()
                   )
@@ -174,12 +190,13 @@ object Atlas:
               for (_, chart) <- charts do chart ! updateRouteTable
 
               logger.debug(
-                partitionToSubscriber.toSeq
-                  .sortBy((index, _) => (index.x, index.y, index.z))
-                  .map((i, senders) =>
-                    s"[${i.x},${i.y},${i.z}]->${senders.map(_._1).mkString("(", ",", ")")}"
-                  )
-                  .mkString("", ", ", "")
+                s"selected grid cell size: $selectedGridCellSize, " +
+                  partitionToSubscriber.toSeq
+                    .sortBy((index, _) => (index.x, index.y, index.z))
+                    .map((i, senders) =>
+                      s"[${i.x},${i.y},${i.z}]->${senders.map(_._1).mkString("(", ",", ")")}"
+                    )
+                    .mkString("", ", ", "")
               )
 
               Behaviors.stopped

@@ -31,10 +31,33 @@ object AtlasConfig:
     override def validated(path: String): ValidatedNec[String, Broadcast] =
       valid(this)
 
-  case class GridCulling(gridCellSize: Vector3Enu) extends Culling:
+  case class GridCulling(
+      gridCellSizeCandidates: Seq[Vector3Enu],
+      cellAgentNumUpperLimit: Int
+  ) extends Culling:
     override def validated(path: String): ValidatedNec[String, GridCulling] =
-      condNec(
-        gridCellSize.x > 0 && gridCellSize.y > 0 && gridCellSize.z > 0,
-        gridCellSize,
-        s"$path.gridCellSize.{x, y, z} must be > 0"
-      ).map(GridCulling.apply)
+      import cats.syntax.apply.*
+      (
+        (
+          condNec(
+            gridCellSizeCandidates.nonEmpty,
+            gridCellSizeCandidates,
+            s"$path.gridCellSizeCandidates must not be empty"
+          ),
+          condNec(
+            gridCellSizeCandidates.forall(a => a.x > 0 && a.y > 0 && a.z > 0),
+            gridCellSizeCandidates,
+            s"$path.gridCellSizeCandidates elements.{x,y,z} must be > 0"
+          ),
+          condNec(
+            gridCellSizeCandidates.distinct.size == gridCellSizeCandidates.size,
+            gridCellSizeCandidates,
+            s"$path.gridCellSizeCandidates elements must be unique"
+          )
+        ).mapN((_, _, _) => gridCellSizeCandidates),
+        condNec(
+          cellAgentNumUpperLimit >= 1,
+          cellAgentNumUpperLimit,
+          s"$path.cellAgentNumUpperLimit must be >= 1"
+        )
+      ).mapN(GridCulling.apply)

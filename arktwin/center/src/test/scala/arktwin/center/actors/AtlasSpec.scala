@@ -91,22 +91,25 @@ class AtlasSpec extends ActorTestBase:
 
     it("filters messages based on grid cells with GridCulling config"):
       val atlasConfig =
-        AtlasConfig(AtlasConfig.GridCulling(Vector3Enu(10, 100, 1000)), 100.millis)
+        AtlasConfig(
+          AtlasConfig.GridCulling(Seq(Vector3Enu(10, 100, 1000)), 100),
+          100.millis
+        )
       val atlas = testKit.spawn(Atlas(atlasConfig, CenterKamon("")))
 
       val (publisherA, subscriberA) = createPubSub("A", atlas)
       Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
 
-      val a1_0 = chartAgent("a1", Timestamp(0, 0), Vector3Enu(1, 1, 1)) // [0, 0, 0]
-      val a2_0 = chartAgent("a2", Timestamp(0, 0), Vector3Enu(1, 1, 1)) // [0, 0, 0]
+      val a1_0 = chartAgent("a1", Timestamp(0, 0), Vector3Enu(1, 1, 1)) // index [0, 0, 0]
+      val a2_0 = chartAgent("a2", Timestamp(0, 0), Vector3Enu(1, 1, 1)) // index [0, 0, 0]
       publisherA ! Chart.PublishBatch(Seq(a1_0, a2_0), MachineTimestamp(0, 0))
       subscriberA.expectNoMessage()
 
       val (publisherB, subscriberB) = createPubSub("B", atlas)
       Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
 
-      val b1_0 = chartAgent("b1", Timestamp(0, 0), Vector3Enu(1, 1, 1)) // [0, 0, 0]
-      val b2_0 = chartAgent("b2", Timestamp(0, 0), Vector3Enu(21, 1, 1)) // [2, 0, 0]
+      val b1_0 = chartAgent("b1", Timestamp(0, 0), Vector3Enu(1, 1, 1)) // index [0, 0, 0]
+      val b2_0 = chartAgent("b2", Timestamp(0, 0), Vector3Enu(21, 1, 1)) // index [2, 0, 0]
       publisherB ! Chart.PublishBatch(Seq(b1_0, b2_0), MachineTimestamp(0, 0))
       assert(subscriberA.receiveMessage().agents.sorted == Seq(b1_0))
       subscriberA.expectNoMessage()
@@ -115,8 +118,8 @@ class AtlasSpec extends ActorTestBase:
       val (publisherC, subscriberC) = createPubSub("C", atlas)
       Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
 
-      val c1_0 = chartAgent("c1", Timestamp(0, 0), Vector3Enu(11, 1, 1)) // [1, 0, 0]
-      val c2_0 = chartAgent("c2", Timestamp(0, 0), Vector3Enu(31, 1, 1001)) // [3, 0, 1]
+      val c1_0 = chartAgent("c1", Timestamp(0, 0), Vector3Enu(11, 1, 1)) // index [1, 0, 0]
+      val c2_0 = chartAgent("c2", Timestamp(0, 0), Vector3Enu(31, 1, 1001)) // index [3, 0, 1]
       publisherC ! Chart.PublishBatch(Seq(c1_0, c2_0), MachineTimestamp(0, 0))
       assert(subscriberA.receiveMessage().agents.sorted == Seq(c1_0))
       assert(subscriberB.receiveMessage().agents.sorted == Seq(c1_0, c2_0))
@@ -126,8 +129,8 @@ class AtlasSpec extends ActorTestBase:
 
       Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
 
-      val a1_1 = chartAgent("a1", Timestamp(1, 0), Vector3Enu(41, 101, 1001)) // [4, 1, 1]
-      val a2_1 = chartAgent("a2", Timestamp(1, 0), Vector3Enu(41, 201, -1)) // [4, 2, -1]
+      val a1_1 = chartAgent("a1", Timestamp(1, 0), Vector3Enu(41, 101, 1001)) // index [4, 1, 1]
+      val a2_1 = chartAgent("a2", Timestamp(1, 0), Vector3Enu(41, 201, -1)) // index [4, 2, -1]
       publisherA ! Chart.PublishBatch(Seq(a1_1, a2_1), MachineTimestamp(0, 0))
       assert(subscriberC.receiveMessage().agents.sorted == Seq(a1_1))
       subscriberA.expectNoMessage()
@@ -141,6 +144,124 @@ class AtlasSpec extends ActorTestBase:
       publisherC ! Chart.PublishBatch(Seq(c1_0, c2_0), MachineTimestamp(0, 0))
       assert(subscriberA.receiveMessage().agents.sorted == Seq(c2_0))
       subscriberA.expectNoMessage()
+      subscriberC.expectNoMessage()
+
+    it("selects appropriate grid cell size based on agent density"):
+      val atlasConfig = AtlasConfig(
+        AtlasConfig.GridCulling(
+          Seq(Vector3Enu(8, 8, 8), Vector3Enu(4, 4, 4), Vector3Enu(16, 16, 16)),
+          2
+        ),
+        100.millis
+      )
+      val atlas = testKit.spawn(Atlas(atlasConfig, CenterKamon("")))
+
+      val (publisherA, subscriberA) = createPubSub("A", atlas)
+      val (publisherB, subscriberB) = createPubSub("B", atlas)
+      val (publisherC, subscriberC) = createPubSub("C", atlas)
+      Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
+
+      val a1_0 = chartAgent("a1", Timestamp(0, 0), Vector3Enu(36, 37, 1))
+      val a2_0 = chartAgent("a2", Timestamp(0, 0), Vector3Enu(38, 39, 2))
+      publisherA ! Chart.PublishBatch(Seq(a1_0, a2_0), MachineTimestamp(0, 0))
+      val b1_0 = chartAgent("b1", Timestamp(0, 0), Vector3Enu(41, 42, 3))
+      publisherB ! Chart.PublishBatch(Seq(b1_0), MachineTimestamp(0, 0))
+      val c1_0 = chartAgent("c1", Timestamp(0, 0), Vector3Enu(1, 1, 4))
+      publisherC ! Chart.PublishBatch(Seq(c1_0), MachineTimestamp(0, 0))
+      subscriberA.expectNoMessage()
+      subscriberB.expectNoMessage()
+      subscriberC.expectNoMessage()
+
+      // selected grid cell size: [8, 8, 8]
+      // index [0, 0, 0]: c1
+      // index [4, 4, 0]: a1, a2
+      // index [5, 5, 0]: b1
+      Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
+      publisherA ! Chart.PublishBatch(Seq(a1_0, a2_0), MachineTimestamp(0, 0))
+      publisherB ! Chart.PublishBatch(Seq(b1_0), MachineTimestamp(0, 0))
+      publisherC ! Chart.PublishBatch(Seq(c1_0), MachineTimestamp(0, 0))
+      assert(subscriberA.receiveMessage().agents.sorted == Seq(b1_0))
+      assert(subscriberB.receiveMessage().agents.sorted == Seq(a1_0, a2_0))
+      subscriberA.expectNoMessage()
+      subscriberB.expectNoMessage()
+      subscriberC.expectNoMessage()
+
+      Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
+      val a1_1 = chartAgent("a1", Timestamp(0, 0), Vector3Enu(1.1, 1.2, 1.3))
+      val a2_1 = chartAgent("a2", Timestamp(0, 0), Vector3Enu(1.4, 1.5, 1.6))
+      publisherA ! Chart.PublishBatch(Seq(a1_1, a2_1), MachineTimestamp(0, 0))
+      val b1_1 = chartAgent("b1", Timestamp(0, 0), Vector3Enu(1.7, 1.8, 1.9))
+      publisherB ! Chart.PublishBatch(Seq(b1_1), MachineTimestamp(0, 0))
+      val c1_1 = chartAgent("c1", Timestamp(0, 0), Vector3Enu(2.0, 2.1, 2.2))
+      publisherC ! Chart.PublishBatch(Seq(c1_1), MachineTimestamp(0, 0))
+      assert(
+        subscriberC.receiveMessages(2).map(_.agents).reduce(_ ++ _).sorted == Seq(
+          a1_1,
+          a2_1,
+          b1_1
+        )
+      )
+      subscriberA.expectNoMessage()
+      subscriberB.expectNoMessage()
+      subscriberC.expectNoMessage()
+
+      // selected grid cell size: [4, 4, 4]
+      // index [0, 0, 0]: a1, a2, b1, c1
+      Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
+      publisherA ! Chart.PublishBatch(Seq(a1_1, a2_1), MachineTimestamp(0, 0))
+      publisherB ! Chart.PublishBatch(Seq(b1_1), MachineTimestamp(0, 0))
+      publisherC ! Chart.PublishBatch(Seq(c1_1), MachineTimestamp(0, 0))
+      assert(
+        subscriberA.receiveMessages(2).map(_.agents).reduce(_ ++ _).sorted == Seq(
+          b1_1,
+          c1_1
+        )
+      )
+      assert(
+        subscriberB.receiveMessages(2).map(_.agents).reduce(_ ++ _).sorted == Seq(
+          a1_1,
+          a2_1,
+          c1_1
+        )
+      )
+      assert(
+        subscriberC.receiveMessages(2).map(_.agents).reduce(_ ++ _).sorted == Seq(
+          a1_1,
+          a2_1,
+          b1_1
+        )
+      )
+      subscriberA.expectNoMessage()
+      subscriberB.expectNoMessage()
+      subscriberC.expectNoMessage()
+
+      Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
+      val a1_2 = chartAgent("a1", Timestamp(0, 0), Vector3Enu(20, 1, 1))
+      val a2_2 = chartAgent("a2", Timestamp(0, 0), Vector3Enu(30, 1, 1))
+      publisherA ! Chart.PublishBatch(Seq(a1_2, a2_2), MachineTimestamp(0, 0))
+      val b1_2 = chartAgent("b1", Timestamp(0, 0), Vector3Enu(40, 1, 1))
+      publisherB ! Chart.PublishBatch(Seq(b1_2), MachineTimestamp(0, 0))
+      val c1_2 = chartAgent("c1", Timestamp(0, 0), Vector3Enu(1, 1, 1))
+      publisherC ! Chart.PublishBatch(Seq(c1_2), MachineTimestamp(0, 0))
+      assert(subscriberA.receiveMessage().agents.sorted == Seq(c1_2))
+      assert(subscriberB.receiveMessage().agents.sorted == Seq(c1_2))
+      subscriberA.expectNoMessage()
+      subscriberB.expectNoMessage()
+      subscriberC.expectNoMessage()
+
+      // selected grid cell size: [16, 16, 16]
+      // index [0, 0, 0]: c1
+      // index [1, 0, 0]: a1, a2
+      // index [2, 0, 0]: b1
+      Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
+      publisherA ! Chart.PublishBatch(Seq(a1_2, a2_2), MachineTimestamp(0, 0))
+      publisherB ! Chart.PublishBatch(Seq(b1_2), MachineTimestamp(0, 0))
+      publisherC ! Chart.PublishBatch(Seq(c1_2), MachineTimestamp(0, 0))
+      assert(subscriberA.receiveMessages(2).map(_.agents).reduce(_ ++ _).sorted == Seq(b1_2, c1_2))
+      assert(subscriberB.receiveMessage().agents.sorted == Seq(a1_2, a2_2))
+      assert(subscriberC.receiveMessage().agents.sorted == Seq(a1_2, a2_2))
+      subscriberA.expectNoMessage()
+      subscriberB.expectNoMessage()
       subscriberC.expectNoMessage()
 
   private def createPubSub(

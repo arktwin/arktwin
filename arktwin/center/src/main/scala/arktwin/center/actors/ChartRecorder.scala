@@ -6,6 +6,7 @@ import arktwin.center.actors.Atlas.PartitionIndex
 import arktwin.center.configs.AtlasConfig
 import arktwin.center.services.ChartAgent
 import arktwin.common.data.TimestampExtensions.*
+import arktwin.common.data.Vector3Enu
 import arktwin.common.util.CommonMessages.Terminate
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
@@ -19,7 +20,10 @@ object ChartRecorder:
       replyTo: ActorRef[ChartRecord]
   )
 
-  case class ChartRecord(edgeId: String, indexes: Set[PartitionIndex])
+  case class ChartRecord(
+      edgeId: String,
+      cellAgentCounts: Map[Vector3Enu, Map[PartitionIndex, Int]]
+  )
 
   def apply(
       edgeId: String
@@ -44,17 +48,27 @@ object ChartRecorder:
         config.culling match
           case AtlasConfig.Broadcast() =>
 
-          case AtlasConfig.GridCulling(gridCellSize) =>
-            val indexes = agents
-              .map((_, agent) =>
-                PartitionIndex(
-                  math.floor(agent.transform.localTranslationMeter.x / gridCellSize.x).toInt,
-                  math.floor(agent.transform.localTranslationMeter.y / gridCellSize.y).toInt,
-                  math.floor(agent.transform.localTranslationMeter.z / gridCellSize.z).toInt
-                )
+          case AtlasConfig.GridCulling(gridCellSizes, _) =>
+            val cellAgentCounts = gridCellSizes
+              .map(gridCellSize =>
+                gridCellSize -> agents.values
+                  .map(agent =>
+                    PartitionIndex(
+                      math
+                        .floor(agent.transform.localTranslationMeter.x / gridCellSize.x)
+                        .toInt,
+                      math
+                        .floor(agent.transform.localTranslationMeter.y / gridCellSize.y)
+                        .toInt,
+                      math
+                        .floor(agent.transform.localTranslationMeter.z / gridCellSize.z)
+                        .toInt
+                    )
+                  )
+                  .groupMapReduce(identity)(_ => 1)(_ + _)
               )
-              .toSet
-            replyTo ! ChartRecord(edgeId, indexes)
+              .toMap
+            replyTo ! ChartRecord(edgeId, cellAgentCounts)
         Behaviors.same
 
       case Terminate =>

@@ -17,6 +17,7 @@ case class CenterConfig(
     static: CenterStaticConfig
 ) derives ConfigReader:
   def toJson: String =
+    given ConfigWriter[Vector3Enu] = deriveWriter
     given ConfigWriter[CenterConfig] = deriveWriter
     ConfigWriter[CenterConfig].to(this).render(ConfigRenderOptions.concise())
 
@@ -28,6 +29,8 @@ case class CenterConfig(
     ).mapN(CenterConfig.apply)
 
 object CenterConfig:
+  given ConfigReader[Vector3Enu] = deriveReader
+
   private val configSource = ConfigSource.defaultOverrides
     .withFallback(ConfigSource.defaultApplication) // -Dconfig.file
     .withFallback(ConfigSource.resources("pekko.conf"))

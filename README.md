@@ -263,6 +263,21 @@ For more details on mailboxes, see [Pekko Mailboxes documentation](https://pekko
 
 ![](docs/center-culling.png)
 
+Center provides two culling strategies to optimize message routing between edges:
+
+- **Broadcast**: Sends all agent transforms to all connected edges without filtering
+- **GridCulling**: Partitions the 3D space into grid cells and sends transforms only to edges with agents in neighboring cells
+
+#### GridCulling Dynamic Selection
+
+GridCulling features dynamic grid cell size selection based on agent density. You can specify multiple grid cell size candidates and an upper limit for the number of agents per cell. The system automatically selects the grid cell size, optimizing performance while maintaining appropriate message granularity.
+
+**Selection Algorithm**:
+
+1. Filter candidates where all grid cells have agent counts ≤ `cellAgentNumUpperLimit`
+2. Select the largest grid size (by volume, then x, y, z) from filtered candidates
+3. If no candidate satisfies the limit (high-density scenario), fall back to the smallest grid size to minimize messaging overhead
+
 Configuration path: `arktwin.center.dynamic.atlas.culling`
 
 ### Edge Culling
