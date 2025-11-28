@@ -172,7 +172,7 @@ class AtlasSpec extends ActorTestBase:
       subscriberB.expectNoMessage()
       subscriberC.expectNoMessage()
 
-      // selected gird cell size: [8, 8, 8]
+      // selected grid cell size: [8, 8, 8]
       // index [0, 0, 0]: c1
       // index [4, 4, 0]: a1, a2
       // index [5, 5, 0]: b1
@@ -205,7 +205,7 @@ class AtlasSpec extends ActorTestBase:
       subscriberB.expectNoMessage()
       subscriberC.expectNoMessage()
 
-      // selected gird cell size: [4, 4, 4]
+      // selected grid cell size: [4, 4, 4]
       // index [0, 0, 0]: a1, a2, b1, c1
       Thread.sleep(atlasConfig.routeTableUpdateMachineInterval.toMillis * 2)
       publisherA ! Chart.PublishBatch(Seq(a1_1, a2_1), MachineTimestamp(0, 0))
@@ -249,7 +249,7 @@ class AtlasSpec extends ActorTestBase:
       subscriberB.expectNoMessage()
       subscriberC.expectNoMessage()
 
-      // selected gird cell size: [16, 16, 16]
+      // selected grid cell size: [16, 16, 16]
       // index [0, 0, 0]: c1
       // index [1, 0, 0]: a1, a2
       // index [2, 0, 0]: b1
