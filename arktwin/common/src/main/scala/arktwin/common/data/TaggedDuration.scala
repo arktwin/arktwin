@@ -64,7 +64,7 @@ object TaggedDuration:
   inline def apply[A <: TimeTag](seconds: Long, nanos: Int): TaggedDuration[A] =
     TaggedDuration(seconds, nanos.toLong)
 
-  inline def from[A <: TimeTag](value: Duration): TaggedDuration[A] =
+  inline def from[A <: TimeTag](value: DurationTrait): TaggedDuration[A] =
     TaggedDuration(value.seconds, value.nanos)
 
   inline def from[A <: TimeTag](value: ScalaDuration): TaggedDuration[A] =

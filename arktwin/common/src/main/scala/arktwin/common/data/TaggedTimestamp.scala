@@ -2,7 +2,6 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.common.data
 
-import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.util.JsonDerivation.given
 import arktwin.common.util.TimeConstants.*
 import arktwin.common.util.{MachineTag, TimeTag, VirtualTag}
@@ -58,7 +57,7 @@ object TaggedTimestamp:
   inline def apply[A <: TimeTag](seconds: Long, nanos: Int): TaggedTimestamp[A] =
     TaggedTimestamp(seconds, nanos.toLong)
 
-  inline def from[A <: TimeTag](value: Timestamp): TaggedTimestamp[A] =
+  inline def from[A <: TimeTag](value: TimestampTrait): TaggedTimestamp[A] =
     TaggedTimestamp(value.seconds, value.nanos)
 
   inline def from[A <: TimeTag](value: ZonedDateTime): TaggedTimestamp[A] =

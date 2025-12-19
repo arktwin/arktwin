@@ -4,10 +4,7 @@ package arktwin.common.data
 
 import org.scalatest.funspec.AnyFunSpec
 
-import TransformEnuExtensions.*
-import TimestampExtensions.*
-
-class TransformEnuExtensionsSpec extends AnyFunSpec:
+class TransformEnuSpec extends AnyFunSpec:
   val defaultParentAgent = Some("parentABC")
   val defaultGlobalScale = Vector3Enu(1, 2, 3)
   val defaultLocalRotation = QuaternionEnu(0.1, 0.2, 0.3, 0.927362)

@@ -3,7 +3,6 @@
 package arktwin.edge.connectors
 
 import arktwin.center.services.{ChartAgent, ChartClient, ChartPublishBatch}
-import arktwin.common.data.TimestampExtensions.*
 import arktwin.common.data.{MachineTimestamp, TaggedTimestamp}
 import arktwin.common.util.CommonMessages.Nop
 import arktwin.common.util.GrpcHeaderKeys

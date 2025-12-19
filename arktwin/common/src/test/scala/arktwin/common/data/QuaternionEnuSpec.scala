@@ -6,9 +6,7 @@ import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
-import QuaternionEnuExtensions.*
-
-class QuaternionEnuExtensionsSpec extends AnyFunSpec with Matchers:
+class QuaternionEnuSpec extends AnyFunSpec with Matchers:
   given Equality[Double] = TolerantNumerics.tolerantDoubleEquality(1e-6)
   given Equality[QuaternionEnu] =
     case (a: QuaternionEnu, b: QuaternionEnu) =>

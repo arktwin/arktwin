@@ -6,9 +6,7 @@ import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
-import Vector3EnuExtensions.*
-
-class Vector3EnuExtensionsSpec extends AnyFunSpec with Matchers:
+class Vector3EnuSpec extends AnyFunSpec with Matchers:
   given Equality[Double] = TolerantNumerics.tolerantDoubleEquality(1e-6)
   given Equality[Vector3Enu] =
     case (a: Vector3Enu, b: Vector3Enu) =>

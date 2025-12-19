@@ -2,7 +2,6 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.center.services
 
-import arktwin.center.services.ClockBaseExtensions.*
 import arktwin.common.data.TaggedTimestamp
 import arktwin.common.util.{MachineTag, VirtualTag}
 import org.scalatest.funspec.AnyFunSpec
