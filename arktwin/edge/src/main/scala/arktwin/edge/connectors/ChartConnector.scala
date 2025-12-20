@@ -3,7 +3,7 @@
 package arktwin.edge.connectors
 
 import arktwin.center.services.{ChartAgent, ChartClient, ChartPublishBatch}
-import arktwin.common.data.{MachineTimestamp, TaggedTimestamp}
+import arktwin.common.data.MachineTimestamp
 import arktwin.common.util.CommonMessages.Nop
 import arktwin.common.util.GrpcHeaderKeys
 import arktwin.common.util.SourceExtensions.*
@@ -40,10 +40,10 @@ case class ChartConnector(
         OverflowStrategy.dropHead
       )
       .mapConcat: a =>
-        val currentMachineTimestamp = TaggedTimestamp.machineNow()
+        val currentMachineTimestamp = MachineTimestamp.now()
         val batches = a.agents
           .grouped(staticConfig.publishBatchSize)
-          .map(agents => ChartPublishBatch(agents, currentMachineTimestamp.untag))
+          .map(agents => ChartPublishBatch(agents, currentMachineTimestamp))
           .toSeq
         publishAgentNumCounter.increment(a.agents.size)
         publishBatchNumCounter.increment(batches.size)
@@ -72,10 +72,10 @@ case class ChartConnector(
       .invoke(Empty())
       .wireTapLog("Chart.Subscribe")
       .mapConcat: a =>
-        val currentMachineTimestamp = TaggedTimestamp.machineNow()
+        val currentMachineTimestamp = MachineTimestamp.now()
         subscribeAgentNumCounter.increment(a.agents.size)
         subscribeMachineLatencyHistogram.record(
-          currentMachineTimestamp - a.transmissionMachineTimestamp.tagMachine,
+          currentMachineTimestamp - a.transmissionMachineTimestamp,
           a.agents.size
         )
         a.agents.map(Chart.UpdateNeighbor.apply)

@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.endpoints
 
-import arktwin.common.data.{TaggedTimestamp, VirtualTimestamp}
+import arktwin.common.data.{MachineTimestamp, VirtualTimestamp}
 import arktwin.common.util.JsonDerivation
 import arktwin.common.util.JsonDerivation.given
 import arktwin.edge.actors.adapters.EdgeAgentsPutAdapter
@@ -105,16 +105,16 @@ object EdgeAgentsPut:
     given Timeout = staticConfig.endpointMachineTimeout
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogicWithLog: request =>
-        val requestTime = TaggedTimestamp.machineNow()
+        val requestTime = MachineTimestamp.now()
         adapter
           .?[Either[ErrorStatus, Response]](
-            EdgeAgentsPutAdapter.Put(request, TaggedTimestamp.machineNow(), _)
+            EdgeAgentsPutAdapter.Put(request, MachineTimestamp.now(), _)
           )
           .recover(throwable => Left(ErrorStatus(throwable)))
           .andThen: _ =>
             requestNumCounter.increment()
             agentNumCounter.increment(request.agents.size)
-            processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)
+            processMachineTimeHistogram.record(MachineTimestamp.now() - requestTime)
 
 case class EdgeAgentsPutRequest(
     @description("If it is omitted, a current timestamp of the edge virtual clock is used.")

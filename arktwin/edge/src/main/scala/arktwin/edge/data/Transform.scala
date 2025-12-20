@@ -33,14 +33,14 @@ case class Transform(
       .map(_.normalize(config.axis) * config.speedUnit.scale)
       .getOrElse(
         previousEnu match
-          case Some(pEnu) if timestamp > pEnu.timestamp.tagVirtual =>
-            (localTranslationEnuMeter - pEnu.localTranslationMeter) / (timestamp - pEnu.timestamp.tagVirtual).secondsDouble
+          case Some(pEnu) if timestamp > pEnu.timestamp =>
+            (localTranslationEnuMeter - pEnu.localTranslationMeter) / (timestamp - pEnu.timestamp).secondsDouble
           case _ =>
             Vector3Enu(0, 0, 0)
       )
 
     TransformEnu(
-      timestamp.untag,
+      timestamp,
       parentAgentId,
       globalScale.normalize(config.axis),
       localRotation.normalize(config.rotation, config.axis),

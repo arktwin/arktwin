@@ -38,7 +38,7 @@ object ChartRecorder:
           if agents
             .get(newAgent.agentId)
             .forall(
-              _.transform.timestamp.tagVirtual <= newAgent.transform.timestamp.tagVirtual
+              _.transform.timestamp <= newAgent.transform.timestamp
             )
         do agents(newAgent.agentId) = newAgent
         Behaviors.same

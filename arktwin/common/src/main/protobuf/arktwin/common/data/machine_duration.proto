@@ -5,8 +5,9 @@ package arktwin.common.data;
 import "scalapb/scalapb.proto";
 import "validate/validate.proto";
 
-message Duration {
-  option (scalapb.message).extends = "arktwin.common.data.DurationTrait";
+message MachineDuration {
+  option (scalapb.message).extends = "arktwin.common.data.MachineDurationTrait";
+  option (scalapb.message).companion_extends = "arktwin.common.data.MachineDurationCompanionTrait";
   int64 seconds = 1;
   int32 nanos = 2 [(validate.rules).int32 = {gte: -999999999, lte: 999999999}];
 }

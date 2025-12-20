@@ -3,10 +3,10 @@
 package arktwin.edge.actors.sinks
 
 import arktwin.center.services.{ChartAgent, ClockBase}
-import arktwin.common.data.{TaggedDuration, TaggedTimestamp}
+import arktwin.common.data.{VirtualDuration, VirtualTimestamp}
 import arktwin.common.util.BehaviorsExtensions.*
 import arktwin.common.util.CommonMessages.Nop
-import arktwin.common.util.{MailboxConfig, VirtualTag}
+import arktwin.common.util.MailboxConfig
 import arktwin.edge.actors.EdgeConfigurator
 import arktwin.edge.actors.EdgeConfigurator.UpdateChartConfig
 import arktwin.edge.actors.sinks.Clock.UpdateClockBase
@@ -83,10 +83,10 @@ object Chart:
       Behaviors.receiveMessage:
         case DeleteExpiredNeighbors =>
           val now = clockBase.now()
-          val timeout = TaggedDuration.from[VirtualTag](chartConfig.expiration.timeout)
+          val timeout = VirtualDuration.from(chartConfig.expiration.timeout)
           orderedNeighbors.filterInPlace:
             case (_, agent) =>
-              if now > agent.transform.timestamp.tagVirtual + timeout
+              if now > agent.transform.timestamp + timeout
               then
                 distances -= agent.agentId
                 logger.trace(
@@ -143,9 +143,9 @@ object Chart:
         case UpdateNeighbor(neighbor) =>
           val oldDistance = distances.get(neighbor.agentId)
           val oldTimestamp = oldDistance
-            .map(orderedNeighbors(_, neighbor.agentId).transform.timestamp.tagVirtual)
-            .getOrElse(TaggedTimestamp.minValue[VirtualTag])
-          if neighbor.transform.timestamp.tagVirtual >= oldTimestamp then
+            .map(orderedNeighbors(_, neighbor.agentId).transform.timestamp)
+            .getOrElse(VirtualTimestamp.minValue)
+          if neighbor.transform.timestamp >= oldTimestamp then
             for od <- oldDistance do orderedNeighbors -= ((od, neighbor.agentId))
 
             // TODO consider relative coordinates

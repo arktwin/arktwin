@@ -3,7 +3,7 @@
 package arktwin.common.data
 
 trait TransformEnuTrait:
-  val timestamp: Timestamp
+  val timestamp: VirtualTimestamp
   val parentAgent: Option[String]
   val globalScale: Vector3Enu
   val localRotation: QuaternionEnu
@@ -13,12 +13,12 @@ trait TransformEnuTrait:
 
   def extrapolate(targetVirtualTimestamp: VirtualTimestamp): TransformEnu =
     TransformEnu(
-      targetVirtualTimestamp.untag,
+      targetVirtualTimestamp,
       parentAgent,
       globalScale,
       localRotation,
       localTranslationMeter +
-        (localTranslationSpeedMps * (targetVirtualTimestamp - timestamp.tagVirtual).secondsDouble),
+        (localTranslationSpeedMps * (targetVirtualTimestamp - timestamp).secondsDouble),
       localTranslationSpeedMps,
       extra
     )

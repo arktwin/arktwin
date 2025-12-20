@@ -2,7 +2,8 @@ syntax = "proto3";
 
 package arktwin.center.services;
 
-import "arktwin/common/data/timestamp.proto";
+import "arktwin/common/data/machine_timestamp.proto";
+import "arktwin/common/data/virtual_timestamp.proto";
 import "google/protobuf/empty.proto";
 import "scalapb/scalapb.proto";
 import "validate/validate.proto";
@@ -14,8 +15,7 @@ service Clock {
 
 message ClockBase {
   option (scalapb.message).extends = "arktwin.center.services.ClockBaseTrait";
-  option (scalapb.message).companion_extends = "arktwin.center.services.ClockBaseCompanionTrait";
-  common.data.Timestamp base_machine_timestamp = 1 [(validate.rules).message.required = true];
-  common.data.Timestamp base_timestamp = 2 [(validate.rules).message.required = true];
+  common.data.MachineTimestamp base_machine_timestamp = 1 [(validate.rules).message.required = true];
+  common.data.VirtualTimestamp base_timestamp = 2 [(validate.rules).message.required = true];
   double clock_speed = 3 [(validate.rules).double = {gte: 0}];
 }

@@ -149,7 +149,7 @@ object EdgeNeighborsQueryAdapter:
               .get(agent.neighbor.agentId)
               .map: registerAgent =>
                 virtualLatencyHistogram.record(
-                  requestTime - agent.neighbor.transform.timestamp.tagVirtual
+                  requestTime - agent.neighbor.transform.timestamp
                 )
                 agent.neighbor.agentId -> ResponseAgent(
                   Some(

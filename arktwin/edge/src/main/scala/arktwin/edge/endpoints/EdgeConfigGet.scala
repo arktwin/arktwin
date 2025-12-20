@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.endpoints
 
-import arktwin.common.data.TaggedTimestamp
+import arktwin.common.data.MachineTimestamp
 import arktwin.common.util.JsonDerivation
 import arktwin.common.util.JsonDerivation.given
 import arktwin.common.util.LoggerConfigurator.LogLevel
@@ -74,10 +74,10 @@ object EdgeConfigGet:
     given Timeout = staticConfig.endpointMachineTimeout
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogicWithLog: _ =>
-        val requestTime = TaggedTimestamp.machineNow()
+        val requestTime = MachineTimestamp.now()
         (configurator ? EdgeConfigurator.Read.apply)
           .map(Right.apply)
           .recover(throwable => Left(ErrorStatus(throwable)))
           .andThen: _ =>
             requestNumCounter.increment()
-            processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)
+            processMachineTimeHistogram.record(MachineTimestamp.now() - requestTime)

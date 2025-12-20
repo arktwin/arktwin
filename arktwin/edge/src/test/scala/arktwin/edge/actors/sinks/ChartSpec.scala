@@ -26,7 +26,7 @@ class ChartSpec extends ActorTestBase:
     case _ =>
       false
 
-  private val initClockBase = ClockBase(Timestamp(1, 2), Timestamp(3, 4), 5.6)
+  private val initClockBase = ClockBase(MachineTimestamp(1, 2), VirtualTimestamp(3, 4), 5.6)
 
   private val baseConfig = ChartConfig(
     culling = ChartConfig.Culling(
@@ -42,7 +42,7 @@ class ChartSpec extends ActorTestBase:
 
   private def chartAgent(
       agentId: String,
-      timestamp: Timestamp,
+      timestamp: VirtualTimestamp,
       translation: Vector3Enu
   ): ChartAgent =
     ChartAgent(
@@ -70,17 +70,17 @@ class ChartSpec extends ActorTestBase:
             )
           )
           val initClockBase = ClockBase(
-            TaggedTimestamp.machineNow().untag,
-            Timestamp(0, 0),
+            MachineTimestamp.now(),
+            VirtualTimestamp(0, 0),
             1.0
           )
           val chart = testKit.spawn(Chart(initClockBase, expirationConfig))
           val clock = testKit.spawn(Clock(initClockBase))
           val reader = testKit.createTestProbe[ReadReply]()
 
-          chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(0, 0), Vector3Enu(1, 1, 1)))
-          chart ! UpdateNeighbor(chartAgent("agent-2", Timestamp(0, 0), Vector3Enu(2, 2, 2)))
-          chart ! UpdateNeighbor(chartAgent("agent-3", Timestamp(0, 0), Vector3Enu(3, 3, 3)))
+          chart ! UpdateNeighbor(chartAgent("agent-1", VirtualTimestamp(0, 0), Vector3Enu(1, 1, 1)))
+          chart ! UpdateNeighbor(chartAgent("agent-2", VirtualTimestamp(0, 0), Vector3Enu(2, 2, 2)))
+          chart ! UpdateNeighbor(chartAgent("agent-3", VirtualTimestamp(0, 0), Vector3Enu(3, 3, 3)))
           chart ! Read(reader.ref)
           {
             val orderedNeighbors = reader.receiveMessage().orderedNeighbors
@@ -91,14 +91,16 @@ class ChartSpec extends ActorTestBase:
 
           clock ! UpdateClockBase(
             ClockBase(
-              TaggedTimestamp.machineNow().untag,
-              Timestamp(10, 0),
+              MachineTimestamp.now(),
+              VirtualTimestamp(10, 0),
               1.0
             )
           )
-          chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(7, 0), Vector3Enu(1, 1, 1)))
-          chart ! UpdateNeighbor(chartAgent("agent-2", Timestamp(9, 0), Vector3Enu(2, 2, 2)))
-          chart ! UpdateNeighbor(chartAgent("agent-3", Timestamp(10, 0), Vector3Enu(3, 3, 3)))
+          chart ! UpdateNeighbor(chartAgent("agent-1", VirtualTimestamp(7, 0), Vector3Enu(1, 1, 1)))
+          chart ! UpdateNeighbor(chartAgent("agent-2", VirtualTimestamp(9, 0), Vector3Enu(2, 2, 2)))
+          chart ! UpdateNeighbor(
+            chartAgent("agent-3", VirtualTimestamp(10, 0), Vector3Enu(3, 3, 3))
+          )
           Thread.sleep(expirationConfig.expiration.checkMachineInterval.toMillis * 2)
           chart ! Read(reader.ref)
           {
@@ -118,17 +120,17 @@ class ChartSpec extends ActorTestBase:
             )
           )
           val initClockBase = ClockBase(
-            TaggedTimestamp.machineNow().untag,
-            Timestamp(0, 0),
+            MachineTimestamp.now(),
+            VirtualTimestamp(0, 0),
             1.0
           )
           val chart = testKit.spawn(Chart(initClockBase, expirationConfig))
           val clock = testKit.spawn(Clock(initClockBase))
           val reader = testKit.createTestProbe[ReadReply]()
 
-          chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(0, 0), Vector3Enu(1, 1, 1)))
-          chart ! UpdateNeighbor(chartAgent("agent-2", Timestamp(0, 0), Vector3Enu(2, 2, 2)))
-          chart ! UpdateNeighbor(chartAgent("agent-3", Timestamp(0, 0), Vector3Enu(3, 3, 3)))
+          chart ! UpdateNeighbor(chartAgent("agent-1", VirtualTimestamp(0, 0), Vector3Enu(1, 1, 1)))
+          chart ! UpdateNeighbor(chartAgent("agent-2", VirtualTimestamp(0, 0), Vector3Enu(2, 2, 2)))
+          chart ! UpdateNeighbor(chartAgent("agent-3", VirtualTimestamp(0, 0), Vector3Enu(3, 3, 3)))
           chart ! Read(reader.ref)
           {
             val orderedNeighbors = reader.receiveMessage().orderedNeighbors
@@ -139,14 +141,16 @@ class ChartSpec extends ActorTestBase:
 
           clock ! UpdateClockBase(
             ClockBase(
-              TaggedTimestamp.machineNow().untag,
-              Timestamp(10, 0),
+              MachineTimestamp.now(),
+              VirtualTimestamp(10, 0),
               1.0
             )
           )
-          chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(7, 0), Vector3Enu(1, 1, 1)))
-          chart ! UpdateNeighbor(chartAgent("agent-2", Timestamp(9, 0), Vector3Enu(2, 2, 2)))
-          chart ! UpdateNeighbor(chartAgent("agent-3", Timestamp(10, 0), Vector3Enu(3, 3, 3)))
+          chart ! UpdateNeighbor(chartAgent("agent-1", VirtualTimestamp(7, 0), Vector3Enu(1, 1, 1)))
+          chart ! UpdateNeighbor(chartAgent("agent-2", VirtualTimestamp(9, 0), Vector3Enu(2, 2, 2)))
+          chart ! UpdateNeighbor(
+            chartAgent("agent-3", VirtualTimestamp(10, 0), Vector3Enu(3, 3, 3))
+          )
           Thread.sleep(expirationConfig.expiration.checkMachineInterval.toMillis * 2)
           chart ! Read(reader.ref)
           {
@@ -179,9 +183,9 @@ class ChartSpec extends ActorTestBase:
           val reader = testKit.createTestProbe[ReadReply]()
 
           chart ! UpdateFirstAgents(
-            Seq(chartAgent("first-1", Timestamp(0, 0), Vector3Enu(0, 0, 0)))
+            Seq(chartAgent("first-1", VirtualTimestamp(0, 0), Vector3Enu(0, 0, 0)))
           )
-          chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(0, 0), Vector3Enu(3, 4, 0)))
+          chart ! UpdateNeighbor(chartAgent("agent-1", VirtualTimestamp(0, 0), Vector3Enu(3, 4, 0)))
           chart ! Read(reader.ref)
           {
             val orderedNeighbors = reader.receiveMessage().orderedNeighbors
@@ -194,9 +198,9 @@ class ChartSpec extends ActorTestBase:
             baseConfig.copy(culling = ChartConfig.Culling(enabled = true, maxFirstAgents = 10))
           )
           chart ! UpdateFirstAgents(
-            Seq(chartAgent("first-1", Timestamp(0, 0), Vector3Enu(0, 0, 0)))
+            Seq(chartAgent("first-1", VirtualTimestamp(0, 0), Vector3Enu(0, 0, 0)))
           )
-          chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(1, 0), Vector3Enu(3, 4, 0)))
+          chart ! UpdateNeighbor(chartAgent("agent-1", VirtualTimestamp(1, 0), Vector3Enu(3, 4, 0)))
           chart ! Read(reader.ref)
           {
             val orderedNeighbors = reader.receiveMessage().orderedNeighbors
@@ -215,15 +219,21 @@ class ChartSpec extends ActorTestBase:
             )
           )
           val initClockBase = ClockBase(
-            TaggedTimestamp.machineNow().untag,
-            Timestamp(123, 0),
+            MachineTimestamp.now(),
+            VirtualTimestamp(123, 0),
             1.0
           )
           val chart = testKit.spawn(Chart(initClockBase, expirationConfig))
           val reader = testKit.createTestProbe[ReadReply]()
-          chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(122, 0), Vector3Enu(1, 1, 1)))
-          chart ! UpdateNeighbor(chartAgent("agent-2", Timestamp(121, 0), Vector3Enu(2, 2, 2)))
-          chart ! UpdateNeighbor(chartAgent("agent-3", Timestamp(100, 0), Vector3Enu(3, 3, 3)))
+          chart ! UpdateNeighbor(
+            chartAgent("agent-1", VirtualTimestamp(122, 0), Vector3Enu(1, 1, 1))
+          )
+          chart ! UpdateNeighbor(
+            chartAgent("agent-2", VirtualTimestamp(121, 0), Vector3Enu(2, 2, 2))
+          )
+          chart ! UpdateNeighbor(
+            chartAgent("agent-3", VirtualTimestamp(100, 0), Vector3Enu(3, 3, 3))
+          )
           Thread.sleep(expirationConfig.expiration.checkMachineInterval.toMillis * 2)
           chart ! Read(reader.ref)
           {
@@ -264,11 +274,11 @@ class ChartSpec extends ActorTestBase:
 
           chart ! UpdateFirstAgents(
             Seq(
-              chartAgent("first-1", Timestamp(0, 0), Vector3Enu(0, 0, 0)),
-              chartAgent("first-2", Timestamp(0, 0), Vector3Enu(5, 5, 5))
+              chartAgent("first-1", VirtualTimestamp(0, 0), Vector3Enu(0, 0, 0)),
+              chartAgent("first-2", VirtualTimestamp(0, 0), Vector3Enu(5, 5, 5))
             )
           )
-          chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(0, 0), Vector3Enu(1, 0, 0)))
+          chart ! UpdateNeighbor(chartAgent("agent-1", VirtualTimestamp(0, 0), Vector3Enu(1, 0, 0)))
           chart ! Read(reader.ref)
 
           val orderedNeighbors = reader.receiveMessage().orderedNeighbors
@@ -288,11 +298,11 @@ class ChartSpec extends ActorTestBase:
 
           chart ! UpdateFirstAgents(
             Seq(
-              chartAgent("first-1", Timestamp(0, 0), Vector3Enu(0, 0, 0)),
-              chartAgent("first-2", Timestamp(0, 0), Vector3Enu(5, 5, 5))
+              chartAgent("first-1", VirtualTimestamp(0, 0), Vector3Enu(0, 0, 0)),
+              chartAgent("first-2", VirtualTimestamp(0, 0), Vector3Enu(5, 5, 5))
             )
           )
-          chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(0, 0), Vector3Enu(1, 0, 0)))
+          chart ! UpdateNeighbor(chartAgent("agent-1", VirtualTimestamp(0, 0), Vector3Enu(1, 0, 0)))
           chart ! Read(reader.ref)
 
           val orderedNeighbors = reader.receiveMessage().orderedNeighbors
@@ -312,10 +322,10 @@ class ChartSpec extends ActorTestBase:
 
           chart ! UpdateFirstAgents(
             Seq(
-              chartAgent("first-1", Timestamp(0, 0), Vector3Enu(1, 1, 1))
+              chartAgent("first-1", VirtualTimestamp(0, 0), Vector3Enu(1, 1, 1))
             )
           )
-          chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(0, 0), Vector3Enu(1, 0, 0)))
+          chart ! UpdateNeighbor(chartAgent("agent-1", VirtualTimestamp(0, 0), Vector3Enu(1, 0, 0)))
           chart ! Read(reader.ref)
           {
             val orderedNeighbors = reader.receiveMessage().orderedNeighbors
@@ -326,12 +336,12 @@ class ChartSpec extends ActorTestBase:
 
           chart ! UpdateFirstAgents(
             Seq(
-              chartAgent("first-1", Timestamp(0, 0), Vector3Enu(1, 1, 1)),
-              chartAgent("first-2", Timestamp(0, 0), Vector3Enu(2, 2, 2)),
-              chartAgent("first-3", Timestamp(0, 0), Vector3Enu(3, 3, 3))
+              chartAgent("first-1", VirtualTimestamp(0, 0), Vector3Enu(1, 1, 1)),
+              chartAgent("first-2", VirtualTimestamp(0, 0), Vector3Enu(2, 2, 2)),
+              chartAgent("first-3", VirtualTimestamp(0, 0), Vector3Enu(3, 3, 3))
             )
           )
-          chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(0, 1), Vector3Enu(1, 0, 0)))
+          chart ! UpdateNeighbor(chartAgent("agent-1", VirtualTimestamp(0, 1), Vector3Enu(1, 0, 0)))
           chart ! Read(reader.ref)
           {
             val orderedNeighbors = reader.receiveMessage().orderedNeighbors
@@ -347,7 +357,9 @@ class ChartSpec extends ActorTestBase:
           val reader = testKit.createTestProbe[ReadReply]()
 
           for i <- 1 to 3 do
-            chart ! UpdateNeighbor(chartAgent(s"agent-$i", Timestamp(0, 0), Vector3Enu(i, i, i)))
+            chart ! UpdateNeighbor(
+              chartAgent(s"agent-$i", VirtualTimestamp(0, 0), Vector3Enu(i, i, i))
+            )
           chart ! Read(reader.ref)
 
           val orderedNeighbors = reader.receiveMessage().orderedNeighbors
@@ -361,13 +373,13 @@ class ChartSpec extends ActorTestBase:
           val chart = testKit.spawn(Chart(initClockBase, baseConfig))
           val reader = testKit.createTestProbe[ReadReply]()
 
-          chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(0, 0), Vector3Enu(1, 1, 1)))
-          chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(1, 0), Vector3Enu(2, 2, 2)))
+          chart ! UpdateNeighbor(chartAgent("agent-1", VirtualTimestamp(0, 0), Vector3Enu(1, 1, 1)))
+          chart ! UpdateNeighbor(chartAgent("agent-1", VirtualTimestamp(1, 0), Vector3Enu(2, 2, 2)))
           chart ! Read(reader.ref)
 
           val orderedNeighbors = reader.receiveMessage().orderedNeighbors
           assert(orderedNeighbors.map(_.neighbor.agentId).toSet == Set("agent-1"))
-          assert(orderedNeighbors(0).neighbor.transform.timestamp == Timestamp(1, 0))
+          assert(orderedNeighbors(0).neighbor.transform.timestamp == VirtualTimestamp(1, 0))
           assert(
             orderedNeighbors(0).neighbor.transform.localTranslationMeter == Vector3Enu(2, 2, 2)
           )
@@ -378,8 +390,8 @@ class ChartSpec extends ActorTestBase:
           val chart = testKit.spawn(Chart(initClockBase, baseConfig))
           val reader = testKit.createTestProbe[ReadReply]()
 
-          chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(2, 0), Vector3Enu(2, 2, 2)))
-          chart ! UpdateNeighbor(chartAgent("agent-1", Timestamp(1, 0), Vector3Enu(1, 1, 1)))
+          chart ! UpdateNeighbor(chartAgent("agent-1", VirtualTimestamp(2, 0), Vector3Enu(2, 2, 2)))
+          chart ! UpdateNeighbor(chartAgent("agent-1", VirtualTimestamp(1, 0), Vector3Enu(1, 1, 1)))
           chart ! Read(reader.ref)
 
           val orderedNeighbors = reader.receiveMessage().orderedNeighbors
@@ -387,7 +399,7 @@ class ChartSpec extends ActorTestBase:
           assert(
             orderedNeighbors(0).neighbor.transform.localTranslationMeter == Vector3Enu(2, 2, 2)
           )
-          assert(orderedNeighbors(0).neighbor.transform.timestamp == Timestamp(2, 0))
+          assert(orderedNeighbors(0).neighbor.transform.timestamp == VirtualTimestamp(2, 0))
           assert(orderedNeighbors(0).nearestDistance == None)
 
       it("sorts neighbors by distance from nearest first agent"):
@@ -397,15 +409,22 @@ class ChartSpec extends ActorTestBase:
 
           chart ! UpdateFirstAgents(
             Seq(
-              chartAgent("a0", Timestamp(0, 0), Vector3Enu(1.99, 2.98, 3.97)), // near b-2-3-4
-              chartAgent("a1", Timestamp(0, 0), Vector3Enu(8.80, 7.81, 6.82)) // near b-9-8-7
+              chartAgent(
+                "a0",
+                VirtualTimestamp(0, 0),
+                Vector3Enu(1.99, 2.98, 3.97)
+              ), // near b-2-3-4
+              chartAgent("a1", VirtualTimestamp(0, 0), Vector3Enu(8.80, 7.81, 6.82)) // near b-9-8-7
             )
           )
           for
             x <- 0 to 9
             y <- 0 to 9
             z <- 0 to 9
-          do chart ! UpdateNeighbor(chartAgent(s"b-$x-$y-$z", Timestamp(1, 0), Vector3Enu(x, y, z)))
+          do
+            chart ! UpdateNeighbor(
+              chartAgent(s"b-$x-$y-$z", VirtualTimestamp(1, 0), Vector3Enu(x, y, z))
+            )
           chart ! Read(reader.ref)
           {
             val orderedNeighbors = reader.receiveMessage().orderedNeighbors
@@ -446,7 +465,11 @@ class ChartSpec extends ActorTestBase:
             z <- 0 to 9
           do
             chart ! UpdateNeighbor(
-              chartAgent(s"b-$x-$y-$z", Timestamp(1, 0), Vector3Enu(x * 0.1, y * 0.1, z * 0.1))
+              chartAgent(
+                s"b-$x-$y-$z",
+                VirtualTimestamp(1, 0),
+                Vector3Enu(x * 0.1, y * 0.1, z * 0.1)
+              )
             )
           chart ! Read(reader.ref)
           {

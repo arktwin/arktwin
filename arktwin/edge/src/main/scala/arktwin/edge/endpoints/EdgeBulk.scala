@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.endpoints
 
-import arktwin.common.data.TaggedTimestamp
+import arktwin.common.data.MachineTimestamp
 import arktwin.common.util.JsonDerivation
 import arktwin.common.util.JsonDerivation.given
 import arktwin.edge.actors.adapters.{EdgeAgentsPutAdapter, EdgeNeighborsQueryAdapter}
@@ -75,13 +75,13 @@ object EdgeBulk:
     given Timeout = staticConfig.endpointMachineTimeout
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogicWithLog: request =>
-        val requestTime = TaggedTimestamp.machineNow()
+        val requestTime = MachineTimestamp.now()
 
         val agentsPutFuture = request.agentsPut match
           case Some(agentsRequest) =>
             agentsPutAdapter
               .?[Either[ErrorStatus, EdgeAgentsPutResponse]](
-                EdgeAgentsPutAdapter.Put(agentsRequest, TaggedTimestamp.machineNow(), _)
+                EdgeAgentsPutAdapter.Put(agentsRequest, MachineTimestamp.now(), _)
               )
               .map:
                 _.fold(
@@ -112,7 +112,7 @@ object EdgeBulk:
 
         responseFuture.andThen: _ =>
           requestNumCounter.increment()
-          processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)
+          processMachineTimeHistogram.record(MachineTimestamp.now() - requestTime)
 
 case class EdgeBulkRequest(
     @description("Same as the request for PUT /api/edge/agents")

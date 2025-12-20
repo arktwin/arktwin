@@ -56,7 +56,7 @@ class EdgeAgentsPutAdapterSpec extends ActorTestBase:
           MeterPerSecond
         )
       )
-      clockReadQueue += ClockBase(Timestamp(0, 0), Timestamp(0, 0), 1)
+      clockReadQueue += ClockBase(MachineTimestamp(0, 0), VirtualTimestamp(0, 0), 1)
       adapter ! Put(
         Request(
           Some(VirtualTimestamp(1, 0)),
@@ -73,18 +73,30 @@ class EdgeAgentsPutAdapterSpec extends ActorTestBase:
       )
       assert(
         chart.receiveMessage().firstAgents == Seq(
-          ChartAgent("a", transformEnu(Timestamp(1, 0), Vector3Enu(1, 2, 3), Vector3Enu(1, 1, 1))),
-          ChartAgent("b", transformEnu(Timestamp(1, 0), Vector3Enu(1, 2, 3), Vector3Enu(0, 0, 0)))
+          ChartAgent(
+            "a",
+            transformEnu(VirtualTimestamp(1, 0), Vector3Enu(1, 2, 3), Vector3Enu(1, 1, 1))
+          ),
+          ChartAgent(
+            "b",
+            transformEnu(VirtualTimestamp(1, 0), Vector3Enu(1, 2, 3), Vector3Enu(0, 0, 0))
+          )
         )
       )
       assert(
         chartPublish.receiveMessage().agents == Seq(
-          ChartAgent("a", transformEnu(Timestamp(1, 0), Vector3Enu(1, 2, 3), Vector3Enu(1, 1, 1))),
-          ChartAgent("b", transformEnu(Timestamp(1, 0), Vector3Enu(1, 2, 3), Vector3Enu(0, 0, 0)))
+          ChartAgent(
+            "a",
+            transformEnu(VirtualTimestamp(1, 0), Vector3Enu(1, 2, 3), Vector3Enu(1, 1, 1))
+          ),
+          ChartAgent(
+            "b",
+            transformEnu(VirtualTimestamp(1, 0), Vector3Enu(1, 2, 3), Vector3Enu(0, 0, 0))
+          )
         )
       )
 
-      clockReadQueue += ClockBase(Timestamp(0, 0), Timestamp(0, 0), 1)
+      clockReadQueue += ClockBase(MachineTimestamp(0, 0), VirtualTimestamp(1, 0), 1)
       adapter ! Put(
         Request(
           Some(VirtualTimestamp(1, 500_000_000)),
@@ -100,11 +112,11 @@ class EdgeAgentsPutAdapterSpec extends ActorTestBase:
         chart.receiveMessage().firstAgents == Seq(
           ChartAgent(
             "a",
-            transformEnu(Timestamp(1, 500_000_000), Vector3Enu(4, 4, 4), Vector3Enu(6, 4, 2))
+            transformEnu(VirtualTimestamp(1, 500_000_000), Vector3Enu(4, 4, 4), Vector3Enu(6, 4, 2))
           ),
           ChartAgent(
             "b",
-            transformEnu(Timestamp(1, 500_000_000), Vector3Enu(1, 2, 3), Vector3Enu(0, 0, 0))
+            transformEnu(VirtualTimestamp(1, 500_000_000), Vector3Enu(1, 2, 3), Vector3Enu(0, 0, 0))
           )
         )
       )
@@ -112,11 +124,11 @@ class EdgeAgentsPutAdapterSpec extends ActorTestBase:
         chartPublish.receiveMessage().agents == Seq(
           ChartAgent(
             "a",
-            transformEnu(Timestamp(1, 500_000_000), Vector3Enu(4, 4, 4), Vector3Enu(6, 4, 2))
+            transformEnu(VirtualTimestamp(1, 500_000_000), Vector3Enu(4, 4, 4), Vector3Enu(6, 4, 2))
           ),
           ChartAgent(
             "b",
-            transformEnu(Timestamp(1, 500_000_000), Vector3Enu(1, 2, 3), Vector3Enu(0, 0, 0))
+            transformEnu(VirtualTimestamp(1, 500_000_000), Vector3Enu(1, 2, 3), Vector3Enu(0, 0, 0))
           )
         )
       )
@@ -132,7 +144,7 @@ class EdgeAgentsPutAdapterSpec extends ActorTestBase:
     )
 
   private def transformEnu(
-      timestamp: Timestamp,
+      timestamp: VirtualTimestamp,
       localTranslation: Vector3Enu,
       localTranslationSpeed: Vector3Enu
   ) =

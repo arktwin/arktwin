@@ -5,9 +5,9 @@ package arktwin.center.actors
 import arktwin.center.configs.ClockConfig
 import arktwin.center.configs.ClockConfig.Start.{Absolute, Relative, Schedule}
 import arktwin.center.services.ClockBase
-import arktwin.common.data.{TaggedDuration, TaggedTimestamp}
+import arktwin.common.data.{MachineDuration, MachineTimestamp}
 import arktwin.common.util.BehaviorsExtensions.*
-import arktwin.common.util.{MachineTag, MailboxConfig}
+import arktwin.common.util.MailboxConfig
 import org.apache.pekko.actor.typed.SpawnProtocol.Spawn
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
@@ -32,12 +32,12 @@ object Clock:
       config: ClockConfig
   ): Behavior[Message] = Behaviors.setupWithLogger: (context, logger) =>
     Behaviors.withTimers: initialUpdateSpeedTimer =>
-      val baseMachineTimestamp = TaggedTimestamp.machineNow()
+      val baseMachineTimestamp = MachineTimestamp.now()
       val baseVirtualTimestamp = config.start.initialTime match
         case Absolute(timestamp) => timestamp
-        case Relative(duration)  => baseMachineTimestamp.untag.tagVirtual + duration
+        case Relative(duration)  => baseMachineTimestamp.toVirtual + duration
       val initialClockBase = config.start.condition match
-        case Schedule(schedule) if schedule <= TaggedDuration[MachineTag](0, 0) =>
+        case Schedule(schedule) if schedule <= MachineDuration(0, 0) =>
           ClockBase(baseMachineTimestamp, baseVirtualTimestamp, config.start.clockSpeed)
 
         case Schedule(schedule) =>
@@ -72,7 +72,7 @@ object Clock:
           if initialUpdateSpeedTimerFlag then
             initialUpdateSpeedTimer.cancelAll()
             initialUpdateSpeedTimerFlag = false
-          val baseMachineTimestamp = TaggedTimestamp.machineNow()
+          val baseMachineTimestamp = MachineTimestamp.now()
           clockBase = ClockBase(
             baseMachineTimestamp,
             clockBase.fromMachine(baseMachineTimestamp),

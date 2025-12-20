@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.endpoints
 
-import arktwin.common.data.TaggedTimestamp
+import arktwin.common.data.MachineTimestamp
 import arktwin.common.util.JsonDerivation
 import arktwin.common.util.JsonDerivation.given
 import arktwin.edge.actors.EdgeConfigurator
@@ -62,7 +62,7 @@ object EdgeConfigChartPut:
 
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogicWithLog: request =>
-        val requestTime = TaggedTimestamp.machineNow()
+        val requestTime = MachineTimestamp.now()
         (request.validated("") match
           case Invalid(errors) =>
             Future.successful(Left(BadRequest(errors.toChain.toVector)))
@@ -71,4 +71,4 @@ object EdgeConfigChartPut:
             Future.successful(Right(()))
         ).andThen: _ =>
           requestNumCounter.increment()
-          processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)
+          processMachineTimeHistogram.record(MachineTimestamp.now() - requestTime)
