@@ -3,7 +3,7 @@ syntax = "proto3";
 package arktwin.common.data;
 
 import "arktwin/common/data/quaternion_enu.proto";
-import "arktwin/common/data/timestamp.proto";
+import "arktwin/common/data/virtual_timestamp.proto";
 import "arktwin/common/data/vector3_enu.proto";
 import "google/protobuf/wrappers.proto";
 import "scalapb/scalapb.proto";
@@ -13,7 +13,7 @@ import "validate/validate.proto";
 // cf. https://docs.unrealengine.com/4.27/en-US/API/Runtime/Core/Math/FTransform/
 message TransformEnu {
   option (scalapb.message).extends = "arktwin.common.data.TransformEnuTrait";
-  Timestamp timestamp = 1 [(validate.rules).message.required = true];
+  VirtualTimestamp timestamp = 1 [(validate.rules).message.required = true];
   google.protobuf.StringValue parent_agent = 2;
   Vector3Enu global_scale = 3 [(validate.rules).message.required = true];
   QuaternionEnu local_rotation = 4 [(validate.rules).message.required = true];

@@ -19,7 +19,7 @@ class TransformEnuSpec extends AnyFunSpec:
       vz: Double
   ): TransformEnu =
     TransformEnu(
-      timestamp = Timestamp(seconds, 0),
+      timestamp = VirtualTimestamp(seconds, 0),
       parentAgent = defaultParentAgent,
       globalScale = defaultGlobalScale,
       localRotation = defaultLocalRotation,
@@ -32,57 +32,57 @@ class TransformEnuSpec extends AnyFunSpec:
     describe("extrapolate"):
       it("updates position with zero time difference"):
         val transform = createTransformEnu(100, 10.0, 20.0, 30.0, 1.0, 2.0, 3.0)
-        val targetTime = Timestamp(100, 0).tagVirtual
+        val targetTime = VirtualTimestamp(100, 0)
         val result = transform.extrapolate(targetTime)
 
-        assert(result.timestamp == targetTime.untag)
+        assert(result.timestamp == targetTime)
         assert(result.localTranslationMeter == Vector3Enu(10.0, 20.0, 30.0))
         assert(result.localTranslationSpeedMps == Vector3Enu(1.0, 2.0, 3.0))
 
       it("updates position forward in time"):
         val transform = createTransformEnu(100, 10.0, 20.0, 30.0, 1.0, 2.0, 3.0)
-        val targetTime = Timestamp(102, 0).tagVirtual // 2 seconds later
+        val targetTime = VirtualTimestamp(102, 0) // 2 seconds later
         val result = transform.extrapolate(targetTime)
 
-        assert(result.timestamp == targetTime.untag)
+        assert(result.timestamp == targetTime)
         assert(result.localTranslationMeter == Vector3Enu(12.0, 24.0, 36.0))
         assert(result.localTranslationSpeedMps == Vector3Enu(1.0, 2.0, 3.0))
 
       it("updates position backward in time"):
         val transform = createTransformEnu(100, 10.0, 20.0, 30.0, 1.0, 2.0, 3.0)
-        val targetTime = Timestamp(98, 0).tagVirtual // 2 seconds earlier
+        val targetTime = VirtualTimestamp(98, 0)
         val result = transform.extrapolate(targetTime)
 
-        assert(result.timestamp == targetTime.untag)
+        assert(result.timestamp == targetTime)
         assert(result.localTranslationMeter == Vector3Enu(8.0, 16.0, 24.0))
         assert(result.localTranslationSpeedMps == Vector3Enu(1.0, 2.0, 3.0))
 
       it("updates position with fractional seconds"):
         val transform = createTransformEnu(100, 0.0, 0.0, 0.0, 10.0, 20.0, 30.0)
-        val targetTime = Timestamp(100, 500000000).tagVirtual // 0.5 seconds later
+        val targetTime = VirtualTimestamp(100, 500000000) // 0.5 seconds later
         val result = transform.extrapolate(targetTime)
 
-        assert(result.timestamp == targetTime.untag)
+        assert(result.timestamp == targetTime)
         assert(result.localTranslationMeter == Vector3Enu(5.0, 10.0, 15.0))
 
       it("maintains position with zero speed"):
         val transform = createTransformEnu(100, 10.0, 20.0, 30.0, 0.0, 0.0, 0.0)
-        val targetTime = Timestamp(105, 0).tagVirtual // 5 seconds later
+        val targetTime = VirtualTimestamp(105, 0) // 5 seconds later
         val result = transform.extrapolate(targetTime)
 
-        assert(result.timestamp == targetTime.untag)
+        assert(result.timestamp == targetTime)
         assert(result.localTranslationMeter == Vector3Enu(10.0, 20.0, 30.0))
 
       it("updates position with negative speed"):
         val transform = createTransformEnu(100, 50.0, 60.0, 70.0, -5.0, -10.0, -15.0)
-        val targetTime = Timestamp(102, 0).tagVirtual // 2 seconds later
+        val targetTime = VirtualTimestamp(102, 0) // 2 seconds later
         val result = transform.extrapolate(targetTime)
 
         assert(result.localTranslationMeter == Vector3Enu(40.0, 40.0, 40.0))
 
       it("preserves other fields during extrapolation"):
         val transform = createTransformEnu(100, 1.0, 2.0, 3.0, 0.5, 0.5, 0.5)
-        val targetTime = Timestamp(101, 0).tagVirtual
+        val targetTime = VirtualTimestamp(101, 0)
         val result = transform.extrapolate(targetTime)
 
         assert(result.parentAgent == defaultParentAgent)

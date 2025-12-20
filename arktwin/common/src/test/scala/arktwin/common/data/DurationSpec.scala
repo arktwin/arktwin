@@ -2,33 +2,16 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.common.data
 
-import arktwin.common.util.{MachineTag, VirtualTag}
 import org.scalactic.{Equality, TolerantNumerics}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.duration.Duration as ScalaDuration
 
-class TaggedDurationSpec extends AnyFunSpec with Matchers:
+class DurationSpec extends AnyFunSpec with Matchers:
   given Equality[Double] = TolerantNumerics.tolerantDoubleEquality(1e-6)
 
-  describe("MachineDuration"):
-    describe("apply"):
-      it("creates normalized MachineDuration"):
-        val duration = MachineDuration(1, 2_000_000_000)
-
-        assert(duration.seconds == 3)
-        assert(duration.nanos == 0)
-
-  describe("VirtualDuration"):
-    describe("apply"):
-      it("creates normalized VirtualDuration"):
-        val duration = VirtualDuration(-1, -2_000_000_000)
-
-        assert(duration.seconds == -3)
-        assert(duration.nanos == 0)
-
-  describe("TaggedDuration"):
+  describe("Duration"):
     describe("secondsDouble"):
       it("converts to double seconds"):
         assert(VirtualDuration(10, 500_000_000).secondsDouble === 10.5)
@@ -137,56 +120,49 @@ class TaggedDurationSpec extends AnyFunSpec with Matchers:
       it("normalizes before comparison"):
         assert(MachineDuration(1, 1_000_000_000) == MachineDuration(2, 0))
 
-  describe("TaggedDuration$"):
+  describe("Duration$"):
     describe("apply"):
       it("normalizes positive overflow nanos"):
-        val result = TaggedDuration[MachineTag](1, 1_500_000_000L)
+        val duration = MachineDuration(1, 1_500_000_000L)
 
-        assert(result.seconds == 2)
-        assert(result.nanos == 500_000_000)
+        assert(duration.seconds == 2)
+        assert(duration.nanos == 500_000_000)
 
       it("normalizes negative overflow nanos"):
-        val result = TaggedDuration[VirtualTag](1, -1_500_000_000L)
+        val duration = VirtualDuration(1, -1_500_000_000L)
 
-        assert(result.seconds == 0)
-        assert(result.nanos == -500_000_000)
+        assert(duration.seconds == 0)
+        assert(duration.nanos == -500_000_000)
 
       it("handles positive seconds with negative nanos"):
-        val result = TaggedDuration[MachineTag](5, -200_000_000)
+        val duration = MachineDuration(5, -200_000_000)
 
-        assert(result.seconds == 4)
-        assert(result.nanos == 800_000_000)
+        assert(duration.seconds == 4)
+        assert(duration.nanos == 800_000_000)
 
       it("handles negative seconds with positive nanos"):
-        val result = TaggedDuration[VirtualTag](-5, 200_000_000)
+        val duration = VirtualDuration(-5, 200_000_000)
 
-        assert(result.seconds == -4)
-        assert(result.nanos == -800_000_000)
+        assert(duration.seconds == -4)
+        assert(duration.nanos == -800_000_000)
 
     describe("from"):
-      it("creates from Duration"):
-        val duration = Duration(100, 999_999_999)
-        val tagged = TaggedDuration.from[MachineTag](duration)
-
-        assert(tagged.seconds == 100)
-        assert(tagged.nanos == 999_999_999)
-
       it("creates from Scala Duration"):
         val scalaDuration = ScalaDuration("2.5 seconds")
-        val tagged = TaggedDuration.from[VirtualTag](scalaDuration)
+        val duration = VirtualDuration.from(scalaDuration)
 
-        assert(tagged.seconds == 2)
-        assert(tagged.nanos == 500_000_000)
+        assert(duration.seconds == 2)
+        assert(duration.nanos == 500_000_000)
 
     describe("fromSecondsDouble"):
       it("converts from double seconds"):
-        val duration = TaggedDuration.fromSecondsDouble[MachineTag](3.75)
+        val duration = MachineDuration.fromSecondsDouble(3.75)
 
         assert(duration.seconds == 3)
         assert(duration.nanos == 750_000_000)
 
       it("handles negative values for fromSecondsDouble"):
-        val duration = TaggedDuration.fromSecondsDouble[VirtualTag](-1.25)
+        val duration = VirtualDuration.fromSecondsDouble(-1.25)
 
         assert(duration.seconds == -1)
         assert(duration.nanos == -250_000_000)

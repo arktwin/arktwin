@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.center.configs
 
-import arktwin.common.data.{TaggedTimestamp, Vector3Enu}
+import arktwin.common.data.Vector3Enu
 import arktwin.common.util.LoggerConfigurator.LogLevel
 import arktwin.common.util.PureConfigHints.given
 import cats.data.Validated.{Invalid, Valid}

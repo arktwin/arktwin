@@ -2,7 +2,7 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.edge.endpoints
 
-import arktwin.common.data.{TaggedTimestamp, VirtualTimestamp}
+import arktwin.common.data.{MachineTimestamp, VirtualTimestamp}
 import arktwin.common.util.JsonDerivation
 import arktwin.common.util.JsonDerivation.given
 import arktwin.edge.actors.adapters.EdgeNeighborsQueryAdapter
@@ -87,13 +87,13 @@ object EdgeNeighborsQuery:
     given Timeout = staticConfig.endpointMachineTimeout
     PekkoHttpServerInterpreter().toRoute:
       endpoint.serverLogicWithLog: request =>
-        val requestTime = TaggedTimestamp.machineNow()
+        val requestTime = MachineTimestamp.now()
         adapter
           .?[Either[ErrorStatus, Response]](EdgeNeighborsQueryAdapter.Query(request, _))
           .recover(throwable => Left(ErrorStatus(throwable)))
           .andThen: _ =>
             requestNumCounter.increment()
-            processMachineTimeHistogram.record(TaggedTimestamp.machineNow() - requestTime)
+            processMachineTimeHistogram.record(MachineTimestamp.now() - requestTime)
 
 case class EdgeNeighborsQueryRequest(
     @description("If it is omitted, a current timestamp of the edge virtual clock is used.")

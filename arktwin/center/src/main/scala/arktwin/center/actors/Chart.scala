@@ -4,7 +4,7 @@ package arktwin.center.actors
 
 import arktwin.center.services.ChartAgent
 import arktwin.center.util.CenterKamon
-import arktwin.common.data.{MachineTimestamp, TaggedTimestamp, Vector3Enu}
+import arktwin.common.data.{MachineTimestamp, Vector3Enu}
 import arktwin.common.util.CommonMessages.Terminate
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.actor.typed.{ActorRef, Behavior}
@@ -38,7 +38,7 @@ object Chart:
     Behaviors.receiveMessage:
       // micro-batch to reduce overhead of stream processing
       case publishBatch: PublishBatch =>
-        val currentMachineTimestamp = TaggedTimestamp.machineNow()
+        val currentMachineTimestamp = MachineTimestamp.now()
 
         // TODO consider relative coordinates
         for (chartSubscriber, agents) <- publishBatch.agents

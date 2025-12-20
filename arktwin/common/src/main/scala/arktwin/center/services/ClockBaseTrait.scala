@@ -5,21 +5,13 @@ package arktwin.center.services
 import arktwin.common.data.*
 
 trait ClockBaseTrait:
-  val baseMachineTimestamp: Timestamp
-  val baseTimestamp: Timestamp
+  val baseMachineTimestamp: MachineTimestamp
+  val baseTimestamp: VirtualTimestamp
   val clockSpeed: Double
 
   def fromMachine(machineTimestamp: MachineTimestamp): VirtualTimestamp =
-    baseTimestamp.tagVirtual +
-      ((machineTimestamp - baseMachineTimestamp.tagMachine) * clockSpeed).untag.tagVirtual
+    val machineDuration = (machineTimestamp - baseMachineTimestamp)
+    baseTimestamp + machineDuration.toVirtual(clockSpeed)
 
   def now(): VirtualTimestamp =
-    fromMachine(TaggedTimestamp.machineNow())
-
-trait ClockBaseCompanionTrait:
-  def apply(
-      baseMachineTimestamp: MachineTimestamp,
-      baseVirtualTimestamp: VirtualTimestamp,
-      clockSpeed: Double
-  ): ClockBase =
-    ClockBase(baseMachineTimestamp.untag, baseVirtualTimestamp.untag, clockSpeed)
+    fromMachine(MachineTimestamp.now())

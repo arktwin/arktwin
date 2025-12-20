@@ -125,7 +125,7 @@ class EdgeNeighborsQueryAdapterSpec extends ActorTestBase:
         CullingNeighbor(ChartAgent("a0", transformEnu()), Some(1)),
         CullingNeighbor(ChartAgent("a3", transformEnu()), None)
       )
-      clockReadQueue += ClockBase(Timestamp(0, 0), Timestamp(0, 0), 1)
+      clockReadQueue += ClockBase(MachineTimestamp(0, 0), VirtualTimestamp(0, 0), 1)
       registerReadQueue += Map(
         "a0" -> RegisterAgent("a0", "k0", Map("i" -> "0"), Map("x" -> "x0")),
         "a1" -> RegisterAgent("a1", "k1", Map("i" -> "1"), Map("x" -> "x1")),
@@ -163,7 +163,7 @@ class EdgeNeighborsQueryAdapterSpec extends ActorTestBase:
       )
 
   private def transformEnu() = TransformEnu(
-    Timestamp(0, 0),
+    VirtualTimestamp(0, 0),
     None,
     Vector3Enu(1, 1, 1),
     QuaternionEnu(1, 0, 0, 0),

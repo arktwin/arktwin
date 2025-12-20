@@ -2,7 +2,6 @@
 // Copyright 2024-2025 TOYOTA MOTOR CORPORATION
 package arktwin.common.util
 
-import arktwin.common.data.Timestamp
 import com.github.plokhotnyuk.jsoniter_scala.core.{JsonReader, JsonValueCodec, JsonWriter}
 import com.github.plokhotnyuk.jsoniter_scala.macros.{CodecMakerConfig, JsonCodecMaker}
 import sttp.tapir.Schema.SName
@@ -80,5 +79,3 @@ object JsonDerivation extends SchemaDerivation:
     override def encodeValue(x: FiniteDuration, out: JsonWriter): Unit = out.writeVal(x.toString())
 
     override val nullValue: FiniteDuration = null
-
-  given JsonValueCodec[Timestamp] = makeCodec

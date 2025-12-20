@@ -5,7 +5,7 @@ package arktwin.center.services
 import arktwin.center.actors.*
 import arktwin.center.configs.CenterStaticConfig
 import arktwin.center.util.CenterKamon
-import arktwin.common.data.TaggedTimestamp
+import arktwin.common.data.MachineTimestamp
 import arktwin.common.util.CommonMessages.Terminate
 import arktwin.common.util.GrpcHeaderKeys
 import arktwin.common.util.SourceExtensions.*
@@ -52,12 +52,12 @@ class ChartService(
       in
         .wireTapLog(s"Chart.Publish/$edgeId")
         .map: publishBatch =>
-          val currentMachineTimestamp = TaggedTimestamp.machineNow()
+          val currentMachineTimestamp = MachineTimestamp.now()
 
           publishAgentNumCounter.increment(publishBatch.agents.size)
           publishBatchNumCounter.increment()
           publishMachineLatencyHistogram.record(
-            currentMachineTimestamp - publishBatch.transmissionMachineTimestamp.tagMachine,
+            currentMachineTimestamp - publishBatch.transmissionMachineTimestamp,
             publishBatch.agents.size
           )
 
@@ -86,7 +86,7 @@ class ChartService(
         _.agents.size
       )
       .map: subscribeBatch =>
-        val currentMachineTimestamp = TaggedTimestamp.machineNow()
+        val currentMachineTimestamp = MachineTimestamp.now()
 
         for subscribe <- subscribeBatch do
           subscribeAgentNumCounter.increment(subscribe.agents.size)
@@ -96,7 +96,7 @@ class ChartService(
           )
         subscribeBatchNumCounter.increment()
 
-        ChartSubscribeBatch(subscribeBatch.flatMap(_.agents), currentMachineTimestamp.untag)
+        ChartSubscribeBatch(subscribeBatch.flatMap(_.agents), currentMachineTimestamp)
       .wireTapLog(s"Chart.Subscribe/$edgeId")
       .preMaterialize()
     atlas ! Atlas.AddChartSubscriber(edgeId, chartSubscriber)

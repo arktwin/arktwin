@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package arktwin.center.services;
 
-import "arktwin/common/data/timestamp.proto";
+import "arktwin/common/data/machine_timestamp.proto";
 import "arktwin/common/data/transform_enu.proto";
 import "google/protobuf/empty.proto";
 import "validate/validate.proto";
@@ -19,10 +19,10 @@ message ChartAgent {
 
 message ChartPublishBatch {
   repeated ChartAgent agents = 1;
-  common.data.Timestamp transmission_machine_timestamp = 2 [(validate.rules).message.required = true];
+  common.data.MachineTimestamp transmission_machine_timestamp = 2 [(validate.rules).message.required = true];
 }
 
 message ChartSubscribeBatch {
   repeated ChartAgent agents = 1;
-  common.data.Timestamp transmission_machine_timestamp = 2 [(validate.rules).message.required = true];
+  common.data.MachineTimestamp transmission_machine_timestamp = 2 [(validate.rules).message.required = true];
 }
