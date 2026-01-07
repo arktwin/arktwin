@@ -20,7 +20,7 @@ val tapirVersion = "1.13.4"
 val apacheLicenseV2 = Some(
   HeaderLicense.Custom(
     """|SPDX-License-Identifier: Apache-2.0
-     |Copyright 2024-2025 TOYOTA MOTOR CORPORATION
+     |Copyright 2024-2026 TOYOTA MOTOR CORPORATION
      |""".stripMargin
   )
 )
