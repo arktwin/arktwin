@@ -309,7 +309,7 @@ Please feel free to share them in [Show and tell](https://github.com/arktwin/ark
 
 ## License
 
-ArkTwin source code is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0), Copyright 2024-2025 TOYOTA MOTOR CORPORATION.
+ArkTwin source code is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0), Copyright 2024-2026 TOYOTA MOTOR CORPORATION.
 
 If you need license lists for libraries that ArkTwin Center or Edge depends on, follow these steps:
 
