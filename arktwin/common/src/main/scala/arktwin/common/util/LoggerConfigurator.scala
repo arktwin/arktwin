@@ -3,11 +3,11 @@
 package arktwin.common.util
 
 import pureconfig.ConfigReader
+import scribe.Level
 import scribe.format.FormatBlock
 import scribe.format.FormatBlock.Level.PaddedRight
 import scribe.handler.AsynchronousLogHandle
 import scribe.output.{Color, ColoredOutput, TextOutput}
-import scribe.{Level, Logger}
 import sttp.tapir.Schema
 
 object LoggerConfigurator:
