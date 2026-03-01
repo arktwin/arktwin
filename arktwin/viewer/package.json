@@ -17,7 +17,7 @@
     "@biomejs/biome": "2.3.13",
     "@types/react": "19.2.9",
     "@types/react-dom": "19.2.3",
-    "@types/three": "0.182.0",
+    "@types/three": "0.183.1",
     "@vitejs/plugin-react-swc": "4.2.2",
     "license-checker": "25.0.1",
     "typescript": "5.9.3",
@@ -34,7 +34,7 @@
     "material-react-table": "3.2.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "three": "0.182.0"
+    "three": "0.183.1"
   },
   "overrides": {
     "vite": {
