@@ -132,28 +132,28 @@ jobs:
           sbt clean "edge/run generate-openapi-center ../temp/arktwin-center-release.yaml" "edge/run generate-openapi-edge ../temp/arktwin-edge-release.yaml"
 
       - name: Generate /api/center changelog from main
-        uses: oasdiff/oasdiff-action/changelog@1c611ffb1253a72924624aa4fb662e302b3565d3 # v0.0.21
+        uses: oasdiff/oasdiff-action/changelog@1f38ea5ea0b4a2e4e49901c3bcdf4386a05e9ea1 # v0.0.37
         with:
           base: arktwin/temp/arktwin-center-main.yaml
           revision: arktwin/temp/arktwin-center-head.yaml
           output-to-file: arktwin/temp/arktwin-center-changelog-from-main.txt
 
       - name: Generate /api/edge changelog from main
-        uses: oasdiff/oasdiff-action/changelog@1c611ffb1253a72924624aa4fb662e302b3565d3 # v0.0.21
+        uses: oasdiff/oasdiff-action/changelog@1f38ea5ea0b4a2e4e49901c3bcdf4386a05e9ea1 # v0.0.37
         with:
           base: arktwin/temp/arktwin-edge-main.yaml
           revision: arktwin/temp/arktwin-edge-head.yaml
           output-to-file: arktwin/temp/arktwin-edge-changelog-from-main.txt
 
       - name: Generate /api/center changelog from latest relase
-        uses: oasdiff/oasdiff-action/changelog@1c611ffb1253a72924624aa4fb662e302b3565d3 # v0.0.21
+        uses: oasdiff/oasdiff-action/changelog@1f38ea5ea0b4a2e4e49901c3bcdf4386a05e9ea1 # v0.0.37
         with:
           base: arktwin/temp/arktwin-center-release.yaml
           revision: arktwin/temp/arktwin-center-head.yaml
           output-to-file: arktwin/temp/arktwin-center-changelog-from-release.txt
 
       - name: Generate /api/edge changelog from latest relase
-        uses: oasdiff/oasdiff-action/changelog@1c611ffb1253a72924624aa4fb662e302b3565d3 # v0.0.21
+        uses: oasdiff/oasdiff-action/changelog@1f38ea5ea0b4a2e4e49901c3bcdf4386a05e9ea1 # v0.0.37
         with:
           base: arktwin/temp/arktwin-edge-release.yaml
           revision: arktwin/temp/arktwin-edge-head.yaml
