@@ -20,7 +20,7 @@
     "@types/three": "0.182.0",
     "@vitejs/plugin-react-swc": "4.3.0",
     "license-checker": "25.0.1",
-    "typescript": "5.9.3",
+    "typescript": "6.0.2",
     "vite": "8.0.2"
   },
   "dependencies": {
