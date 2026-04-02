@@ -174,13 +174,13 @@ jobs:
   docker-build:
     runs-on: ubuntu-latest
     steps:
-      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+      - uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
         with:
           file: docker/center.dockerfile
           tags: arktwin-center
           push: false
 
-      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+      - uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
         with:
           file: docker/edge.dockerfile
           tags: arktwin-edge
