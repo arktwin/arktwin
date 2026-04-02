@@ -21,7 +21,7 @@ jobs:
           cache: sbt
           cache-dependency-path: arktwin/build.sbt
       
-      - uses: sbt/setup-sbt@a627500d27445f8c5021755a439829b6e78e3358 # v1.1.15
+      - uses: sbt/setup-sbt@508b753e53cb6095967669e0911487d2b9bc9f41 # v1.1.22
 
       # check before automatic execution at compile time
       - name: sbt scalafixAll --check
@@ -60,7 +60,7 @@ jobs:
           cache: sbt
           cache-dependency-path: arktwin/build.sbt
 
-      - uses: sbt/setup-sbt@a627500d27445f8c5021755a439829b6e78e3358 # v1.1.15
+      - uses: sbt/setup-sbt@508b753e53cb6095967669e0911487d2b9bc9f41 # v1.1.22
 
       - name: sbt compile
         working-directory: arktwin
@@ -94,7 +94,7 @@ jobs:
           cache: sbt
           cache-dependency-path: arktwin/build.sbt
 
-      - uses: sbt/setup-sbt@a627500d27445f8c5021755a439829b6e78e3358 # v1.1.15
+      - uses: sbt/setup-sbt@508b753e53cb6095967669e0911487d2b9bc9f41 # v1.1.22
 
       - name: sbt center/licenseCheck
         working-directory: arktwin
@@ -118,7 +118,7 @@ jobs:
           cache: sbt
           cache-dependency-path: arktwin/build.sbt
 
-      - uses: sbt/setup-sbt@a627500d27445f8c5021755a439829b6e78e3358 # v1.1.15
+      - uses: sbt/setup-sbt@508b753e53cb6095967669e0911487d2b9bc9f41 # v1.1.22
 
       - name: Generate OpenAPI YAML files
         working-directory: arktwin
@@ -132,28 +132,28 @@ jobs:
           sbt clean "edge/run generate-openapi-center ../temp/arktwin-center-release.yaml" "edge/run generate-openapi-edge ../temp/arktwin-edge-release.yaml"
 
       - name: Generate /api/center changelog from main
-        uses: oasdiff/oasdiff-action/changelog@1c611ffb1253a72924624aa4fb662e302b3565d3 # v0.0.21
+        uses: oasdiff/oasdiff-action/changelog@1f38ea5ea0b4a2e4e49901c3bcdf4386a05e9ea1 # v0.0.37
         with:
           base: arktwin/temp/arktwin-center-main.yaml
           revision: arktwin/temp/arktwin-center-head.yaml
           output-to-file: arktwin/temp/arktwin-center-changelog-from-main.txt
 
       - name: Generate /api/edge changelog from main
-        uses: oasdiff/oasdiff-action/changelog@1c611ffb1253a72924624aa4fb662e302b3565d3 # v0.0.21
+        uses: oasdiff/oasdiff-action/changelog@1f38ea5ea0b4a2e4e49901c3bcdf4386a05e9ea1 # v0.0.37
         with:
           base: arktwin/temp/arktwin-edge-main.yaml
           revision: arktwin/temp/arktwin-edge-head.yaml
           output-to-file: arktwin/temp/arktwin-edge-changelog-from-main.txt
 
       - name: Generate /api/center changelog from latest relase
-        uses: oasdiff/oasdiff-action/changelog@1c611ffb1253a72924624aa4fb662e302b3565d3 # v0.0.21
+        uses: oasdiff/oasdiff-action/changelog@1f38ea5ea0b4a2e4e49901c3bcdf4386a05e9ea1 # v0.0.37
         with:
           base: arktwin/temp/arktwin-center-release.yaml
           revision: arktwin/temp/arktwin-center-head.yaml
           output-to-file: arktwin/temp/arktwin-center-changelog-from-release.txt
 
       - name: Generate /api/edge changelog from latest relase
-        uses: oasdiff/oasdiff-action/changelog@1c611ffb1253a72924624aa4fb662e302b3565d3 # v0.0.21
+        uses: oasdiff/oasdiff-action/changelog@1f38ea5ea0b4a2e4e49901c3bcdf4386a05e9ea1 # v0.0.37
         with:
           base: arktwin/temp/arktwin-edge-release.yaml
           revision: arktwin/temp/arktwin-edge-head.yaml
@@ -174,13 +174,13 @@ jobs:
   docker-build:
     runs-on: ubuntu-latest
     steps:
-      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+      - uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
         with:
           file: docker/center.dockerfile
           tags: arktwin-center
           push: false
 
-      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+      - uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
         with:
           file: docker/edge.dockerfile
           tags: arktwin-edge
