@@ -15,7 +15,7 @@ WORKDIR /arktwin/
 COPY arktwin/ /arktwin/
 RUN sbt viewer/package edge/assembly
 
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 RUN apt-get update && \
