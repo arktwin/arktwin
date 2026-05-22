@@ -16,7 +16,7 @@ FROM debian:trixie-slim
 ENV JAVA_HOME=/opt/java/openjdk
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 RUN apt-get update && \
-    apt-get install -y curl jq && \
+    apt-get install -y curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 RUN mkdir /opt/arktwin/ && \
