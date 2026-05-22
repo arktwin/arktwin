@@ -28,4 +28,6 @@ RUN mkdir /opt/arktwin/ && \
 COPY --from=jre-build /javaruntime $JAVA_HOME
 COPY --from=jar-build /arktwin/edge/target/scala-3.8.3/arktwin-edge.jar /opt/arktwin/arktwin-edge.jar
 COPY docker/edge.sh /opt/arktwin/entrypoint.sh
+EXPOSE 2237
+HEALTHCHECK --start-period=5s CMD curl -f http://localhost:2237/health || exit 1
 ENTRYPOINT ["/opt/arktwin/entrypoint.sh"]

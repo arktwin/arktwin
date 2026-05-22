@@ -24,4 +24,6 @@ RUN mkdir /opt/arktwin/ && \
     touch /etc/opt/arktwin/center.conf
 COPY --from=jre-build /javaruntime $JAVA_HOME
 COPY --from=jar-build /arktwin/center/target/scala-3.8.3/arktwin-center.jar /opt/arktwin/arktwin-center.jar
+EXPOSE 2236
+HEALTHCHECK --start-period=5s CMD curl -f http://localhost:2236/health || exit 1
 ENTRYPOINT ["java", "-Dconfig.file=/etc/opt/arktwin/center.conf", "-XX:MaxRAMPercentage=75", "-XX:+UseZGC", "-jar", "/opt/arktwin/arktwin-center.jar"]
