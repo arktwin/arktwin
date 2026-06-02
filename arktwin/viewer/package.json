@@ -26,14 +26,14 @@
   "dependencies": {
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
-    "@mui/icons-material": "9.0.0",
-    "@mui/material": "9.0.0",
-    "@mui/x-date-pickers": "9.0.4",
+    "@mui/icons-material": "9.0.1",
+    "@mui/material": "9.0.1",
+    "@mui/x-date-pickers": "9.3.0",
     "@react-three/drei": "10.7.7",
     "@react-three/fiber": "9.6.1",
     "material-react-table": "3.2.1",
     "react": "19.2.6",
-    "react-dom": "19.2.5",
+    "react-dom": "19.2.6",
     "three": "0.184.0"
   },
   "overrides": {
