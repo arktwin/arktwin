@@ -17,7 +17,7 @@
     "@biomejs/biome": "2.3.13",
     "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
-    "@types/three": "0.184.0",
+    "@types/three": "0.184.1",
     "@vitejs/plugin-react-swc": "4.3.1",
     "license-checker": "25.0.1",
     "typescript": "6.0.3",
