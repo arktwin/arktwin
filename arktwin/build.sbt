@@ -27,7 +27,7 @@ val apacheLicenseV2 = Some(
 
 inThisBuild(
   List(
-    scalaVersion := "3.8.3",
+    scalaVersion := "3.8.4",
     scalacOptions ++= Seq(
       "-deprecation",
       "-feature",
