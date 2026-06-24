@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> Development of this repository is paused until around summer 2027 due to the maintainer's personal circumstances. Issues and PRs may not be addressed until then.
+
 # ArkTwin: Distributed Multi-Agent Messaging Framework
 
 [![Scala CI](https://github.com/arktwin/arktwin/actions/workflows/scala-ci.yaml/badge.svg?branch=main)](https://github.com/arktwin/arktwin/actions/workflows/scala-ci.yaml)
