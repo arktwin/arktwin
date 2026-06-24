@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "monthly"
+      interval: "yearly"
     cooldown:
       default-days: 7
     labels:
@@ -13,7 +13,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/arktwin/viewer/"
     schedule:
-      interval: "monthly"
+      interval: "yearly"
     cooldown:
       default-days: 7
     labels:
